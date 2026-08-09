@@ -84,18 +84,43 @@ def expand(body_lines, placeholders):
 
 
 def sample_placeholders(name, body):
-    """根据 placeholder 默认值生成示例输入。"""
+    """根据 placeholder 默认值生成示例输入。
+
+    支持嵌套 placeholder：若占位符 N 的默认值里出现 ${M:foo} 或 $M，
+    会先记录 N 的"临时"默认值，再在占位符 M 解析完后用 M 的值替换。
+    """
     ph = {}
+    refs = {}  # N -> template string containing $M / ${M:...}
     for line in body:
+        for m in re.finditer(r"\$\{(\d+)\|([^}]*)\|\}", line):
+            n = int(m.group(1))
+            options = m.group(2)
+            if n not in ph and options:
+                ph[n] = options.split(",")[0]
         for m in re.finditer(r"\$\{(\d+)(?::([^}]*))?\}", line):
             n = int(m.group(1))
             default = m.group(2) or ""
-            if n not in ph and default:
+            if default and re.search(r"\$\{?\d", default):
+                refs[n] = default
+            elif n not in ph and default:
                 ph[n] = default
         for m in re.finditer(r"\$(\d)\b", line):
             n = int(m.group(1))
             if n not in ph:
                 ph[n] = "X"
+    # 解析嵌套引用：refs[N] 中的 $M / ${M:foo} 替换为 ph[M] 的值
+    for n, tmpl in refs.items():
+        resolved = re.sub(
+            r"\$\{(\d+)(?::([^}]*))?\}",
+            lambda m: ph.get(int(m.group(1)), m.group(0)),
+            tmpl,
+        )
+        resolved = re.sub(
+            r"\$(\d)\b",
+            lambda m: ph.get(int(m.group(1)), m.group(0)),
+            resolved,
+        )
+        ph[n] = resolved
     return ph
 
 

@@ -107,8 +107,8 @@ python3 references/expand.py shell.code-snippets
 	- 例如：`/generate-snippets go` 则代表生成go语言的
 
 # 需要生成的模块
-- 循环
-- 错误捕获
+- 循环(数组，range)
+- 错误捕获（错误定义、错误抛出、错误捕获）
 - if判断逻辑
 - 读取文件
 - 读取env
