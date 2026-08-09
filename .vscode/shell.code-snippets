@@ -1,0 +1,226 @@
+{
+    "sh_for": {
+        "prefix": "sh_for",
+        "body": [
+            "for ${1:item} in ${2:list}; do",
+            "    ${3:# body}",
+            "done"
+        ],
+        "description": "Shell for 遍历列表"
+    },
+    "sh_for_range": {
+        "prefix": "sh_for_range",
+        "body": [
+            "for ((${1:i}=${2:0}; $1 < ${3:10}; $1++)); do",
+            "    ${4:# body}",
+            "done"
+        ],
+        "description": "Shell C 风格 for 循环（range）"
+    },
+    "sh_while": {
+        "prefix": "sh_while",
+        "body": [
+            "while [[ ${1:condition} ]]; do",
+            "    ${2:# body}",
+            "done"
+        ],
+        "description": "Shell while 循环"
+    },
+    "sh_try": {
+        "prefix": "sh_try",
+        "body": [
+            "${1:command} || { echo \"error\" >&2; ${2:exit 1}; }"
+        ],
+        "description": "Shell 错误处理（用 || 链）"
+    },
+    "sh_throw": {
+        "prefix": "sh_throw",
+        "body": [
+            "echo \"${1:error message}\" >&2",
+            "exit ${2:1}"
+        ],
+        "description": "Shell 输出错误并退出（throw）"
+    },
+    "sh_error_define": {
+        "prefix": "sh_error_define",
+        "body": [
+            "${1:err_handler}() {",
+            "    echo \"${2:message}\" >&2",
+            "    return ${3:1}",
+            "}"
+        ],
+        "description": "Shell 错误处理函数"
+    },
+    "sh_if": {
+        "prefix": "sh_if",
+        "body": [
+            "if [[ ${1:condition} ]]; then",
+            "    ${2:# body}",
+            "elif [[ ${3:condition} ]]; then",
+            "    ${4:# body}",
+            "else",
+            "    ${5:# body}",
+            "fi"
+        ],
+        "description": "Shell if 判断"
+    },
+    "sh_read_file": {
+        "prefix": "sh_read_file",
+        "body": [
+            "while IFS= read -r ${1:line}; do",
+            "    ${2:echo \"$line\"}",
+            "done < ${3:file}"
+        ],
+        "description": "Shell 读取文件（按行）"
+    },
+    "sh_read_env": {
+        "prefix": "sh_read_env",
+        "body": [
+            "${1:value}=\\${${2:KEY}:-${3:default}}"
+        ],
+        "description": "Shell 读取环境变量"
+    },
+    "sh_shell": {
+        "prefix": "sh_shell",
+        "body": [
+            "${1:output}=${2:$(command)}"
+        ],
+        "description": "Shell 命令替换"
+    },
+    "sh_time": {
+        "prefix": "sh_time",
+        "body": [
+            "start=\\$(date +%s%N)",
+            "${1:# code}",
+            "end=\\$(date +%s%N)",
+            "echo \"耗时: \\$(( (end - start) / 1000000 ))ms\""
+        ],
+        "description": "Shell 获取程序运行耗时"
+    },
+    "sh_cwd": {
+        "prefix": "sh_cwd",
+        "body": [
+            "${1:dir}=$(pwd)"
+        ],
+        "description": "Shell 获取当前目录"
+    },
+    "sh_args": {
+        "prefix": "sh_args",
+        "body": [
+            "while getopts \"${1:o:vh}\" opt; do",
+            "    case \"$opt\" in",
+            "        ${2:o})",
+            "            ${3:echo \"option -$opt with arg $OPTARG\"}",
+            "            ;;",
+            "        h)",
+            "            ${4:usage}",
+            "            ;;",
+            "        *)",
+            "            ${5:exit 1}",
+            "            ;;",
+            "    esac",
+            "done"
+        ],
+        "description": "Shell 命令行参数 (getopts)"
+    },
+    "sh_input": {
+        "prefix": "sh_input",
+        "body": [
+            "read -p \"${1:请输入}: \" ${2:input}"
+        ],
+        "description": "Shell 获取用户输入"
+    },
+    "sh_thread_lock": {
+        "prefix": "sh_thread_lock",
+        "body": [
+            "${1:lock_file}=$(mktemp)",
+            "exec 200>\\$${1:lock_file}",
+            "flock -x 200",
+            "${2:# critical section}",
+            "exec 200>&-"
+        ],
+        "description": "Shell 文件锁（flock）"
+    },
+    "sh_thread_rlock": {
+        "prefix": "sh_thread_rlock",
+        "body": [
+            "# Shell 无内置读写锁，可用 flock 配合两个文件实现"
+        ],
+        "description": "Shell 读写锁（flock 模拟）"
+    },
+    "sh_thread_semaphore": {
+        "prefix": "sh_thread_semaphore",
+        "body": [
+            "# Shell 信号量：用 mkdir 原子性实现互斥，循环控制并发数",
+            "${1:dir}=$(mktemp -d)",
+            "while ! mkdir \"\\$${1:dir}/lock\" 2>/dev/null; do sleep 0.1; done",
+            "${2:# critical section}",
+            "rmdir \"\\$${1:dir}/lock\""
+        ],
+        "description": "Shell 信号量（基于文件）"
+    },
+    "sh_thread_condition": {
+        "prefix": "sh_thread_condition",
+        "body": [
+            "# ============ 实现 1：文件轮询（跨平台，简单）============",
+            "# 注意：Shell 无 notify() / notify_all() 区分",
+            "# 任何进程 touch 事件文件，所有等待者都会被唤醒",
+            "${1:event_file}=$(mktemp)",
+            "# 触发方：touch ${2:$1}",
+            "while [[ ! -f ${3:$2} ]]; do sleep 0.1; done",
+            "",
+            "",
+            "# ============ 实现 2：inotifywait（Linux 专属，事件驱动不占 CPU）============",
+            "# ${1:event_file}=$(mktemp)",
+            "# inotifywait -e modify \"${2:$1}\""
+        ],
+        "description": "Shell 条件变量（文件轮询 + inotifywait 备选）"
+    },
+    "sh_thread_event": {
+        "prefix": "sh_thread_event",
+        "body": [
+            "# Shell 事件：用文件存在与否作为信号",
+            "${1:event_file}=$(mktemp)",
+            "# 触发方: touch \\$${1:event_file}",
+            "while [[ ! -f \\$${1:event_file} ]]; do sleep 0.1; done"
+        ],
+        "description": "Shell 事件（基于文件）"
+    },
+    "sh_thread_barrier": {
+        "prefix": "sh_thread_barrier",
+        "body": [
+            "wait"
+        ],
+        "description": "Shell 屏障（wait 所有后台进程）"
+    },
+    "sh_process": {
+        "prefix": "sh_process",
+        "body": [
+            "${1:command} &",
+            "pid=\\$!",
+            "wait \\$pid"
+        ],
+        "description": "Shell 后台进程"
+    },
+    "sh_log": {
+        "prefix": "sh_log",
+        "body": [
+            "echo \"[\\$(date '+%Y-%m-%d %H:%M:%S')] ${1:level}: ${2:message}\" | tee -a ${3:log_file}"
+        ],
+        "description": "Shell 日志打印（带时间戳）"
+    },
+    "sh_read_json": {
+        "prefix": "sh_read_json",
+        "body": [
+            "${1:value}=$(jq -r ${2:.path.to.value} ${3:config.json})"
+        ],
+        "description": "Shell 读取 JSON 配置文件 (jq)"
+    },
+    "sh_signal": {
+        "prefix": "sh_signal",
+        "body": [
+            "trap '${1:echo \"收到信号\"; cleanup; exit 0}' ${2|SIGHUP,SIGINT,SIGTERM|}"
+        ],
+        "description": "Shell 信号监听（trap）"
+    }
+}

@@ -125,6 +125,46 @@ python3 references/expand.py shell.code-snippets
 
 > 上面的是我想生成的功能名称，`prefix` 要保证是英文,`Print to console`和`description`是中文
 
+# Sufix 规范
+
+新增语言时，**先看 sufix 表，相同功能复用同 sufix**，不允许临时发明。prefix 格式 `{lang}_{sufix}`，例如 `py_try`、`go_throw`、`ts_for_range`。
+
+| sufix | 含义 | py | go | ts | js | sh |
+|---|---|:-:|:-:|:-:|:-:|:-:|
+| `for` | for 循环 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `for_range` | 范围/迭代循环（`range` / `for-of` / `for ((;;))`） | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `while` | while 循环 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `try` | 错误捕获（try/catch/|| 链） | ✓ | — | — | — | ✓ |
+| `err_check` | 错误检查（Go `if err != nil`） | — | ✓ | — | — | — |
+| `throw` | 抛出错误（raise/throw/return err） | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `error_define` | 定义错误（class/var/func） | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `if` | if 判断 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `read_file` | 读文件 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `read_env` | 读环境变量 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `read_json` | 读 JSON 配置 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `shell` | 执行 shell 命令 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `time` | 获取程序耗时 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `cwd` | 获取当前目录 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `args` | 命令行参数 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `input` | 用户输入 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `thread_lock` | 互斥锁 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `thread_rlock` | 读写锁 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `thread_semaphore` | 信号量 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `thread_condition` | 条件变量 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `thread_event` | 事件 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `thread_barrier` | 屏障 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `process` | 多进程 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `log` | 日志 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `signal` | 信号监听 | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+**规则**：
+- Go 习惯用 `if err != nil` 而不是 try/catch，所以用 `err_check` 替代 `try`（其他语言都用 `try`）
+- Go 没有 `while` 关键字，用 `for cond {}` 等价实现，sufix 仍叫 `while`（body 是 for 写法）
+- 错误抛出统一 `throw`（不管语言里叫 raise/throw/return err）
+- 错误定义统一 `error_define`（不管实现是 class/var/func）
+- 语言没有的特性，sufix 整体不出现（如只有 Go 用 `err_check` 替代 `try`）
+- 跨语言 sufix 必须完全一致，方便 IDE 自动补全跨语言切换
+
 # 文件格式
 - 以python为例子
   - 文件名: python.code-snippets 放在当前项目的.vscode目录下
