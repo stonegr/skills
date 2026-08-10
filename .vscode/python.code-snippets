@@ -235,18 +235,52 @@
         ],
         "description": "Python 读取 JSON 配置文件"
     },
-    "py_signal": {
+    "Python 信号监听（程序退出前清理）": {
         "prefix": "py_signal",
         "body": [
             "import signal",
             "import sys",
+            "import time",
             "",
-            "def ${1:handler}(signum, frame):",
-            "    ${2:# cleanup}",
+            "def handler(signum, frame):",
+            "    # cleanup",
             "    sys.exit(0)",
             "",
-            "signal.signal(signal.${3|SIGHUP,SIGINT,SIGTERM|}, $1)"
+            "# signal.SIGHUP` (1)    | 挂起  | 终止| 终端连接断开|",
+            "# signal.SIGINT` (2)    | 终止  | 键盘中断（Ctrl+C）| 用户主动中断|",
+            "# signal.SIGTERM` (15)  | 终止  | 优雅终止（**推荐使用**）| `kill <pid>` 默认信号|",
+            "# signal.SIGUSR1` (10)  | 忽略  | 用户自定义| 应用程序自定义|",
+            "# signal.SIGKILL` (9)   | 终止  | 不能捕获/忽略| 强制杀死（最高优先级），程序处理不了|",
+            "signal.signal(signal.SIGHUP, handler)",
+            "",
+            "",
+            "def alarm_handler(signum, frame):",
+            "    print(f\"收到信号: {signum}, 超时了\")",
+            "    raise TimeoutError(\"操作超时\")",
+            "",
+            "",
+            "# 注册 SIGALRM 处理函数",
+            "signal.signal(signal.SIGALRM, alarm_handler)",
+            "",
+            "",
+            "def long_task():",
+            "    print(\"开始执行任务...\")",
+            "    time.sleep(10)",
+            "    print(\"任务完成\")",
+            "",
+            "",
+            "try:",
+            "    # 设置 3 秒后触发 SIGALRM",
+            "    signal.alarm(3)",
+            "",
+            "    long_task()",
+            "",
+            "    # 任务完成，取消 alarm",
+            "    signal.alarm(0)",
+            "",
+            "except TimeoutError as e:",
+            "    print(e)"
         ],
-        "description": "Python 信号监听（程序退出前清理）"
+        "description": "py_signal"
     }
 }
