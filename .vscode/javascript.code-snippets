@@ -301,5 +301,30 @@
             "// }, ${2:1000})"
         ],
         "description": "JavaScript 时间等待（await Promise 版默认 + setTimeout 备选）"
+    },
+    "js_random_string": {
+        "prefix": "js_random_string",
+        "body": [
+            "// ============ 实现 1：crypto.randomBytes（密码学安全，推荐 token/密码）============",
+            "const { randomBytes } = require('crypto')",
+            "",
+            "function ${1:randomString}(${2:length} = ${3:16}) {",
+            "    return randomBytes($2).toString('base64').slice(0, $2)",
+            "}",
+            "",
+            "const ${4:str} = $1($2)",
+            "",
+            "",
+            "// ============ 实现 2：Math.random（够快但非密码学安全）============",
+            "// function $1($2 = $3) {",
+            "//     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'",
+            "//     let result = ''",
+            "//     for (let i = 0; i < $2; i++) {",
+            "//         result += chars.charAt(Math.floor(Math.random() * chars.length))",
+            "//     }",
+            "//     return result",
+            "// }"
+        ],
+        "description": "JavaScript 生成随机字符串（crypto 默认 + Math.random 备选）"
     }
 }

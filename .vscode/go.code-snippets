@@ -319,5 +319,35 @@
             "time.Sleep(${1:1} * time.Second)  // 单位: time.Second / time.Millisecond / time.Minute"
         ],
         "description": "Go 时间等待"
+    },
+    "go_random_string": {
+        "prefix": "go_random_string",
+        "body": [
+            "// ============ 实现 1：密码学安全（crypto/rand，推荐用于 token/密码）============",
+            "var ${1:letters} = []rune(\"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")",
+            "",
+            "func ${2:randSeq}(n int) string {",
+            "    b := make([]rune, n)",
+            "    for i := range b {",
+            "        idx, _ := rand.Int(rand.Reader, big.NewInt(int64(len($1))))",
+            "        b[i] = $1[idx.Int64()]",
+            "    }",
+            "    return string(b)",
+            "}",
+            "",
+            "${3:result} := $2(${4:16})",
+            "",
+            "",
+            "// ============ 实现 2：math/rand（够快，但非密码学安全）============",
+            "// import \"math/rand\"",
+            "// func $2(n int) string {",
+            "//     b := make([]rune, n)",
+            "//     for i := range b {",
+            "//         b[i] = $1[rand.Intn(len($1))]",
+            "//     }",
+            "//     return string(b)",
+            "// }"
+        ],
+        "description": "Go 生成随机字符串（crypto/rand 安全版默认，math/rand 注释备选）"
     }
 }

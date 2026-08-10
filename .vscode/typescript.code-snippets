@@ -302,5 +302,30 @@
             "// }, ${2:1000})"
         ],
         "description": "TypeScript 时间等待（await Promise 版默认 + setTimeout 备选）"
+    },
+    "ts_random_string": {
+        "prefix": "ts_random_string",
+        "body": [
+            "// ============ 实现 1：crypto.randomBytes（密码学安全，推荐 token/密码）============",
+            "import { randomBytes } from 'crypto'",
+            "",
+            "function ${1:randomString}(${2:length}: number = ${3:16}): string {",
+            "    return randomBytes($2).toString('base64').slice(0, $2)",
+            "}",
+            "",
+            "const ${4:str} = $1($2)",
+            "",
+            "",
+            "// ============ 实现 2：Math.random（够快但非密码学安全）============",
+            "// function $1($2: number = $3): string {",
+            "//     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'",
+            "//     let result = ''",
+            "//     for (let i = 0; i < $2; i++) {",
+            "//         result += chars.charAt(Math.floor(Math.random() * chars.length))",
+            "//     }",
+            "//     return result",
+            "// }"
+        ],
+        "description": "TypeScript 生成随机字符串（crypto 默认 + Math.random 备选）"
     }
 }

@@ -323,5 +323,15 @@
             "time.sleep(${1:seconds})"
         ],
         "description": "Python 时间等待（秒）"
+    },
+    "py_random_string": {
+        "prefix": "py_random_string",
+        "body": [
+            "import secrets",
+            "import string",
+            "",
+            "${1:random_str} = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(${2:16}))"
+        ],
+        "description": "Python 生成随机字符串（密码学安全）"
     }
 }

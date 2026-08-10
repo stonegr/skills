@@ -115,6 +115,7 @@ python3 references/expand.py shell.code-snippets
 - 执行shell命令
 - 获取程序运行耗时
 - 时间等待
+- 生成随机字符串
 - 获取当前目录
 - 命令行参数获取
 - 获取用户输入
@@ -150,6 +151,7 @@ python3 references/expand.py shell.code-snippets
 | `shell` | 执行 shell 命令 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `time` | 获取程序耗时 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `sleep` | 时间等待 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `random_string` | 生成随机字符串 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `cwd` | 获取当前目录 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `args` | 命令行参数 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `input` | 用户输入 | ✓ | ✓ | ✓ | ✓ | ✓ |

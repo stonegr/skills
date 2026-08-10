@@ -259,5 +259,17 @@
             "sleep ${1:seconds}"
         ],
         "description": "Shell 时间等待（秒）"
+    },
+    "sh_random_string": {
+        "prefix": "sh_random_string",
+        "body": [
+            "# ============ 实现 1：/dev/urandom + tr（密码学安全，Linux/Mac）============",
+            "${1:str}=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c ${2:16})",
+            "",
+            "",
+            "# ============ 实现 2：openssl rand（更可控，可指定字符集）============",
+            "# ${1:str}=$(openssl rand -base64 ${3:24} | tr -d '=+/' | cut -c1-${2:16})"
+        ],
+        "description": "Shell 生成随机字符串（/dev/urandom 默认 + openssl 备选）"
     }
 }
