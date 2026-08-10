@@ -255,5 +255,51 @@
             "})"
         ],
         "description": "JavaScript 信号监听（程序退出前清理）"
+    },
+    "js_write_file": {
+        "prefix": "js_write_file",
+        "body": [
+            "const fs = require('fs')",
+            "fs.writeFileSync(${1:path}, ${2:content}, '${3:utf-8}')"
+        ],
+        "description": "JavaScript 写入文件"
+    },
+    "js_copy_file": {
+        "prefix": "js_copy_file",
+        "body": [
+            "const fs = require('fs')",
+            "fs.copyFileSync(${1:src}, ${2:dst})"
+        ],
+        "description": "JavaScript 拷贝文件"
+    },
+    "js_move_file": {
+        "prefix": "js_move_file",
+        "body": [
+            "const fs = require('fs')",
+            "fs.renameSync(${1:src}, ${2:dst})"
+        ],
+        "description": "JavaScript 移动/重命名文件"
+    },
+    "js_delete_file": {
+        "prefix": "js_delete_file",
+        "body": [
+            "const fs = require('fs')",
+            "fs.unlinkSync(${1:path})"
+        ],
+        "description": "JavaScript 删除文件"
+    },
+    "js_sleep": {
+        "prefix": "js_sleep",
+        "body": [
+            "// ============ 实现 1：async 函数里等待（推荐）============",
+            "await new Promise(r => setTimeout(r, ${1:1000}))  // 毫秒",
+            "",
+            "",
+            "// ============ 实现 2：定时器，到时间执行回调（无 await）============",
+            "// setTimeout(() => {",
+            "//     ${1:// 等待后执行}",
+            "// }, ${2:1000})"
+        ],
+        "description": "JavaScript 时间等待（await Promise 版默认 + setTimeout 备选）"
     }
 }

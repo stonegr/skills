@@ -222,5 +222,42 @@
             "trap '${1:echo \"收到信号\"; cleanup; exit 0}' ${2|SIGHUP,SIGINT,SIGTERM|}"
         ],
         "description": "Shell 信号监听（trap）"
+    },
+    "sh_write_file": {
+        "prefix": "sh_write_file",
+        "body": [
+            "cat > ${1:path} << 'EOF'",
+            "${2:content}",
+            "EOF"
+        ],
+        "description": "Shell 写入文件（多行）"
+    },
+    "sh_copy_file": {
+        "prefix": "sh_copy_file",
+        "body": [
+            "cp ${1:src} ${2:dst}"
+        ],
+        "description": "Shell 拷贝文件"
+    },
+    "sh_move_file": {
+        "prefix": "sh_move_file",
+        "body": [
+            "mv ${1:src} ${2:dst}"
+        ],
+        "description": "Shell 移动/重命名文件"
+    },
+    "sh_delete_file": {
+        "prefix": "sh_delete_file",
+        "body": [
+            "rm ${1:path}"
+        ],
+        "description": "Shell 删除文件"
+    },
+    "sh_sleep": {
+        "prefix": "sh_sleep",
+        "body": [
+            "sleep ${1:seconds}"
+        ],
+        "description": "Shell 时间等待（秒）"
     }
 }

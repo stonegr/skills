@@ -110,10 +110,11 @@ python3 references/expand.py shell.code-snippets
 - 循环(数组，range)
 - 错误捕获（错误定义、错误抛出、错误捕获）
 - if判断逻辑
-- 读取文件
+- 文件操作（读、写、拷贝、移动、删除）
 - 读取env
 - 执行shell命令
 - 获取程序运行耗时
+- 时间等待
 - 获取当前目录
 - 命令行参数获取
 - 获取用户输入
@@ -140,10 +141,15 @@ python3 references/expand.py shell.code-snippets
 | `error_define` | 定义错误（class/var/func） | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `if` | if 判断 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `read_file` | 读文件 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `write_file` | 写文件 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `copy_file` | 拷贝文件 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `move_file` | 移动/重命名 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `delete_file` | 删除文件 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `read_env` | 读环境变量 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `read_json` | 读 JSON 配置 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `shell` | 执行 shell 命令 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `time` | 获取程序耗时 | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `sleep` | 时间等待 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `cwd` | 获取当前目录 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `args` | 命令行参数 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `input` | 用户输入 | ✓ | ✓ | ✓ | ✓ | ✓ |
