@@ -22,6 +22,7 @@ language_name_map = {
     'python': 'python',
     'shell': 'shellscript',
     'typescript': 'typescript',
+    'rust': 'rust',
 }
 
 

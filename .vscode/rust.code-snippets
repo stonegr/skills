@@ -1,0 +1,406 @@
+{
+    "rs_for": {
+        "prefix": "rs_for",
+        "body": [
+            "for ${1:i} in 0..${2:10} {",
+            "    ${3:// code}",
+            "}"
+        ],
+        "description": "Rust for 循环"
+    },
+    "rs_for_range": {
+        "prefix": "rs_for_range",
+        "body": [
+            "for (${1:i}, ${2:v}) in ${3:slice}.iter().enumerate() {",
+            "    ${4:// code}",
+            "}"
+        ],
+        "description": "Rust for 遍历切片/数组（带索引）"
+    },
+    "rs_while": {
+        "prefix": "rs_while",
+        "body": [
+            "while ${1:condition} {",
+            "    ${2:// code}",
+            "}"
+        ],
+        "description": "Rust while 循环"
+    },
+    "rs_throw": {
+        "prefix": "rs_throw",
+        "body": [
+            "panic!(\"${1:message}\")"
+        ],
+        "description": "Rust 抛出错误（panic）"
+    },
+    "rs_error_define": {
+        "prefix": "rs_error_define",
+        "body": [
+            "use thiserror::Error;",
+            "",
+            "#[derive(Error, Debug)]",
+            "pub enum ${1:AppError} {",
+            "    #[error(\"${2:message}\")]",
+            "    ${3:Variant},",
+            "}"
+        ],
+        "description": "Rust 定义错误（thiserror 枚举）"
+    },
+    "rs_if": {
+        "prefix": "rs_if",
+        "body": [
+            "if ${1:condition} {",
+            "    ${2:// code}",
+            "} else if ${3:condition} {",
+            "    ${4:// code}",
+            "} else {",
+            "    ${5:// code}",
+            "}"
+        ],
+        "description": "Rust if 判断"
+    },
+    "rs_read_file": {
+        "prefix": "rs_read_file",
+        "body": [
+            "use std::fs;",
+            "",
+            "let ${1:content} = fs::read_to_string(${2:path})?;"
+        ],
+        "description": "Rust 读取文件"
+    },
+    "rs_write_file": {
+        "prefix": "rs_write_file",
+        "body": [
+            "use std::fs;",
+            "",
+            "fs::write(${1:path}, ${2:content})?;"
+        ],
+        "description": "Rust 写入文件"
+    },
+    "rs_copy_file": {
+        "prefix": "rs_copy_file",
+        "body": [
+            "use std::fs;",
+            "",
+            "fs::copy(${1:src}, ${2:dst})?;"
+        ],
+        "description": "Rust 拷贝文件"
+    },
+    "rs_move_file": {
+        "prefix": "rs_move_file",
+        "body": [
+            "use std::fs;",
+            "",
+            "fs::rename(${1:src}, ${2:dst})?;"
+        ],
+        "description": "Rust 移动/重命名文件"
+    },
+    "rs_delete_file": {
+        "prefix": "rs_delete_file",
+        "body": [
+            "use std::fs;",
+            "",
+            "fs::remove_file(${1:path})?;"
+        ],
+        "description": "Rust 删除文件"
+    },
+    "rs_read_env": {
+        "prefix": "rs_read_env",
+        "body": [
+            "let ${1:value} = std::env::var(\"${2:KEY}\")?;"
+        ],
+        "description": "Rust 读取环境变量"
+    },
+    "rs_read_json": {
+        "prefix": "rs_read_json",
+        "body": [
+            "use serde::Deserialize;",
+            "",
+            "#[derive(Deserialize, Debug)]",
+            "struct ${1:Config} {",
+            "    ${2:// fields}",
+            "}",
+            "",
+            "let ${3:raw} = std::fs::read_to_string(${4:config_path})?;",
+            "let ${5:config}: ${1:Config} = serde_json::from_str(&$3)?;"
+        ],
+        "description": "Rust 读取 JSON 配置文件（serde）"
+    },
+    "rs_shell": {
+        "prefix": "rs_shell",
+        "body": [
+            "use std::process::Command;",
+            "",
+            "let ${1:output} = Command::new(\"${2:sh}\")",
+            "    .arg(\"-c\")",
+            "    .arg(\"${3:ls -la}\")",
+            "    .output()?;"
+        ],
+        "description": "Rust 执行 shell 命令"
+    },
+    "rs_time": {
+        "prefix": "rs_time",
+        "body": [
+            "use std::time::Instant;",
+            "",
+            "let start = Instant::now();",
+            "${1:// code}",
+            "println!(\"耗时: {:?}\", start.elapsed());"
+        ],
+        "description": "Rust 获取程序运行耗时"
+    },
+    "rs_sleep": {
+        "prefix": "rs_sleep",
+        "body": [
+            "std::thread::sleep(std::time::Duration::from_secs(${1:1}));"
+        ],
+        "description": "Rust 时间等待（秒）"
+    },
+    "rs_random_string": {
+        "prefix": "rs_random_string",
+        "body": [
+            "use rand::distributions::{Alphanumeric, DistString};",
+            "",
+            "let ${1:random_str}: String = Alphanumeric.sample_string(&mut rand::thread_rng(), ${2:16});"
+        ],
+        "description": "Rust 生成随机字符串（rand）"
+    },
+    "rs_cwd": {
+        "prefix": "rs_cwd",
+        "body": [
+            "let ${1:dir} = std::env::current_dir()?;"
+        ],
+        "description": "Rust 获取当前目录"
+    },
+    "rs_args": {
+        "prefix": "rs_args",
+        "body": [
+            "use clap::Parser;",
+            "",
+            "#[derive(Parser, Debug)]",
+            "struct ${1:Args} {",
+            "    #[arg(short, long)]",
+            "    ${2:name}: ${3:String},",
+            "}",
+            "",
+            "let ${4:args} = ${1:Args}::parse();"
+        ],
+        "description": "Rust 命令行参数（clap）"
+    },
+    "rs_input": {
+        "prefix": "rs_input",
+        "body": [
+            "use std::io::{self, BufRead, Write};",
+            "",
+            "print!(\"${1:请输入}: \");",
+            "io::stdout().flush()?;",
+            "let mut ${2:input} = String::new();",
+            "io::stdin().lock().read_line(&mut $2)?;",
+            "let $2 = $2.trim().to_string();"
+        ],
+        "description": "Rust 获取用户输入"
+    },
+    "rs_thread_lock": {
+        "prefix": "rs_thread_lock",
+        "body": [
+            "use std::sync::Mutex;",
+            "",
+            "let ${1:lock} = Mutex::new(${2:value});",
+            "",
+            "let mut ${3:guard} = $1.lock().unwrap();",
+            "${4:// critical section}",
+            "// guard 在作用域结束时自动 drop 释放锁"
+        ],
+        "description": "Rust 互斥锁"
+    },
+    "rs_thread_rlock": {
+        "prefix": "rs_thread_rlock",
+        "body": [
+            "use std::sync::RwLock;",
+            "",
+            "let ${1:lock} = RwLock::new(${2:value});",
+            "",
+            "// 读锁",
+            "let ${3:r_guard} = $1.read().unwrap();",
+            "${4:// read}",
+            "drop($3);",
+            "",
+            "// 写锁",
+            "// let mut w_guard = $1.write().unwrap();",
+            "// ${5:// write}"
+        ],
+        "description": "Rust 读写锁"
+    },
+    "rs_thread_semaphore": {
+        "prefix": "rs_thread_semaphore",
+        "body": [
+            "// ============ 实现 1：标准库自实现（Mutex + Condvar）============",
+            "use std::sync::{Arc, Condvar, Mutex};",
+            "",
+            "struct Semaphore {",
+            "    count: Mutex<usize>,",
+            "    cvar: Condvar,",
+            "}",
+            "",
+            "impl Semaphore {",
+            "    fn new(n: usize) -> Self {",
+            "        Self { count: Mutex::new(n), cvar: Condvar::new() }",
+            "    }",
+            "",
+            "    fn acquire(&self) {",
+            "        let mut count = self.count.lock().unwrap();",
+            "        while *count == 0 {",
+            "            count = self.cvar.wait(count).unwrap();",
+            "        }",
+            "        *count -= 1;",
+            "    }",
+            "",
+            "    fn release(&self) {",
+            "        *self.count.lock().unwrap() += 1;",
+            "        self.cvar.notify_one();",
+            "    }",
+            "}",
+            "",
+            "let ${1:sem} = Arc::new(Semaphore::new(${2:3}));",
+            "",
+            "",
+            "// ============ 实现 2：tokio（异步，推荐生产用）============",
+            "// use tokio::sync::Semaphore;",
+            "// let $1 = Arc::new(Semaphore::new($2));",
+            "// let _permit = $1.acquire().await;"
+        ],
+        "description": "Rust 信号量（std 自实现默认 + tokio 备选）"
+    },
+    "rs_thread_condition": {
+        "prefix": "rs_thread_condition",
+        "body": [
+            "use std::sync::{Arc, Condvar, Mutex};",
+            "",
+            "let ${1:state} = Arc::new(Mutex::new(false));",
+            "let ${2:cvar} = Arc::new(Condvar::new());",
+            "",
+            "// ============ 实现 1：waiter（消费者）============",
+            "let mut ${3:ready} = $1.lock().unwrap();",
+            "while !*$3 {",
+            "    $3 = $2.wait($3).unwrap();",
+            "}",
+            "${4:// 条件满足，处理}",
+            "",
+            "",
+            "// ============ 实现 2：notifier（生产者）============",
+            "// {",
+            "//     let mut ready = $1.lock().unwrap();",
+            "//     *ready = true;",
+            "//     $2.notify_all();",
+            "// }"
+        ],
+        "description": "Rust 条件变量（waiter 与 notifier 拆成独立块）"
+    },
+    "rs_thread_event": {
+        "prefix": "rs_thread_event",
+        "body": [
+            "use std::sync::{Arc, Condvar, Mutex};",
+            "",
+            "// Event = (Mutex<bool>, Condvar)",
+            "let ${1:event} = Arc::new((Mutex::new(false), Condvar::new()));",
+            "",
+            "// waiter",
+            "{",
+            "    let (lock, cvar) = &*$1;",
+            "    let mut fired = lock.lock().unwrap();",
+            "    while !*fired {",
+            "        fired = cvar.wait(fired).unwrap();",
+            "    }",
+            "}",
+            "${2:// event fired}",
+            "",
+            "",
+            "// set (notify)",
+            "// {",
+            "//     let (lock, cvar) = &*$1;",
+            "//     *lock.lock().unwrap() = true;",
+            "//     cvar.notify_all();",
+            "// }"
+        ],
+        "description": "Rust 事件（Condvar + Mutex<bool>）"
+    },
+    "rs_thread_barrier": {
+        "prefix": "rs_thread_barrier",
+        "body": [
+            "use std::sync::{Arc, Barrier};",
+            "use std::thread;",
+            "",
+            "let ${1:barrier} = Arc::new(Barrier::new(${2:3}));",
+            "let ${3:barrier_clone} = $1.clone();",
+            "",
+            "thread::spawn(move || {",
+            "    ${4:// work}",
+            "    $3.wait();",
+            "});",
+            "",
+            "// $1.wait();"
+        ],
+        "description": "Rust 屏障（std::sync::Barrier）"
+    },
+    "rs_process": {
+        "prefix": "rs_process",
+        "body": [
+            "use std::thread;",
+            "",
+            "let ${1:handle} = thread::spawn(|| {",
+            "    ${2:// code}",
+            "});",
+            "",
+            "$1.join().unwrap();"
+        ],
+        "description": "Rust 启动线程（std::thread::spawn）"
+    },
+    "rs_log": {
+        "prefix": "rs_log",
+        "body": [
+            "// ============ 实现 1：log + env_logger（推荐）============",
+            "// Cargo.toml: log = \"0.4\", env_logger = \"0.11\"",
+            "use log::{debug, error, info, warn};",
+            "",
+            "fn main() {",
+            "    env_logger::init();",
+            "    log::${1|debug,info,warn,error|}(${2:\"message\"});",
+            "}",
+            "",
+            "",
+            "// ============ 实现 2：println! 简单输出（无需依赖）============",
+            "// println!(\"${1:[INFO]} {}\", ${2:message});"
+        ],
+        "description": "Rust 日志打印（log crate + println 备选）"
+    },
+    "rs_signal": {
+        "prefix": "rs_signal",
+        "body": [
+            "// ============ 实现 1：signal-hook（推荐）============",
+            "// Cargo.toml: signal-hook = \"0.3\"",
+            "use signal_hook::consts::{SIGHUP, SIGINT, SIGTERM};",
+            "use signal_hook::iterator::Signals;",
+            "",
+            "fn main() -> Result<(), Box<dyn std::error::Error>> {",
+            "    let mut ${1:signals} = Signals::new(&[SIGHUP, SIGINT, SIGTERM])?;",
+            "",
+            "    std::thread::spawn(move || {",
+            "        for sig in $1.forever() {",
+            "            ${2:// cleanup}",
+            "            std::process::exit(0);",
+            "        }",
+            "    });",
+            "",
+            "    Ok(())",
+            "}",
+            "",
+            "",
+            "// ============ 实现 2：ctrlc（仅 Ctrl+C）============",
+            "// ctrlc::set_handler(|| {",
+            "//     ${2:// cleanup}",
+            "//     std::process::exit(0);",
+            "// })?;"
+        ],
+        "description": "Rust 信号监听（signal-hook 推荐 + ctrlc 备选）"
+    }
+}
