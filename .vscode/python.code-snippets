@@ -2,18 +2,18 @@
     "py_for": {
         "prefix": "py_for",
         "body": [
-            "for ${1:item} in ${2:iterable}:",
-            "    ${3:pass}"
+            "for ${1:i} in range(${2:10}):",
+            "    ${3:# code}"
         ],
-        "description": "Python for 遍历"
+        "description": "Python for 数字范围循环"
     },
     "py_for_range": {
         "prefix": "py_for_range",
         "body": [
-            "for ${1:i} in range(${2:10}):",
-            "    ${3:# code}"
+            "for ${1:item} in ${2:iterable}:",
+            "    ${3:pass}"
         ],
-        "description": "Python for range 循环"
+        "description": "Python for 遍历集合"
     },
     "py_while": {
         "prefix": "py_while",

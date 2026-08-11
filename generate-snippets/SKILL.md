@@ -133,8 +133,8 @@ python3 references/expand.py shell.code-snippets
 
 | sufix | 含义 | py | go | ts | js | sh | rs |
 |---|---|:-:|:-:|:-:|:-:|:-:|:-:|
-| `for` | for 循环 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `for_range` | 范围/迭代循环（`range` / `for-of` / `for ((;;))`） | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `for` | 数字范围循环（`0..n`） | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `for_range` | 遍历集合（`for-of` / `range slice` / `iter().enumerate()`） | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `while` | while 循环 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `try` | 错误捕获（try/catch/|| 链） | ✓ | — | — | — | ✓ | — |
 | `err_check` | 错误检查（Go `if err != nil`） | — | ✓ | — | — | — | — |
