@@ -235,6 +235,7 @@
     "sh_copy_file": {
         "prefix": "sh_copy_file",
         "body": [
+            "-P 表示直接复制链接而不是跟随链接复制",
             "cp ${1:src} ${2:dst}"
         ],
         "description": "Shell 拷贝文件"
