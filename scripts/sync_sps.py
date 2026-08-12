@@ -23,6 +23,8 @@ os.makedirs(BACKUP_DIR, exist_ok=True)
 name_map = {
     'pandas': 'python',
     'fastapi': 'python',
+    'sqlalchemy': 'python',
+    'sqlmodel': 'python',
 }
 
 
@@ -39,7 +41,6 @@ for name, cate in name_map.items():
     _logger.info(f'开始处理: {o_file_name}')
     o_file_path = FILE_DIR.parent / '.vscode' / f'{o_file_name}'
     t_file_path = VSCODE_SNIPPETS_DIR / f'{cate}/{o_file_name}'
-    # 备份
     if t_file_path.exists():
         shutil.copy(t_file_path, BACKUP_DIR)
         _logger.info(f'{o_file_name} 备份到 {BACKUP_DIR / o_file_name} 完成')

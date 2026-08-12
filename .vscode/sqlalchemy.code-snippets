@@ -1,0 +1,428 @@
+{
+  "sa_create_engine": {
+    "prefix": "sa_create_engine",
+    "body": [
+      "from sqlalchemy import create_engine",
+      "${1:engine} = create_engine(${2:'sqlite:///example.db'}, echo=${3:True}, future=True)"
+    ],
+    "description": "创建 SQLAlchemy engine"
+  },
+  "sa_echo_sql": {
+    "prefix": "sa_echo_sql",
+    "body": [
+      "import logging",
+      "logging.basicConfig()",
+      "logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)",
+      "",
+      "${1:engine} = create_engine(${2:URL}, echo=${3|True,'debug'|})"
+    ],
+    "description": "配置 SQL 日志输出"
+  },
+  "sa_pool_config": {
+    "prefix": "sa_pool_config",
+    "body": [
+      "from sqlalchemy import create_engine",
+      "${1:engine} = create_engine(",
+      "    ${2:URL},",
+      "    pool_size=${3:5},",
+      "    max_overflow=${4:10},",
+      "    pool_pre_ping=${5:True},",
+      "    pool_recycle=${6:3600},",
+      ")"
+    ],
+    "description": "engine 连接池配置"
+  },
+  "sa_sessionmaker": {
+    "prefix": "sa_sessionmaker",
+    "body": [
+      "from sqlalchemy.orm import sessionmaker",
+      "${1:SessionLocal} = sessionmaker(bind=${2:engine}, autoflush=False, autocommit=False, future=True)",
+      "${3:session} = ${1:SessionLocal}()"
+    ],
+    "description": "创建 sessionmaker 工厂"
+  },
+  "sa_scoped_session": {
+    "prefix": "sa_scoped_session",
+    "body": [
+      "from sqlalchemy.orm import scoped_session, sessionmaker",
+      "${1:SessionFactory} = sessionmaker(bind=${2:engine}, future=True)",
+      "${3:Session} = scoped_session(${1:SessionFactory})"
+    ],
+    "description": "创建线程安全的 scoped_session"
+  },
+  "sa_declarative_base": {
+    "prefix": "sa_declarative_base",
+    "body": [
+      "from sqlalchemy.orm import declarative_base",
+      "${1:Base} = declarative_base()"
+    ],
+    "description": "创建 declarative_base 类"
+  },
+  "sa_model_basic": {
+    "prefix": "sa_model_basic",
+    "body": [
+      "from sqlalchemy import Column, Integer, String",
+      "from ${1:your_module} import Base",
+      "",
+      "class ${2:User}(Base):",
+      "    __tablename__ = '${3:users}'",
+      "",
+      "    id = Column(Integer, primary_key=True, autoincrement=True)",
+      "    name = Column(String(${4:50}), nullable=False)",
+      "",
+      "    def __repr__(self):",
+      "        return f'<${2:User} id={self.id} name={self.name}>'"
+    ],
+    "description": "定义基础 ORM 模型"
+  },
+  "sa_column_types": {
+    "prefix": "sa_column_types",
+    "body": [
+      "from datetime import datetime",
+      "from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Text, ForeignKey",
+      "from sqlalchemy.orm import relationship",
+      "from ${1:your_module} import Base",
+      "",
+      "class ${2:Example}(Base):",
+      "    __tablename__ = '${3:examples}'",
+      "",
+      "    id = Column(Integer, primary_key=True, autoincrement=True)",
+      "    name = Column(String(${4:50}), nullable=False)",
+      "    price = Column(Float, default=${5:0.0})",
+      "    is_active = Column(Boolean, default=True)",
+      "    description = Column(Text)",
+      "    created_at = Column(DateTime, default=datetime.utcnow)"
+    ],
+    "description": "常用字段类型示例"
+  },
+  "sa_primary_key": {
+    "prefix": "sa_primary_key",
+    "body": [
+      "from sqlalchemy import Column, Integer",
+      "",
+      "${1:id} = Column(Integer, primary_key=True, autoincrement=True, index=True)"
+    ],
+    "description": "主键自增字段"
+  },
+  "sa_model_repr": {
+    "prefix": "sa_model_repr",
+    "body": [
+      "def __repr__(self):",
+      "    return f'<${1:ModelName} {${2:self.id}}>'"
+    ],
+    "description": "模型 __repr__ 方法"
+  },
+  "sa_add": {
+    "prefix": "sa_add",
+    "body": [
+      "from ${1:your_module} import ${2:User}, ${3:SessionLocal}",
+      "",
+      "${4:session} = ${3:SessionLocal}()",
+      "${5:user} = ${2:User}(name=${6:'alice'}, age=${7:30})",
+      "${4:session}.add(${5:user})",
+      "${4:session}.commit()",
+      "${4:session}.refresh(${5:user})",
+      "${4:session}.close()"
+    ],
+    "description": "新增单条数据"
+  },
+  "sa_add_all": {
+    "prefix": "sa_add_all",
+    "body": [
+      "from ${1:your_module} import ${2:User}, ${3:SessionLocal}",
+      "",
+      "${4:session} = ${3:SessionLocal}()",
+      "${5:users} = [",
+      "    ${2:User}(name=${6:'alice'}),",
+      "    ${2:User}(name=${7:'bob'}),",
+      "]",
+      "${4:session}.add_all(${5:users})",
+      "${4:session}.commit()",
+      "${4:session}.close()"
+    ],
+    "description": "批量新增数据"
+  },
+  "sa_query_all": {
+    "prefix": "sa_query_all",
+    "body": [
+      "from ${1:your_module} import ${2:User}, ${3:SessionLocal}",
+      "",
+      "${4:session} = ${3:SessionLocal}()",
+      "${5:users} = ${4:session}.query(${2:User}).all()",
+      "${4:session}.close()"
+    ],
+    "description": "查询全部记录"
+  },
+  "sa_query_first": {
+    "prefix": "sa_query_first",
+    "body": [
+      "from ${1:your_module} import ${2:User}, ${3:SessionLocal}",
+      "",
+      "${4:session} = ${3:SessionLocal}()",
+      "${5:user} = ${4:session}.query(${2:User}).filter_by(id=${6:1}).first()",
+      "${4:session}.close()"
+    ],
+    "description": "查询单条记录"
+  },
+  "sa_update": {
+    "prefix": "sa_update",
+    "body": [
+      "from ${1:your_module} import ${2:User}, ${3:SessionLocal}",
+      "",
+      "${4:session} = ${3:SessionLocal}()",
+      "${4:session}.query(${2:User}).filter_by(id=${5:1}).update({\"${6:field}\": \"${7:value}\"})",
+      "${4:session}.commit()",
+      "${4:session}.close()"
+    ],
+    "description": "更新数据"
+  },
+  "sa_delete": {
+    "prefix": "sa_delete",
+    "body": [
+      "from ${1:your_module} import ${2:User}, ${3:SessionLocal}",
+      "",
+      "${4:session} = ${3:SessionLocal}()",
+      "${4:session}.query(${2:User}).filter_by(id=${5:1}).delete()",
+      "${4:session}.commit()",
+      "${4:session}.close()"
+    ],
+    "description": "删除数据"
+  },
+  "sa_filter": {
+    "prefix": "sa_filter",
+    "body": [
+      "${1:results} = ${2:session}.query(${3:User}).filter(${3:User}.${4:age} > ${5:18}).all()"
+    ],
+    "description": "filter 条件查询"
+  },
+  "sa_filter_by": {
+    "prefix": "sa_filter_by",
+    "body": [
+      "${1:results} = ${2:session}.query(${3:User}).filter_by(${4:name}=${5:'alice'}).all()"
+    ],
+    "description": "filter_by 简洁写法"
+  },
+  "sa_order_by": {
+    "prefix": "sa_order_by",
+    "body": [
+      "${1:results} = ${2:session}.query(${3:User}).order_by(${3:User}.${4:id}.${5|asc(),desc()|}).all()"
+    ],
+    "description": "排序查询 order_by"
+  },
+  "sa_limit_offset": {
+    "prefix": "sa_limit_offset",
+    "body": [
+      "${1:results} = ${2:session}.query(${3:User}).limit(${4:10}).offset(${5:20}).all()"
+    ],
+    "description": "分页查询 limit/offset"
+  },
+  "sa_count": {
+    "prefix": "sa_count",
+    "body": [
+      "${1:count} = ${2:session}.query(${3:User}).count()"
+    ],
+    "description": "统计记录数"
+  },
+  "sa_foreign_key": {
+    "prefix": "sa_foreign_key",
+    "body": [
+      "from sqlalchemy import Column, Integer, ForeignKey",
+      "from ${1:your_module} import Base",
+      "",
+      "${2:user_id} = Column(Integer, ForeignKey('${3:users}.id'), nullable=False)"
+    ],
+    "description": "外键字段 ForeignKey"
+  },
+  "sa_relationship": {
+    "prefix": "sa_relationship",
+    "body": [
+      "from sqlalchemy import Column, Integer, ForeignKey",
+      "from sqlalchemy.orm import relationship",
+      "from ${1:your_module} import Base",
+      "",
+      "class ${2:User}(Base):",
+      "    __tablename__ = '${3:users}'",
+      "    id = Column(Integer, primary_key=True)",
+      "    ${4:posts} = relationship('${5:Post}', back_populates='${6:user}', cascade='all, delete-orphan')",
+      "",
+      "class ${5:Post}(Base):",
+      "    __tablename__ = '${7:posts}'",
+      "    id = Column(Integer, primary_key=True)",
+      "    user_id = Column(Integer, ForeignKey('${3:users}.id'))",
+      "    ${6:user} = relationship('${2:User}', back_populates='${4:posts}')"
+    ],
+    "description": "一对多关系 relationship"
+  },
+  "sa_many_to_many": {
+    "prefix": "sa_many_to_many",
+    "body": [
+      "from sqlalchemy import Column, Integer, Table, ForeignKey",
+      "from sqlalchemy.orm import relationship",
+      "from ${1:your_module} import Base",
+      "",
+      "${2:user_tag} = Table(",
+      "    '${3:user_tag}', Base.metadata,",
+      "    Column('user_id', Integer, ForeignKey('${4:users}.id'), primary_key=True),",
+      "    Column('tag_id', Integer, ForeignKey('${5:tags}.id'), primary_key=True),",
+      ")",
+      "",
+      "class ${6:User}(Base):",
+      "    __tablename__ = '${4:users}'",
+      "    id = Column(Integer, primary_key=True)",
+      "    ${7:tags} = relationship('${8:Tag}', secondary=${2:user_tag}, back_populates='${9:users}')",
+      "",
+      "class ${8:Tag}(Base):",
+      "    __tablename__ = '${5:tags}'",
+      "    id = Column(Integer, primary_key=True)",
+      "    ${9:users} = relationship('${6:User}', secondary=${2:user_tag}, back_populates='${7:tags}')"
+    ],
+    "description": "多对多关系 secondary"
+  },
+  "sa_join": {
+    "prefix": "sa_join",
+    "body": [
+      "${1:results} = ${2:session}.query(${3:User}).join(${4:Post}).filter(${4:Post}.${5:title} == ${6:'x'}).all()"
+    ],
+    "description": "join 关联查询"
+  },
+  "sa_joinedload": {
+    "prefix": "sa_joinedload",
+    "body": [
+      "from sqlalchemy.orm import joinedload",
+      "${1:results} = ${2:session}.query(${3:User}).options(joinedload(${3:User}.${4:posts})).all()"
+    ],
+    "description": "joinedload 立即加载"
+  },
+  "sa_subqueryload": {
+    "prefix": "sa_subqueryload",
+    "body": [
+      "from sqlalchemy.orm import subqueryload",
+      "${1:results} = ${2:session}.query(${3:User}).options(subqueryload(${3:User}.${4:posts})).all()"
+    ],
+    "description": "subqueryload 子查询加载"
+  },
+  "sa_selectinload": {
+    "prefix": "sa_selectinload",
+    "body": [
+      "from sqlalchemy.orm import selectinload",
+      "${1:results} = ${2:session}.query(${3:User}).options(selectinload(${3:User}.${4:posts})).all()"
+    ],
+    "description": "selectinload IN 加载"
+  },
+  "sa_session_context": {
+    "prefix": "sa_session_context",
+    "body": [
+      "from ${1:your_module} import ${2:SessionLocal}",
+      "",
+      "with ${2:SessionLocal}() as ${3:session}:",
+      "    ${3:session}.add(${4:obj})",
+      "    ${3:session}.commit()"
+    ],
+    "description": "with session 上下文管理"
+  },
+  "sa_transaction": {
+    "prefix": "sa_transaction",
+    "body": [
+      "${1:session} = ${2:SessionLocal}()",
+      "${1:session}.begin()",
+      "try:",
+      "    ${1:session}.add(${3:obj})",
+      "    ${1:session}.commit()",
+      "except Exception:",
+      "    ${1:session}.rollback()",
+      "    raise",
+      "finally:",
+      "    ${1:session}.close()"
+    ],
+    "description": "事务块 try/except/finally"
+  },
+  "sa_rollback": {
+    "prefix": "sa_rollback",
+    "body": [
+      "try:",
+      "    ${1:session}.add(${2:obj})",
+      "    ${1:session}.commit()",
+      "except Exception as ${3:e}:",
+      "    ${1:session}.rollback()",
+      "    ${4:raise}"
+    ],
+    "description": "异常回滚处理"
+  },
+  "sa_text": {
+    "prefix": "sa_text",
+    "body": [
+      "from sqlalchemy import text",
+      "${1:stmt} = text(${2:'SELECT * FROM users WHERE id = :id'})"
+    ],
+    "description": "text() 构造 SQL"
+  },
+  "sa_execute_raw": {
+    "prefix": "sa_execute_raw",
+    "body": [
+      "from sqlalchemy import text",
+      "${1:result} = ${2:session}.execute(text(${3:'SELECT * FROM users'})).fetchall()"
+    ],
+    "description": "执行原生 SQL"
+  },
+  "sa_bindparams": {
+    "prefix": "sa_bindparams",
+    "body": [
+      "from sqlalchemy import text",
+      "${1:stmt} = text(${2:'SELECT * FROM users WHERE id = :id'}).bindparams(id=${3:1})",
+      "${4:result} = ${5:session}.execute(${1:stmt}).fetchall()"
+    ],
+    "description": "参数化 SQL 查询"
+  },
+  "sa_alembic_init": {
+    "prefix": "sa_alembic_init",
+    "body": [
+      "# 初始化 alembic 迁移目录",
+      "# alembic init alembic"
+    ],
+    "description": "alembic 初始化迁移目录"
+  },
+  "sa_alembic_autogen": {
+    "prefix": "sa_alembic_autogen",
+    "body": [
+      "# 自动生成迁移文件",
+      "# alembic revision --autogenerate -m \"${1:msg}\""
+    ],
+    "description": "alembic 自动生成迁移"
+  },
+  "sa_alembic_upgrade": {
+    "prefix": "sa_alembic_upgrade",
+    "body": [
+      "# 应用迁移到最新版本",
+      "# alembic upgrade head",
+      "",
+      "# 回滚一个版本",
+      "# alembic downgrade -1"
+    ],
+    "description": "alembic 执行/回滚迁移"
+  },
+  "sa_index": {
+    "prefix": "sa_index",
+    "body": [
+      "from sqlalchemy import Column, String, Index",
+      "${1:name} = Column(String(${2:50}), index=True)"
+    ],
+    "description": "字段索引 index=True"
+  },
+  "sa_unique": {
+    "prefix": "sa_unique",
+    "body": [
+      "from sqlalchemy import Column, String",
+      "${1:email} = Column(String(${2:120}), unique=True, nullable=False, index=True)"
+    ],
+    "description": "字段唯一约束 unique=True"
+  },
+  "sa_default": {
+    "prefix": "sa_default",
+    "body": [
+      "from sqlalchemy import Column, DateTime",
+      "from datetime import datetime",
+      "${1:created_at} = Column(DateTime, default=datetime.utcnow, nullable=False)"
+    ],
+    "description": "字段默认值 default"
+  }
+}
