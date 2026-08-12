@@ -46,7 +46,8 @@ for name, cate in name_map.items():
         _logger.info(f'{o_file_name} 备份到 {BACKUP_DIR / o_file_name} 完成')
     # 拷贝
     if t_file_path.exists():
-        os.remove(t_file_path)
-    shutil.copy2(o_file_path, VSCODE_SNIPPETS_DIR / f'{cate}')
+        t_file_path.write_text(o_file_path.read_text())
+    else:
+        shutil.copy2(o_file_path, VSCODE_SNIPPETS_DIR / f'{cate}')
 
     _logger.info(f'处理完成: {o_file_name}')
