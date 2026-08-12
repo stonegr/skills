@@ -1,0 +1,478 @@
+{
+    "ms_schema_basic": {
+        "prefix": "ms_schema_basic",
+        "body": [
+            "from marshmallow import Schema",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    pass"
+        ],
+        "description": "定义最简 Schema 类"
+    },
+    "ms_schema_fields": {
+        "prefix": "ms_schema_fields",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:name} = fields.${3|Str,Int,Float,Bool|}()"
+        ],
+        "description": "定义带字段的 Schema"
+    },
+    "ms_schema_meta": {
+        "prefix": "ms_schema_meta",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:field1} = fields.${3|Str,Int,Float|}()",
+            "    ${4:field2} = fields.${5|Str,Int,Float|}()",
+            "",
+            "    class Meta:",
+            "        fields = (${6:'field1'}, ${7:'field2'})",
+            "        ordered = True"
+        ],
+        "description": "用 class Meta 配置 Schema 字段"
+    },
+    "ms_schema_load": {
+        "prefix": "ms_schema_load",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:name} = fields.${3:Str}()",
+            "",
+            "${4:result} = ${1:MySchema}().load(${5:data})"
+        ],
+        "description": "反序列化（dict 校验后转 dict）"
+    },
+    "ms_schema_dump": {
+        "prefix": "ms_schema_dump",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:name} = fields.${3:Str}()",
+            "",
+            "${4:result} = ${1:MySchema}().dump(${5:obj})"
+        ],
+        "description": "序列化（对象转 dict）"
+    },
+    "ms_field_str": {
+        "prefix": "ms_field_str",
+        "body": [
+            "from marshmallow import fields",
+            "",
+            "${1:field} = fields.Str(${2:required=True})"
+        ],
+        "description": "字符串字段"
+    },
+    "ms_field_int": {
+        "prefix": "ms_field_int",
+        "body": [
+            "from marshmallow import fields",
+            "",
+            "${1:field} = fields.Int(${2:required=True})"
+        ],
+        "description": "整数字段"
+    },
+    "ms_field_float": {
+        "prefix": "ms_field_float",
+        "body": [
+            "from marshmallow import fields",
+            "",
+            "${1:field} = fields.Float(${2:required=True})"
+        ],
+        "description": "浮点数字段"
+    },
+    "ms_field_bool": {
+        "prefix": "ms_field_bool",
+        "body": [
+            "from marshmallow import fields",
+            "",
+            "${1:field} = fields.Bool(${2:required=True})"
+        ],
+        "description": "布尔字段"
+    },
+    "ms_field_datetime": {
+        "prefix": "ms_field_datetime",
+        "body": [
+            "from marshmallow import fields",
+            "",
+            "${1:field} = fields.DateTime(${2:format='%Y-%m-%dT%H:%M:%S'})"
+        ],
+        "description": "日期时间字段"
+    },
+    "ms_field_date": {
+        "prefix": "ms_field_date",
+        "body": [
+            "from marshmallow import fields",
+            "",
+            "${1:field} = fields.Date(${2:format='%Y-%m-%d'})"
+        ],
+        "description": "日期字段"
+    },
+    "ms_field_list": {
+        "prefix": "ms_field_list",
+        "body": [
+            "from marshmallow import fields",
+            "",
+            "${1:field} = fields.List(fields.${2:Str}(), ${3:required=True})"
+        ],
+        "description": "列表字段"
+    },
+    "ms_field_dict": {
+        "prefix": "ms_field_dict",
+        "body": [
+            "from marshmallow import fields",
+            "",
+            "${1:field} = fields.Dict(${2:required=True})"
+        ],
+        "description": "字典字段"
+    },
+    "ms_valid_length": {
+        "prefix": "ms_valid_length",
+        "body": [
+            "from marshmallow import Schema, fields, validate",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:name} = fields.Str(validate=validate.Length(min=${3:1}, max=${4:80}))"
+        ],
+        "description": "字符串长度验证"
+    },
+    "ms_valid_range": {
+        "prefix": "ms_valid_range",
+        "body": [
+            "from marshmallow import Schema, fields, validate",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:age} = fields.Int(validate=validate.Range(min=${3:0}, max=${4:150}))"
+        ],
+        "description": "数值范围验证"
+    },
+    "ms_valid_regexp": {
+        "prefix": "ms_valid_regexp",
+        "body": [
+            "from marshmallow import Schema, fields, validate",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:code} = fields.Str(validate=validate.Regexp(${3:r'^A-Z{2,}$'}))"
+        ],
+        "description": "正则验证"
+    },
+    "ms_valid_oneof": {
+        "prefix": "ms_valid_oneof",
+        "body": [
+            "from marshmallow import Schema, fields, validate",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:status} = fields.Str(validate=validate.OneOf([${3:'draft'}, ${4:'published'}]))"
+        ],
+        "description": "枚举值验证"
+    },
+    "ms_valid_email": {
+        "prefix": "ms_valid_email",
+        "body": [
+            "from marshmallow import Schema, fields, validate",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:email} = fields.Str(validate=validate.Email())"
+        ],
+        "description": "邮箱格式验证"
+    },
+    "ms_valid_custom": {
+        "prefix": "ms_valid_custom",
+        "body": [
+            "from marshmallow import Schema, fields, ValidationError",
+            "",
+            "def ${1:validate_func}(${2:value}):",
+            "    if not ${3:condition}:",
+            "        raise ValidationError(${4:'Invalid value'})",
+            "",
+            "class ${5:MySchema}(Schema):",
+            "    ${6:field} = fields.Str(validate=${1:validate_func})"
+        ],
+        "description": "自定义验证函数"
+    },
+    "ms_nested": {
+        "prefix": "ms_nested",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:ChildSchema}(Schema):",
+            "    ${2:name} = fields.${3:Str}()",
+            "",
+            "class ${4:ParentSchema}(Schema):",
+            "    ${5:child} = fields.Nested(${1:ChildSchema})"
+        ],
+        "description": "嵌套另一个 Schema"
+    },
+    "ms_nested_many": {
+        "prefix": "ms_nested_many",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:ChildSchema}(Schema):",
+            "    ${2:name} = fields.${3:Str}()",
+            "",
+            "class ${4:ParentSchema}(Schema):",
+            "    ${5:children} = fields.Nested(${1:ChildSchema}, many=True)"
+        ],
+        "description": "嵌套列表"
+    },
+    "ms_nested_self": {
+        "prefix": "ms_nested_self",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:NodeSchema}(Schema):",
+            "    ${2:value} = fields.${3:Str}()",
+            "    ${4:children} = fields.List(fields.Nested('self'))"
+        ],
+        "description": "自嵌套（树形结构）"
+    },
+    "ms_nested_load_from": {
+        "prefix": "ms_nested_load_from",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:ProfileSchema}(Schema):",
+            "    ${2:bio} = fields.${3:Str}()",
+            "",
+            "class ${4:UserSchema}(Schema):",
+            "    ${5:profile} = fields.Nested(${1:ProfileSchema}, attribute=${6:'profile_obj'})"
+        ],
+        "description": "从其他 attribute 加载嵌套"
+    },
+    "ms_pre_load": {
+        "prefix": "ms_pre_load",
+        "body": [
+            "from marshmallow import Schema, fields, pre_load",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:field} = fields.${3:Str}()",
+            "",
+            "    @pre_load",
+            "    def ${4:preprocess}(self, data, **kwargs):",
+            "        ${5:# 加载前预处理原始数据}",
+            "        return data"
+        ],
+        "description": "加载前预处理数据"
+    },
+    "ms_post_load": {
+        "prefix": "ms_post_load",
+        "body": [
+            "from marshmallow import Schema, fields, post_load",
+            "",
+            "class ${1:UserSchema}(Schema):",
+            "    ${2:name} = fields.${3:Str}()",
+            "    ${4:age} = fields.${5:Int}()",
+            "",
+            "    @post_load",
+            "    def ${6:make_user}(self, data, **kwargs):",
+            "        return ${7:User}(**data)"
+        ],
+        "description": "加载后构造领域对象"
+    },
+    "ms_pre_dump": {
+        "prefix": "ms_pre_dump",
+        "body": [
+            "from marshmallow import Schema, fields, pre_dump",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:field} = fields.${3:Str}()",
+            "",
+            "    @pre_dump",
+            "    def ${4:preprocess}(self, data, **kwargs):",
+            "        ${5:# 序列化前预处理对象}",
+            "        return data"
+        ],
+        "description": "序列化前预处理对象"
+    },
+    "ms_post_dump": {
+        "prefix": "ms_post_dump",
+        "body": [
+            "from marshmallow import Schema, fields, post_dump",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:field} = fields.${3:Str}()",
+            "",
+            "    @post_dump",
+            "    def ${4:add_extra}(self, data, **kwargs):",
+            "        data[${5:'extra'}] = ${6:'value'}",
+            "        return data"
+        ],
+        "description": "序列化后处理输出"
+    },
+    "ms_field_method": {
+        "prefix": "ms_field_method",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:full_name} = fields.Method('${3:get_full_name}')",
+            "",
+            "    def ${3:get_full_name}(self, obj):",
+            "        return f'{obj.${4:first_name}} {obj.${5:last_name}}'"
+        ],
+        "description": "Method 字段（可访问 self）"
+    },
+    "ms_field_function": {
+        "prefix": "ms_field_function",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "def ${1:get_value}(obj):",
+            "    return obj.${2:attr}",
+            "",
+            "class ${3:MySchema}(Schema):",
+            "    ${4:field} = fields.Function(${1:get_value})"
+        ],
+        "description": "Function 字段（纯函数）"
+    },
+    "ms_field_constant": {
+        "prefix": "ms_field_constant",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:type} = fields.Constant(${3:'default_value'})"
+        ],
+        "description": "常量字段（固定值）"
+    },
+    "ms_validates": {
+        "prefix": "ms_validates",
+        "body": [
+            "from marshmallow import Schema, fields, validates, ValidationError",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:field} = fields.${3:Str}()",
+            "",
+            "    @validates('${2:field}')",
+            "    def ${4:check_field}(self, value, **kwargs):",
+            "        if not ${5:condition}:",
+            "            raise ValidationError(${6:'Invalid value'})"
+        ],
+        "description": "字段级校验装饰器"
+    },
+    "ms_validates_schema": {
+        "prefix": "ms_validates_schema",
+        "body": [
+            "from marshmallow import Schema, fields, validates_schema, ValidationError",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:start} = fields.${3:Date}()",
+            "    ${4:end} = fields.${5:Date}()",
+            "",
+            "    @validates_schema",
+            "    def ${6:check_dates}(self, data, **kwargs):",
+            "        if data['${2:start}'] > data['${4:end}']:",
+            "            raise ValidationError(${7:'start must be before end'})"
+        ],
+        "description": "整 Schema 校验装饰器"
+    },
+    "ms_partial": {
+        "prefix": "ms_partial",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:UserSchema}(Schema):",
+            "    ${2:name} = fields.${3:Str}(required=True)",
+            "    ${4:age} = fields.${5:Int}()",
+            "",
+            "${6:result} = ${1:UserSchema}(partial=True).load(${7:data})"
+        ],
+        "description": "部分加载（PATCH 更新）"
+    },
+    "ms_exclude": {
+        "prefix": "ms_exclude",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:public_field} = fields.${3:Str}()",
+            "    ${4:password} = fields.${5:Str}()",
+            "",
+            "    class Meta:",
+            "        exclude = (${6:'password'},)"
+        ],
+        "description": "排除指定字段"
+    },
+    "ms_only": {
+        "prefix": "ms_only",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:field1} = fields.${3:Str}()",
+            "    ${4:field2} = fields.${5:Int}()",
+            "    ${6:field3} = fields.${7:Str}()",
+            "",
+            "    class Meta:",
+            "        fields = (${8:'field1'}, ${9:'field2'})"
+        ],
+        "description": "仅包含指定字段"
+    },
+    "ms_data_key": {
+        "prefix": "ms_data_key",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:python_attr} = fields.${3:Str}(data_key=${4:'json_key'})"
+        ],
+        "description": "输入键重命名（data_key）"
+    },
+    "ms_field_default": {
+        "prefix": "ms_field_default",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:field} = fields.${3:Str}(default=${4:'default_value'})"
+        ],
+        "description": "字段默认值（load 时使用）"
+    },
+    "ms_field_metadata": {
+        "prefix": "ms_field_metadata",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:field} = fields.${3:Str}(metadata={${4:'key'}: ${5:'value'}})"
+        ],
+        "description": "字段元数据 metadata"
+    },
+    "ms_catch_error": {
+        "prefix": "ms_catch_error",
+        "body": [
+            "from marshmallow import Schema, fields, ValidationError",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:field} = fields.${3:Str}(required=True)",
+            "",
+            "try:",
+            "    ${4:result} = ${1:MySchema}().load(${5:data})",
+            "except ValidationError as ${6:err}:",
+            "    ${7:errors} = ${6:err}.messages",
+            "    ${8:# 处理错误}"
+        ],
+        "description": "捕获 ValidationError"
+    },
+    "ms_error_messages": {
+        "prefix": "ms_error_messages",
+        "body": [
+            "from marshmallow import Schema, fields",
+            "",
+            "class ${1:MySchema}(Schema):",
+            "    ${2:field} = fields.${3:Str}(",
+            "        required=True,",
+            "        error_messages={",
+            "            ${4:key1}: ${5:message1},",
+            "            ${6:key2}: ${7:message2},",
+            "        },",
+            "    )"
+        ],
+        "description": "自定义字段错误消息"
+    }
+}
