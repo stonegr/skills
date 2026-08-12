@@ -1,5 +1,5 @@
 ---
-name: "lang-types"
+name: "generate-lang-types"
 description: "学习任意编程语言的类型系统，生成类型定义 + 校验两份详细教学文件，含基础类型、泛型、可选、特色"
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: generate-snippets
+name: generate-lang-snippets
 description: 批量生成vscode的code-snippets，为各种语言生成相同功能的代码片段
 ---
 
