@@ -1,0 +1,551 @@
+{
+  "gm_connect": {
+    "prefix": "gm_connect",
+    "body": [
+      "import \"gorm.io/gorm\"",
+      "import \"gorm.io/driver/mysql\"",
+      "",
+      "dsn := ${1:\"user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local\"}",
+      "db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})",
+      "if err != nil {",
+      "\tpanic(\"failed to connect database\")",
+      "}",
+      "${0:sqlDB, _ := db.DB()}"
+    ],
+    "description": "GORM 连接 MySQL 数据库"
+  },
+  "gm_config": {
+    "prefix": "gm_config",
+    "body": [
+      "import \"gorm.io/gorm\"",
+      "import \"gorm.io/gorm/logger\"",
+      "import \"gorm.io/gorm/schema\"",
+      "",
+      "cfg := &gorm.Config{",
+      "\tLogger: logger.Default.LogMode(${1|Info,Warn,Error,Silent|}),",
+      "\tNamingStrategy: schema.NamingStrategy{",
+      "\t\tSingularTable: ${2|true,false|},",
+      "\t},",
+      "}"
+    ],
+    "description": "GORM 自定义配置"
+  },
+  "gm_logger": {
+    "prefix": "gm_logger",
+    "body": [
+      "import \"gorm.io/gorm/logger\"",
+      "import \"log\"",
+      "import \"os\"",
+      "import \"time\"",
+      "",
+      "newLogger := logger.New(",
+      "\tlog.New(os.Stdout, \"\\r\\n\", log.LstdFlags),",
+      "\tlogger.Config{",
+      "\t\tSlowThreshold: ${1:time.Second},",
+      "\t\tLogLevel: ${2|Info,Warn,Error,Silent|},",
+      "\t\tIgnoreRecordNotFoundError: ${3|true,false|},",
+      "\t},",
+      ")",
+      "db.Logger = newLogger"
+    ],
+    "description": "GORM 配置自定义 SQL 日志"
+  },
+  "gm_pool": {
+    "prefix": "gm_pool",
+    "body": [
+      "import \"time\"",
+      "",
+      "sqlDB, err := ${1:db}.DB()",
+      "if err != nil {",
+      "\t${2:return err}",
+      "}",
+      "sqlDB.SetMaxOpenConns(${3:100})",
+      "sqlDB.SetMaxIdleConns(${4:10})",
+      "sqlDB.SetConnMaxLifetime(${5:time.Hour})"
+    ],
+    "description": "GORM 连接池配置"
+  },
+  "gm_model": {
+    "prefix": "gm_model",
+    "body": [
+      "import \"gorm.io/gorm\"",
+      "",
+      "type ${1:User} struct {",
+      "\tgorm.Model",
+      "\t${2:Name} string",
+      "\t${3:Age}  int",
+      "}",
+      "",
+      "func (${1:User}) TableName() string {",
+      "\treturn \"${4:users}\"",
+      "}"
+    ],
+    "description": "GORM 定义基础模型"
+  },
+  "gm_model_custom": {
+    "prefix": "gm_model_custom",
+    "body": [
+      "import \"gorm.io/gorm\"",
+      "import \"time\"",
+      "",
+      "type ${1:User} struct {",
+      "\t${2:UID}        uint   `gorm:\"primaryKey;autoIncrement\"`",
+      "\t${3:Name}       string",
+      "\t${4:Email}      string `gorm:\"size:128;uniqueIndex\"`",
+      "\tCreatedAt     time.Time",
+      "\tUpdatedAt     time.Time",
+      "\tDeletedAt     gorm.DeletedAt `gorm:\"index\"`",
+      "}",
+      "",
+      "func (${1:User}) TableName() string {",
+      "\treturn \"${5:t_user}\"",
+      "}"
+    ],
+    "description": "GORM 自定义主键表名字段"
+  },
+  "gm_field_tag": {
+    "prefix": "gm_field_tag",
+    "body": [
+      "${1:Name} ${2:string} `gorm:\"${3:size:128;not null;default:'';index}\"`"
+    ],
+    "description": "GORM 字段标签模板"
+  },
+  "gm_embed": {
+    "prefix": "gm_embed",
+    "body": [
+      "import \"gorm.io/gorm\"",
+      "import \"time\"",
+      "",
+      "type ${1:Base} struct {",
+      "\tID        uint           `gorm:\"primaryKey\"`",
+      "\tCreatedAt time.Time",
+      "\tUpdatedAt time.Time",
+      "\tDeletedAt gorm.DeletedAt `gorm:\"index\"`",
+      "}",
+      "",
+      "type ${2:User} struct {",
+      "\t${1:Base} `gorm:\"embedded\"`",
+      "\t${3:Name} string",
+      "}"
+    ],
+    "description": "GORM 嵌入字段复用"
+  },
+  "gm_enum": {
+    "prefix": "gm_enum",
+    "body": [
+      "import \"database/sql/driver\"",
+      "import \"fmt\"",
+      "",
+      "type ${1:Status} string",
+      "",
+      "const (",
+      "\t${1:StatusActive}   ${1:Status} = \"${2:active}\"",
+      "\t${1:StatusInactive} ${1:Status} = \"${3:inactive}\"",
+      ")",
+      "",
+      "func (s *${1:Status}) Scan(value interface{}) error {",
+      "\t*s = ${1:Status}(value.([]byte))",
+      "\treturn nil",
+      "}",
+      "",
+      "func (s ${1:Status}) Value() (driver.Value, error) {",
+      "\treturn string(s), nil",
+      "}"
+    ],
+    "description": "GORM 自定义枚举类型"
+  },
+  "gm_create": {
+    "prefix": "gm_create",
+    "body": [
+      "${1:user} := &${2:User}{Name: \"${3:test}\"}",
+      "result := db.Create(${1:user})",
+      "if result.Error != nil {",
+      "\t${4:return result.Error}",
+      "}",
+      "${0:fmt.Println(user.ID)}"
+    ],
+    "description": "GORM 单条插入记录"
+  },
+  "gm_create_batch": {
+    "prefix": "gm_create_batch",
+    "body": [
+      "${1:users} := []${2:User}{",
+      "\t{Name: \"${3:a}\"},",
+      "\t{Name: \"${4:b}\"},",
+      "}",
+      "result := db.CreateInBatches(&${1:users}, ${5:100})",
+      "if result.Error != nil {",
+      "\t${6:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 批量插入记录"
+  },
+  "gm_create_map": {
+    "prefix": "gm_create_map",
+    "body": [
+      "result := db.Model(&${1:User}{}).Create(map[string]interface{}{",
+      "\t\"${2:Name}\": \"${3:test}\",",
+      "\t\"${4:Age}\":  ${5:18},",
+      "})",
+      "if result.Error != nil {",
+      "\t${6:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 用 map 创建记录"
+  },
+  "gm_selective": {
+    "prefix": "gm_selective",
+    "body": [
+      "${1:user} := &${2:User}{Name: \"${3:test}\", Age: ${4:18}}",
+      "db.Select(\"${5:Name, Age}\").Create(${1:user})"
+    ],
+    "description": "GORM 按字段选择性创建"
+  },
+  "gm_first": {
+    "prefix": "gm_first",
+    "body": [
+      "import \"errors\"",
+      "import \"gorm.io/gorm\"",
+      "",
+      "var ${1:user} ${2:User}",
+      "result := db.First(&${1:user}, ${3:1})",
+      "if errors.Is(result.Error, gorm.ErrRecordNotFound) {",
+      "\t${4:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 主键查询单条"
+  },
+  "gm_take": {
+    "prefix": "gm_take",
+    "body": [
+      "import \"errors\"",
+      "import \"gorm.io/gorm\"",
+      "",
+      "var ${1:user} ${2:User}",
+      "result := db.Take(&${1:user})",
+      "if errors.Is(result.Error, gorm.ErrRecordNotFound) {",
+      "\t${3:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 取任意一条"
+  },
+  "gm_last": {
+    "prefix": "gm_last",
+    "body": [
+      "import \"errors\"",
+      "import \"gorm.io/gorm\"",
+      "",
+      "var ${1:user} ${2:User}",
+      "result := db.Last(&${1:user})",
+      "if errors.Is(result.Error, gorm.ErrRecordNotFound) {",
+      "\t${3:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 取最后一条"
+  },
+  "gm_find": {
+    "prefix": "gm_find",
+    "body": [
+      "var ${1:users} []${2:User}",
+      "result := db.Find(&${1:users})",
+      "if result.Error != nil {",
+      "\t${3:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 查询多条记录"
+  },
+  "gm_where": {
+    "prefix": "gm_where",
+    "body": [
+      "var ${1:users} []${2:User}",
+      "result := db.Where(\"${3:name = ?}\", ${4:\"test\"}).Find(&${1:users})",
+      "if result.Error != nil {",
+      "\t${5:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 字符串条件查询"
+  },
+  "gm_where_struct": {
+    "prefix": "gm_where_struct",
+    "body": [
+      "var ${1:users} []${2:User}",
+      "result := db.Where(&${2:User}{Name: ${3:\"test\"}, Age: ${4:18}}).Find(&${1:users})",
+      "if result.Error != nil {",
+      "\t${5:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 结构体条件查询"
+  },
+  "gm_where_map": {
+    "prefix": "gm_where_map",
+    "body": [
+      "var ${1:users} []${2:User}",
+      "result := db.Where(map[string]interface{}{",
+      "\t\"${3:name}\": ${4:\"test\"},",
+      "\t\"${5:age}\":  ${6:18},",
+      "}).Find(&${1:users})",
+      "if result.Error != nil {",
+      "\t${7:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM map 条件查询"
+  },
+  "gm_order": {
+    "prefix": "gm_order",
+    "body": [
+      "var ${1:users} []${2:User}",
+      "result := db.Order(\"${3:age desc, id}\").Limit(${4:10}).Offset(${5:0}).Find(&${1:users})",
+      "if result.Error != nil {",
+      "\t${6:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 排序 + 限制"
+  },
+  "gm_select_fields": {
+    "prefix": "gm_select_fields",
+    "body": [
+      "var ${1:users} []${2:User}",
+      "result := db.Select(\"${3:name, age}\").Find(&${1:users})",
+      "if result.Error != nil {",
+      "\t${4:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 查询指定字段"
+  },
+  "gm_group_having": {
+    "prefix": "gm_group_having",
+    "body": [
+      "type ${1:Result} struct {",
+      "\t${2:Type}  string",
+      "\t${3:Total} int",
+      "}",
+      "var ${4:results} []${1:Result}",
+      "db.Model(&${5:User}{}).Select(\"${2:type}, count(*) as ${3:total}\").Group(\"${2:type}\").Having(\"${6:count(*) > ?}\", ${7:1}).Scan(&${4:results})"
+    ],
+    "description": "GORM 分组聚合查询"
+  },
+  "gm_distinct": {
+    "prefix": "gm_distinct",
+    "body": [
+      "var ${1:users} []${2:User}",
+      "db.Distinct(\"${3:name}\").Find(&${1:users})"
+    ],
+    "description": "GORM 去重查询"
+  },
+  "gm_pluck": {
+    "prefix": "gm_pluck",
+    "body": [
+      "var ${1:names} []string",
+      "db.Model(&${2:User}{}).Pluck(\"${3:name}\", &${1:names})"
+    ],
+    "description": "GORM 查询单列值"
+  },
+  "gm_save": {
+    "prefix": "gm_save",
+    "body": [
+      "${1:user}.Name = \"${2:new name}\"",
+      "result := db.Save(&${1:user})",
+      "if result.Error != nil {",
+      "\t${3:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 保存所有字段"
+  },
+  "gm_updates": {
+    "prefix": "gm_updates",
+    "body": [
+      "result := db.Model(&${1:user}).Updates(map[string]interface{}{",
+      "\t\"${2:name}\": \"${3:new name}\",",
+      "\t\"${4:age}\":  ${5:20},",
+      "})",
+      "if result.Error != nil {",
+      "\t${6:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 更新指定字段"
+  },
+  "gm_update_column": {
+    "prefix": "gm_update_column",
+    "body": [
+      "result := db.Model(&${1:user}).UpdateColumn(\"${2:name}\", \"${3:new}\")",
+      "if result.Error != nil {",
+      "\t${4:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 更新字段跳过 hooks"
+  },
+  "gm_delete": {
+    "prefix": "gm_delete",
+    "body": [
+      "result := db.Delete(&${1:User}{}, ${2:1})",
+      "if result.Error != nil {",
+      "\t${3:return result.Error}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 物理删除记录"
+  },
+  "gm_soft_delete": {
+    "prefix": "gm_soft_delete",
+    "body": [
+      "import \"gorm.io/gorm\"",
+      "",
+      "type ${1:User} struct {",
+      "\tID        uint           `gorm:\"primaryKey\"`",
+      "\tName      string",
+      "\tDeletedAt gorm.DeletedAt `gorm:\"index\"`",
+      "}",
+      "",
+      "// 软删除",
+      "db.Delete(&${1:user}{ID: ${2:1}})"
+    ],
+    "description": "GORM 软删除模型定义"
+  },
+  "gm_unscoped": {
+    "prefix": "gm_unscoped",
+    "body": [
+      "// 查找包含软删的所有记录",
+      "db.Unscoped().Where(\"${1:name = ?}\", ${2:\"test\"}).Find(&${3:users})",
+      "",
+      "// 永久删除软删记录",
+      "db.Unscoped().Delete(&${4:user}{ID: ${5:1}})"
+    ],
+    "description": "GORM 查询或删除软删数据"
+  },
+  "gm_belongs_to": {
+    "prefix": "gm_belongs_to",
+    "body": [
+      "type ${1:Profile} struct {",
+      "\tID     uint",
+      "\tUserID uint",
+      "\tUser   ${2:User} `gorm:\"foreignKey:UserID\"`",
+      "}"
+    ],
+    "description": "GORM Belongs To 一对多反向"
+  },
+  "gm_has_one": {
+    "prefix": "gm_has_one",
+    "body": [
+      "type ${1:User} struct {",
+      "\tID      uint",
+      "\tName    string",
+      "\tProfile ${2:Profile} `gorm:\"foreignKey:UserID\"`",
+      "}",
+      "",
+      "type ${2:Profile} struct {",
+      "\tID     uint",
+      "\tUserID uint",
+      "}"
+    ],
+    "description": "GORM Has One 一对一"
+  },
+  "gm_has_many": {
+    "prefix": "gm_has_many",
+    "body": [
+      "type ${1:User} struct {",
+      "\tID     uint",
+      "\tName   string",
+      "\tOrders []${2:Order} `gorm:\"foreignKey:UserID\"`",
+      "}",
+      "",
+      "type ${2:Order} struct {",
+      "\tID      uint",
+      "\tUserID  uint",
+      "\tAmount  float64",
+      "}"
+    ],
+    "description": "GORM Has Many 一对多"
+  },
+  "gm_many_to_many": {
+    "prefix": "gm_many_to_many",
+    "body": [
+      "type ${1:User} struct {",
+      "\tID        uint",
+      "\tName      string",
+      "\tLanguages []${2:Language} `gorm:\"many2many:${3:user_languages};\"`",
+      "}",
+      "",
+      "type ${2:Language} struct {",
+      "\tID   uint",
+      "\tName string",
+      "}"
+    ],
+    "description": "GORM Many To Many 多对多"
+  },
+  "gm_preload": {
+    "prefix": "gm_preload",
+    "body": [
+      "var ${1:users} []${2:User}",
+      "db.Preload(\"${3:Orders}\").Find(&${1:users})"
+    ],
+    "description": "GORM 预加载关联数据"
+  },
+  "gm_joins": {
+    "prefix": "gm_joins",
+    "body": [
+      "var ${1:users} []${2:User}",
+      "db.Joins(\"${3:Profile}\").Joins(\"Profile.${4:Address}\").Find(&${1:users})"
+    ],
+    "description": "GORM JOIN 关联查询"
+  },
+  "gm_preload_cond": {
+    "prefix": "gm_preload_cond",
+    "body": [
+      "var ${1:users} []${2:User}",
+      "db.Preload(\"${3:Orders}\", \"${4:status = ?}\", \"${5:paid}\").Find(&${1:users})"
+    ],
+    "description": "GORM 带条件预加载"
+  },
+  "gm_tx": {
+    "prefix": "gm_tx",
+    "body": [
+      "err := db.Transaction(func(tx *gorm.DB) error {",
+      "\t${1:// 在事务内做 CRUD}",
+      "\treturn nil",
+      "})",
+      "if err != nil {",
+      "\t${2:return err}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 事务块"
+  },
+  "gm_tx_manual": {
+    "prefix": "gm_tx_manual",
+    "body": [
+      "tx := db.Begin()",
+      "defer func() {",
+      "\tif r := recover(); r != nil {",
+      "\t\ttx.Rollback()",
+      "\t}",
+      "}()",
+      "",
+      "if err := tx.Error; err != nil {",
+      "\t${1:return err}",
+      "}",
+      "",
+      "${2:// 业务操作}",
+      "",
+      "if err := tx.Commit().Error; err != nil {",
+      "\ttx.Rollback()",
+      "\t${3:return err}",
+      "}",
+      "${0}"
+    ],
+    "description": "GORM 手动控制事务"
+  }
+}

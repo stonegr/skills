@@ -25,6 +25,7 @@ name_map = {
     'fastapi': 'python',
     'sqlalchemy': 'python',
     'sqlmodel': 'python',
+    'gorm': 'go',
 }
 
 
