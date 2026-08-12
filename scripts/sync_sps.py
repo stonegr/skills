@@ -42,11 +42,11 @@ for name, cate in name_map.items():
     o_file_path = FILE_DIR.parent / '.vscode' / f'{o_file_name}'
     t_file_path = VSCODE_SNIPPETS_DIR / f'{cate}/{o_file_name}'
     if t_file_path.exists():
-        shutil.copy(t_file_path, BACKUP_DIR)
+        shutil.copy2(t_file_path, BACKUP_DIR)
         _logger.info(f'{o_file_name} 备份到 {BACKUP_DIR / o_file_name} 完成')
     # 拷贝
     if t_file_path.exists():
         os.remove(t_file_path)
-    shutil.copy(o_file_path, VSCODE_SNIPPETS_DIR / f'{cate}')
+    shutil.copy2(o_file_path, VSCODE_SNIPPETS_DIR / f'{cate}')
 
     _logger.info(f'处理完成: {o_file_name}')

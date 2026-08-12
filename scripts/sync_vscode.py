@@ -45,7 +45,7 @@ for o_name, t_name in language_name_map.items():
     t_file_path = VSCODE_SNIPPETS_DIR / t_file_name
     _logger.info(f'开始处理: {o_file_name}')
     # 备份
-    shutil.copy(t_file_path, BACKUP_DIR)
+    shutil.copy2(t_file_path, BACKUP_DIR)
     _logger.info(f'{t_file_path} 备份到 {BACKUP_DIR / t_file_name} 完成')
     with open(o_file_path, encoding='utf-8') as f:
         content_list = pop_list_null(f.readlines(), '\n')
