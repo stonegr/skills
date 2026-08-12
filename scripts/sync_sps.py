@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 import platform
 import shutil
@@ -15,6 +16,9 @@ if system == 'Windows' or system == 'Linux':
     raise NotImplementedError
 elif system == 'Darwin':
     VSCODE_SNIPPETS_DIR = Path('/Users/stone/Documents/code/mine/template_snippet')
+
+BACKUP_DIR = FILE_DIR.parent / 'backup' / 'sps'
+os.makedirs(BACKUP_DIR, exist_ok=True)
 
 name_map = {
     'pandas': 'python',
@@ -33,15 +37,15 @@ def pop_list_null(lines: list, no_str: str = ''):
 for name, cate in name_map.items():
     o_file_name = f'{name}.code-snippets'
     _logger.info(f'开始处理: {o_file_name}')
-    o_file_path = FILE_DIR.parent / f'.vscode/{o_file_name}'
+    o_file_path = FILE_DIR.parent / '.vscode' / f'{o_file_name}'
     t_file_path = VSCODE_SNIPPETS_DIR / f'{cate}/{o_file_name}'
     # 备份
     if t_file_path.exists():
-        shutil.copy(t_file_path, FILE_DIR.parent / 'backup/sps')
-    # 覆盖
+        shutil.copy(t_file_path, BACKUP_DIR)
+        _logger.info(f'{o_file_name} 备份到 {BACKUP_DIR / o_file_name} 完成')
+    # 拷贝
     if t_file_path.exists():
-        t_file_path.replace(o_file_path)
-    else:
-        shutil.copy(o_file_path, VSCODE_SNIPPETS_DIR / f'{cate}')
+        os.remove(t_file_path)
+    shutil.copy(o_file_path, VSCODE_SNIPPETS_DIR / f'{cate}')
 
     _logger.info(f'处理完成: {o_file_name}')

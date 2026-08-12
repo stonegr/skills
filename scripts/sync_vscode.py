@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 import platform
 import shutil
@@ -15,6 +16,9 @@ if system == 'Windows' or system == 'Linux':
     raise NotImplementedError
 elif system == 'Darwin':
     VSCODE_SNIPPETS_DIR = Path('~/Library/Application Support/Code/User/snippets').expanduser()
+
+BACKUP_DIR = FILE_DIR.parent / 'backup' / 'vscode'
+os.makedirs(BACKUP_DIR, exist_ok=True)
 
 language_name_map = {
     'go': 'go',
@@ -36,13 +40,13 @@ def pop_list_null(lines: list, no_str: str = ''):
 
 for o_name, t_name in language_name_map.items():
     o_file_name = f'{o_name}.code-snippets'
-    o_file_path = FILE_DIR.parent / f'.vscode/{o_file_name}'
+    o_file_path = FILE_DIR.parent / '.vscode' / f'{o_file_name}'
     t_file_name = f'{t_name}.json'
     t_file_path = VSCODE_SNIPPETS_DIR / t_file_name
     _logger.info(f'开始处理: {o_file_name}')
     # 备份
-    shutil.copy(t_file_path, FILE_DIR.parent / 'backup/vscode')
-    _logger.info(f'{t_file_path} 备份到 {FILE_DIR.parent / "backup/vscode" / t_file_name} 完成')
+    shutil.copy(t_file_path, BACKUP_DIR)
+    _logger.info(f'{t_file_path} 备份到 {BACKUP_DIR / t_file_name} 完成')
     with open(o_file_path, encoding='utf-8') as f:
         content_list = pop_list_null(f.readlines(), '\n')
     with open(t_file_path, encoding='utf-8') as f:

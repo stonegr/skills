@@ -80,5 +80,20 @@
       "$0"
     ],
     "description": "使用 groupby.apply 对分组进行批量修改"
+  },
+  "Pandas Rename Columns": {
+    "prefix": "pd_rename",
+    "body": [
+      "# 方式一：按映射重命名（部分列）",
+      "${1:df} = ${1:df}.rename(columns={",
+      "\t'${2:old_col1}': '${3:new_col1}',",
+      "\t'${4:old_col2}': '${5:new_col2}'",
+      "})",
+      "",
+      "# 方式二：整体重命名（所有列）",
+      "# ${1:df}.columns = ['${6:col1}', '${7:col2}', '${8:col3}']",
+      "$0"
+    ],
+    "description": "重命名列名（支持映射或整体替换）"
   }
 }
