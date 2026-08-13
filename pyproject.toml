@@ -47,8 +47,6 @@ select = [
 
 ignore = [
     "B008",   # 允许在函数参数中使用函数调用（FastAPI 依赖注入常用）
-    "ANN101", # 忽略 self 的类型注解 (Ruff 官方也建议忽略)
-    "ANN102", # 忽略 cls 的类型注解
     "RUF", # 中文标点字符
     "D",      # 如果不需要强制写 docstring，可以忽略
     "ANN401", # any
