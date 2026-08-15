@@ -125,7 +125,48 @@ python3 references/expand.py shell.code-snippets
 - 读取json配置文件
 - 程序退出监听，比如sighup这种，要做推出前的清理或者处理
 
-> 上面的是我想生成的功能名称，`prefix` 要保证是英文,`Print to console`和`description`是中文
+> 上面的是我想生成的功能名称
+
+# 输出规范（key / prefix / description）
+
+每个 snippet 在 JSON 文件里有三个**字符串属性**，规范如下：
+
+| 字段 | 含义 | 语言要求 | 示例 |
+|---|---|---|---|
+| **key** | JSON 字典的 key（snippet 内部名，显示在 VSCode 补全面板里） | **中文** | `"for 数字范围循环"` |
+| **prefix** | 输入触发词 | **英文**（按 sufix 表） | `"py_for"` |
+| **description** | snippet 简介 | **中文**（去掉语言名前缀，括号备注可保留） | `"for 数字范围循环"` |
+
+**规则细节**：
+
+- **key** = 中文描述的简短版（去掉所有括号备注）。例如 `description="for 数字范围循环（C 风格）"` → `key="for 数字范围循环"`。
+- **description** = 中文描述，**去掉语言名前缀**（如 `Python`、`Go`、`Java`、`Rust`、库名 `GORM`/`FastAPI`/`SQLAlchemy` 等）。括号备注（如实现细节、依赖包）**保留**，方便用户快速了解注意点。
+- **prefix** = 按 sufix 表严格使用英文 `{lang}_{sufix}` 格式（见下方 "Sufix 规范"），方便跨语言 IDE 自动补全切换。
+- 跨文件 key 可以重复（如 `python.code-snippets` 和 `go.code-snippets` 都用 `while 循环` 作为 key），VSCode 按文件后缀匹配，互不干扰。
+
+**完整示例**（python.code-snippets）：
+
+```jsonc
+{
+    "for 数字范围循环": {                           // key: 中文
+        "prefix": "py_for",                          // prefix: 英文
+        "body": [
+            "for ${1:i} in range(${2:10}):",
+            "    ${3:# code}"
+        ],
+        "description": "for 数字范围循环"           // description: 中文（去掉了"Python"前缀）
+    },
+    "信号监听": {
+        "prefix": "py_signal",
+        "body": [
+            "import signal",
+            "import sys",
+            // ...
+        ],
+        "description": "信号监听（程序退出前清理）"  // 括号备注保留
+    }
+}
+```
 
 # Sufix 规范
 
@@ -174,6 +215,7 @@ python3 references/expand.py shell.code-snippets
 - 错误定义统一 `error_define`（不管实现是 class/var/func/enum）
 - 语言没有的特性，sufix 整体不出现（如 Go 无 `try`、Rust 无 `try`、仅 Go 用 `err_check`）
 - 跨语言 sufix 必须完全一致，方便 IDE 自动补全跨语言切换
+- **跨语言 key 也保持一致**：同名功能的 snippet 在所有语言文件里用相同的中文 key（如 `while 循环`、`if 判断`、`信号监听`），VSCode 按文件后缀匹配，互不冲突
 
 # 文件格式
 - 以python为例子

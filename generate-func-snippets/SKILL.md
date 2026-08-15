@@ -85,9 +85,8 @@ description: 为具体的库（pandas/numpy/requests/fastapi/gin/gorm/axios 等�
 
 ### Step 3：生成 .code-snippets
 - 按确认后的大纲，逐个生成 snippet
-- prefix 严格遵循下面的命名规范
+- **key / description 一律中文**，prefix 严格遵循下面的命名规范（英文）
 - 每个 body 头部都写完整 `import`（独立可用原则）
-- description 用中文
 - 生成完写入 `.vscode/<library>.code-snippets`
 
 ### Step 4：校验（生成完必跑）
@@ -160,15 +159,23 @@ python3 references/expand.py .vscode/<library>.code-snippets
 ### 通用模板
 
 ```json
-"<key>": {
-  "prefix": "<abbrev>_<func>",
+"<中文 key>": {                           // JSON 字典的 key：中文
+  "prefix": "<abbrev>_<func>",           // 触发词：英文（按缩写表）
   "body": [
     "import <lib> as <abbrev>",
     "${1:result} = <abbrev>.<api>(${2:arg})"
   ],
-  "description": "<中文描述>"
+  "description": "<中文描述>"            // 中文（去掉库名前缀，括号备注可保留）
 }
 ```
+
+三个字段的语种分工：
+
+| 字段 | 语种 | 规则 |
+|---|---|---|
+| **key** | **中文** | 简短描述，去掉括号备注。与 description 保持中文一致 |
+| **prefix** | **英文** | 按下方缩写表 `<abbrev>_<func>` |
+| **description** | **中文** | 去掉库名前缀（如 `pandas`、`fastapi`、`gin`），括号备注可保留 |
 
 ### 占位符规范
 
@@ -191,7 +198,15 @@ python3 references/expand.py .vscode/<library>.code-snippets
 
 - 中文，简洁（不超过 30 字）
 - 名词为主，不加"用于"等冗余词
-- 例：`pandas 读取 CSV 文件` / `gin 定义 GET 路由`
+- **去掉库名前缀**：写 `读取 CSV 文件` 而不是 `pandas 读取 CSV 文件`、写 `定义 GET 路由` 而不是 `gin 定义 GET 路由`（库名已隐含在 prefix/文件名里）
+- **括号备注可保留**：实现细节、依赖包等关键提示写在括号里（如 `信号监听（程序退出前清理）`）
+- 例：`读取 CSV 文件` / `定义 GET 路由` / `信号监听（程序退出前清理）`
+
+### key 规范
+
+- **key 一律中文**，与 description 保持中文一致
+- key 是 description 去掉所有括号备注后的简短版（如 `description="信号监听（程序退出前清理）"` → `key="信号监听"`）
+- key 名直接对应一个 snippet，VSCode 补全面板里会显示这个中文名
 
 ---
 
@@ -336,7 +351,7 @@ JSON 文件 raw:    \\$var        ← 文件里实际写的字符
 - **全面不冗余**：覆盖核心 API，不堆冷门方法
 - **可独立运行**：每个 snippet 复制到空文件即可工作
 - **占位符语义清晰**：默认值要让用户秒懂该填什么
-- **描述中文**：description 一律中文
+- **key 和 description 一律中文**：key 是中文简短版，description 是中文详情（去掉库名前缀，括号备注可保留）。**只有 prefix 保留英文**
 - **不发明新缩写**：库里没出现的缩写先去查表，没查到问用户
 - **snippet 总数 30-50**：少了说明覆盖不全，多了说明喧宾夺主
 
@@ -345,13 +360,13 @@ JSON 文件 raw:    \\$var        ← 文件里实际写的字符
 ## 完整示例（pandas 一个 snippet）
 
 ```json
-"pd_read_csv": {
-  "prefix": "pd_read_csv",
+"读取 CSV 文件": {                              // key: 中文（与 description 一致）
+  "prefix": "pd_read_csv",                      // prefix: 英文（按缩写表）
   "body": [
     "import pandas as pd",
     "${1:df} = pd.read_csv(${2:path}, encoding=${3|'utf-8','gbk','gb2312'|}, sep=${4:','})"
   ],
-  "description": "pandas 读取 CSV 文件"
+  "description": "读取 CSV 文件"                // description: 中文（去掉"pandas"前缀）
 }
 ```
 
@@ -389,6 +404,7 @@ snippet 总数: 42
 ## 注意事项
 
 - 中文输出为主，但代码、prefix、API 名保留英文
+- **key 和 description 都用中文**（key 是简短中文名，description 是中文详情）；只有 prefix 保留英文
 - 生成前确认 `.vscode/` 目录可写
 - **不在大纲未确认时直接生成文件**
 - 用户 review 大纲时可增删改，确认后再生成详细 snippet
