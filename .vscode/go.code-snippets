@@ -1,55 +1,55 @@
 {
-    "go_for": {
+    "for 循环": {
         "prefix": "go_for",
         "body": [
             "for ${1:i} := 0; $1 < ${2:10}; $1++ {",
             "    ${3:// code}",
             "}"
         ],
-        "description": "Go for 循环"
+        "description": "for 循环"
     },
-    "go_for_range": {
+    "for range 遍历切片/数组/map/channel": {
         "prefix": "go_for_range",
         "body": [
             "for ${1:i}, ${2:v} := range ${3:slice} {",
             "    ${4:// code}",
             "}"
         ],
-        "description": "Go for range 遍历切片/数组/map/channel"
+        "description": "for range 遍历切片/数组/map/channel"
     },
-    "go_while": {
+    "while 循环": {
         "prefix": "go_while",
         "body": [
             "for ${1:cond} {",
             "    ${2:// code}",
             "}"
         ],
-        "description": "Go while 循环（用 for cond {} 实现）"
+        "description": "while 循环（用 for cond {} 实现）"
     },
-    "go_throw": {
+    "创建并返回错误": {
         "prefix": "go_throw",
         "body": [
             "return errors.New(\"${1:message}\")"
         ],
-        "description": "Go 创建并返回错误"
+        "description": "创建并返回错误"
     },
-    "go_error_define": {
+    "定义包级错误变量": {
         "prefix": "go_error_define",
         "body": [
             "var Err${1:Name} = errors.New(\"${2:message}\")"
         ],
-        "description": "Go 定义包级错误变量"
+        "description": "定义包级错误变量"
     },
-    "go_err_check": {
+    "错误检查": {
         "prefix": "go_err_check",
         "body": [
             "if err != nil {",
             "    ${1:return err}",
             "}"
         ],
-        "description": "Go 错误检查（if err != nil）"
+        "description": "错误检查（if err != nil）"
     },
-    "go_if": {
+    "if 判断": {
         "prefix": "go_if",
         "body": [
             "if ${1:condition} {",
@@ -60,9 +60,9 @@
             "    ${5:// code}",
             "}"
         ],
-        "description": "Go if 判断"
+        "description": "if 判断"
     },
-    "go_read_file": {
+    "读取文件": {
         "prefix": "go_read_file",
         "body": [
             "data, err := os.ReadFile(${1:path})",
@@ -71,16 +71,16 @@
             "}",
             "${3:fmt.Println(string(data))}"
         ],
-        "description": "Go 读取文件"
+        "description": "读取文件"
     },
-    "go_read_env": {
+    "读取环境变量": {
         "prefix": "go_read_env",
         "body": [
             "${1:value} := os.Getenv(\"${2:KEY}\")"
         ],
-        "description": "Go 读取环境变量"
+        "description": "读取环境变量"
     },
-    "go_shell": {
+    "执行 shell 命令": {
         "prefix": "go_shell",
         "body": [
             "out, err := exec.Command(${1:\"sh\"}, ${2:\"-c\"}, ${3:\"ls -la\"}).CombinedOutput()",
@@ -89,18 +89,18 @@
             "}",
             "${5:fmt.Println(string(out))}"
         ],
-        "description": "Go 执行 shell 命令"
+        "description": "执行 shell 命令"
     },
-    "go_time": {
+    "获取程序运行耗时": {
         "prefix": "go_time",
         "body": [
             "start := time.Now()",
             "${1:// code}",
             "fmt.Printf(\"耗时: %v\\n\", time.Since(start))"
         ],
-        "description": "Go 获取程序运行耗时"
+        "description": "获取程序运行耗时"
     },
-    "go_cwd": {
+    "获取当前目录": {
         "prefix": "go_cwd",
         "body": [
             "${1:dir}, err := os.Getwd()",
@@ -108,25 +108,25 @@
             "    ${2:log.Fatal(err)}",
             "}"
         ],
-        "description": "Go 获取当前目录"
+        "description": "获取当前目录"
     },
-    "go_args": {
+    "命令行参数": {
         "prefix": "go_args",
         "body": [
             "${1:arg} := os.Args[${2:1}]"
         ],
-        "description": "Go 命令行参数"
+        "description": "命令行参数"
     },
-    "go_input": {
+    "获取用户输入": {
         "prefix": "go_input",
         "body": [
             "reader := bufio.NewReader(os.Stdin)",
             "${1:input}, _ := reader.ReadString('\\n')",
             "$1 = strings.TrimSpace($1)"
         ],
-        "description": "Go 获取用户输入"
+        "description": "获取用户输入"
     },
-    "go_thread_lock": {
+    "互斥锁": {
         "prefix": "go_thread_lock",
         "body": [
             "var ${1:mu} sync.Mutex",
@@ -134,9 +134,9 @@
             "${2:// critical section}",
             "$1.Unlock()"
         ],
-        "description": "Go 互斥锁"
+        "description": "互斥锁"
     },
-    "go_thread_rlock": {
+    "读写锁": {
         "prefix": "go_thread_rlock",
         "body": [
             "var ${1:mu} sync.RWMutex",
@@ -147,9 +147,9 @@
             "${3:// write}",
             "$1.Unlock()"
         ],
-        "description": "Go 读写锁"
+        "description": "读写锁"
     },
-    "go_thread_semaphore": {
+    "信号量": {
         "prefix": "go_thread_semaphore",
         "body": [
             "${1:sem} := make(chan struct{}, ${2:3})",
@@ -157,9 +157,9 @@
             "${3:// critical section}",
             "<-$1"
         ],
-        "description": "Go 信号量（channel 实现）"
+        "description": "信号量（channel 实现）"
     },
-    "go_thread_condition": {
+    "条件变量": {
         "prefix": "go_thread_condition",
         "body": [
             "var ${1:cond} = sync.NewCond(&${2:mu})",
@@ -186,18 +186,18 @@
             "    $1.L.Unlock()",
             "}"
         ],
-        "description": "Go 条件变量（waiter 与 notifier 拆成独立函数）"
+        "description": "条件变量（waiter 与 notifier 拆成独立函数）"
     },
-    "go_thread_event": {
+    "事件": {
         "prefix": "go_thread_event",
         "body": [
             "${1:done} := make(chan struct{})",
             "close($1)",
             "<-$1"
         ],
-        "description": "Go 事件（channel close）"
+        "description": "事件（channel close）"
     },
-    "go_thread_barrier": {
+    "屏障": {
         "prefix": "go_thread_barrier",
         "body": [
             "var ${1:wg} sync.WaitGroup",
@@ -208,23 +208,23 @@
             "}()",
             "$1.Wait()"
         ],
-        "description": "Go 屏障（WaitGroup 实现）"
+        "description": "屏障（WaitGroup 实现）"
     },
-    "go_process": {
+    "启动 goroutine": {
         "prefix": "go_process",
         "body": [
             "go ${1:func()}()"
         ],
-        "description": "Go 启动 goroutine（轻量协程）"
+        "description": "启动 goroutine（轻量协程）"
     },
-    "go_log": {
+    "日志打印": {
         "prefix": "go_log",
         "body": [
             "log.${1|Print,Printf,Println|}(${2:\"message\"})"
         ],
-        "description": "Go 日志打印"
+        "description": "日志打印"
     },
-    "go_read_json": {
+    "读取 JSON 配置文件": {
         "prefix": "go_read_json",
         "body": [
             "data, err := os.ReadFile(${1:config_path})",
@@ -236,9 +236,9 @@
             "}",
             "err = json.Unmarshal(data, &$3)"
         ],
-        "description": "Go 读取 JSON 配置文件"
+        "description": "读取 JSON 配置文件"
     },
-    "go_signal": {
+    "信号监听": {
         "prefix": "go_signal",
         "body": [
             "sigCh := make(chan os.Signal, 1)",
@@ -249,9 +249,9 @@
             "    ${3:os.Exit(0)}",
             "}()"
         ],
-        "description": "Go 信号监听（程序退出前清理）"
+        "description": "信号监听（程序退出前清理）"
     },
-    "go_write_file": {
+    "写入文件": {
         "prefix": "go_write_file",
         "body": [
             "err := os.WriteFile(${1:path}, []byte(${2:content}), 0644)",
@@ -259,9 +259,9 @@
             "    ${3:log.Fatal(err)}",
             "}"
         ],
-        "description": "Go 写入文件"
+        "description": "写入文件"
     },
-    "go_copy_file": {
+    "拷贝文件": {
         "prefix": "go_copy_file",
         "body": [
             "// ============ 实现 1：适合小文件（ReadFile + WriteFile）============",
@@ -291,9 +291,9 @@
             "//     ${5:log.Fatal(err)}",
             "// }"
         ],
-        "description": "Go 拷贝文件（小文件版默认，大文件 io.Copy 版注释备选）"
+        "description": "拷贝文件（小文件版默认，大文件 io.Copy 版注释备选）"
     },
-    "go_move_file": {
+    "移动/重命名文件": {
         "prefix": "go_move_file",
         "body": [
             "err := os.Rename(${1:src_path}, ${2:dst_path})",
@@ -301,9 +301,9 @@
             "    ${3:log.Fatal(err)}",
             "}"
         ],
-        "description": "Go 移动/重命名文件"
+        "description": "移动/重命名文件"
     },
-    "go_delete_file": {
+    "删除文件": {
         "prefix": "go_delete_file",
         "body": [
             "err := os.Remove(${1:path})",
@@ -311,16 +311,16 @@
             "    ${2:log.Fatal(err)}",
             "}"
         ],
-        "description": "Go 删除文件"
+        "description": "删除文件"
     },
-    "go_sleep": {
+    "时间等待": {
         "prefix": "go_sleep",
         "body": [
             "time.Sleep(${1:1} * time.Second)  // 单位: time.Second / time.Millisecond / time.Minute"
         ],
-        "description": "Go 时间等待"
+        "description": "时间等待"
     },
-    "go_random_string": {
+    "生成随机字符串": {
         "prefix": "go_random_string",
         "body": [
             "// ============ 实现 1：密码学安全（crypto/rand，推荐用于 token/密码）============",
@@ -348,6 +348,6 @@
             "//     return string(b)",
             "// }"
         ],
-        "description": "Go 生成随机字符串（crypto/rand 安全版默认，math/rand 注释备选）"
+        "description": "生成随机字符串（crypto/rand 安全版默认，math/rand 注释备选）"
     }
 }

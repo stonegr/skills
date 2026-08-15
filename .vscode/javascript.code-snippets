@@ -1,39 +1,39 @@
 {
-    "js_for": {
+    "for 循环": {
         "prefix": "js_for",
         "body": [
             "for (let ${1:i} = 0; $1 < ${2:array.length}; $1++) {",
             "    ${3:// code}",
             "}"
         ],
-        "description": "JavaScript for 循环（索引）"
+        "description": "for 循环（索引）"
     },
-    "js_for_range": {
+    "for...of 遍历数组": {
         "prefix": "js_for_range",
         "body": [
             "for (const ${1:item} of ${2:array}) {",
             "    ${3:// code}",
             "}"
         ],
-        "description": "JavaScript for...of 遍历数组"
+        "description": "for...of 遍历数组"
     },
-    "js_while": {
+    "while 循环": {
         "prefix": "js_while",
         "body": [
             "while (${1:condition}) {",
             "    ${2:// code}",
             "}"
         ],
-        "description": "JavaScript while 循环"
+        "description": "while 循环"
     },
-    "js_throw": {
+    "抛出错误": {
         "prefix": "js_throw",
         "body": [
             "throw new ${1:Error}('${2:message}')"
         ],
-        "description": "JavaScript 抛出错误"
+        "description": "抛出错误"
     },
-    "js_error_define": {
+    "自定义错误类": {
         "prefix": "js_error_define",
         "body": [
             "class ${1:CustomError} extends ${2:Error} {",
@@ -43,9 +43,9 @@
             "    }",
             "}"
         ],
-        "description": "JavaScript 自定义错误类"
+        "description": "自定义错误类"
     },
-    "js_try": {
+    "错误捕获": {
         "prefix": "js_try",
         "body": [
             "try {",
@@ -56,9 +56,9 @@
             "    ${4:// cleanup}",
             "}"
         ],
-        "description": "JavaScript 错误捕获"
+        "description": "错误捕获"
     },
-    "js_if": {
+    "if 判断": {
         "prefix": "js_if",
         "body": [
             "if (${1:condition}) {",
@@ -69,55 +69,55 @@
             "    ${5:// code}",
             "}"
         ],
-        "description": "JavaScript if 判断"
+        "description": "if 判断"
     },
-    "js_read_file": {
+    "读取文件": {
         "prefix": "js_read_file",
         "body": [
             "const fs = require('fs')",
             "const ${1:content} = fs.readFileSync(${2:path}, '${3:utf-8}')"
         ],
-        "description": "JavaScript 读取文件 (Node)"
+        "description": "读取文件 (Node)"
     },
-    "js_read_env": {
+    "读取环境变量": {
         "prefix": "js_read_env",
         "body": [
             "const ${1:value} = process.env.${2:KEY} || '${3:default}'"
         ],
-        "description": "JavaScript 读取环境变量"
+        "description": "读取环境变量"
     },
-    "js_shell": {
+    "执行 shell 命令": {
         "prefix": "js_shell",
         "body": [
             "const { execSync } = require('child_process')",
             "const ${1:output} = execSync(${2:'ls -la'}, { encoding: 'utf-8' })"
         ],
-        "description": "JavaScript 执行 shell 命令"
+        "description": "执行 shell 命令"
     },
-    "js_time": {
+    "获取程序运行耗时": {
         "prefix": "js_time",
         "body": [
             "const start = Date.now()",
             "${1:// code}",
             "console.log(`耗时: \\${Date.now() - start}ms`)"
         ],
-        "description": "JavaScript 获取程序运行耗时"
+        "description": "获取程序运行耗时"
     },
-    "js_cwd": {
+    "获取当前目录": {
         "prefix": "js_cwd",
         "body": [
             "const ${1:path} = process.cwd()"
         ],
-        "description": "JavaScript 获取当前目录"
+        "description": "获取当前目录"
     },
-    "js_args": {
+    "命令行参数": {
         "prefix": "js_args",
         "body": [
             "const ${1:args} = process.argv.slice(2)"
         ],
-        "description": "JavaScript 命令行参数"
+        "description": "命令行参数"
     },
-    "js_input": {
+    "获取用户输入": {
         "prefix": "js_input",
         "body": [
             "const readline = require('readline')",
@@ -127,9 +127,9 @@
             "    rl.close()",
             "})"
         ],
-        "description": "JavaScript 获取用户输入"
+        "description": "获取用户输入"
     },
-    "js_thread_lock": {
+    "互斥锁": {
         "prefix": "js_thread_lock",
         "body": [
             "const { Mutex } = require('async-mutex')",
@@ -141,17 +141,17 @@
             "    release()",
             "}"
         ],
-        "description": "JavaScript 互斥锁 (async-mutex)"
+        "description": "互斥锁 (async-mutex)"
     },
-    "js_thread_rlock": {
+    "读写锁": {
         "prefix": "js_thread_rlock",
         "body": [
             "const { RWLock } = require('async-mutex')",
             "const ${1:lock} = new RWLock()"
         ],
-        "description": "JavaScript 读写锁"
+        "description": "读写锁"
     },
-    "js_thread_semaphore": {
+    "信号量": {
         "prefix": "js_thread_semaphore",
         "body": [
             "const { Semaphore } = require('async-mutex')",
@@ -163,9 +163,9 @@
             "    release()",
             "}"
         ],
-        "description": "JavaScript 信号量"
+        "description": "信号量"
     },
-    "js_thread_condition": {
+    "条件变量": {
         "prefix": "js_thread_condition",
         "body": [
             "// ============ 实现 1：async-mutex 的 Condition（推荐，需 npm install async-mutex）============",
@@ -196,9 +196,9 @@
             "//     $1.emit('${8:continue}')",
             "// })"
         ],
-        "description": "JavaScript 条件变量（推荐 async-mutex，含 EventEmitter 备选）"
+        "description": "条件变量（推荐 async-mutex，含 EventEmitter 备选）"
     },
-    "js_thread_event": {
+    "事件": {
         "prefix": "js_thread_event",
         "body": [
             "const { EventEmitter } = require('events')",
@@ -208,9 +208,9 @@
             "})",
             "$1.emit('$2', ${5:payload})"
         ],
-        "description": "JavaScript 事件 (EventEmitter)"
+        "description": "事件 (EventEmitter)"
     },
-    "js_thread_barrier": {
+    "屏障": {
         "prefix": "js_thread_barrier",
         "body": [
             "await Promise.all([",
@@ -219,9 +219,9 @@
             "    ${3:task3()}",
             "])"
         ],
-        "description": "JavaScript 屏障 (Promise.all)"
+        "description": "屏障 (Promise.all)"
     },
-    "js_process": {
+    "多进程": {
         "prefix": "js_process",
         "body": [
             "const { fork } = require('child_process')",
@@ -230,23 +230,23 @@
             "    ${4:// handle message}",
             "})"
         ],
-        "description": "JavaScript 多进程 (child_process)"
+        "description": "多进程 (child_process)"
     },
-    "js_log": {
+    "日志打印": {
         "prefix": "js_log",
         "body": [
             "console.${1|log,info,warn,error,debug|}(${2:'message'})"
         ],
-        "description": "JavaScript 日志打印"
+        "description": "日志打印"
     },
-    "js_read_json": {
+    "读取 JSON 配置文件": {
         "prefix": "js_read_json",
         "body": [
             "const ${1:config} = require(${2:./config.json})"
         ],
-        "description": "JavaScript 读取 JSON 配置文件"
+        "description": "读取 JSON 配置文件"
     },
-    "js_signal": {
+    "信号监听": {
         "prefix": "js_signal",
         "body": [
             "process.on('${1|SIGINT,SIGTERM,SIGHUP|}', () => {",
@@ -254,41 +254,41 @@
             "    process.exit(0)",
             "})"
         ],
-        "description": "JavaScript 信号监听（程序退出前清理）"
+        "description": "信号监听（程序退出前清理）"
     },
-    "js_write_file": {
+    "写入文件": {
         "prefix": "js_write_file",
         "body": [
             "const fs = require('fs')",
             "fs.writeFileSync(${1:path}, ${2:content}, '${3:utf-8}')"
         ],
-        "description": "JavaScript 写入文件"
+        "description": "写入文件"
     },
-    "js_copy_file": {
+    "拷贝文件": {
         "prefix": "js_copy_file",
         "body": [
             "const fs = require('fs')",
             "fs.copyFileSync(${1:src}, ${2:dst})"
         ],
-        "description": "JavaScript 拷贝文件"
+        "description": "拷贝文件"
     },
-    "js_move_file": {
+    "移动/重命名文件": {
         "prefix": "js_move_file",
         "body": [
             "const fs = require('fs')",
             "fs.renameSync(${1:src}, ${2:dst})"
         ],
-        "description": "JavaScript 移动/重命名文件"
+        "description": "移动/重命名文件"
     },
-    "js_delete_file": {
+    "删除文件": {
         "prefix": "js_delete_file",
         "body": [
             "const fs = require('fs')",
             "fs.unlinkSync(${1:path})"
         ],
-        "description": "JavaScript 删除文件"
+        "description": "删除文件"
     },
-    "js_sleep": {
+    "时间等待": {
         "prefix": "js_sleep",
         "body": [
             "// ============ 实现 1：async 函数里等待（推荐）============",
@@ -300,9 +300,9 @@
             "//     ${1:// 等待后执行}",
             "// }, ${2:1000})"
         ],
-        "description": "JavaScript 时间等待（await Promise 版默认 + setTimeout 备选）"
+        "description": "时间等待（await Promise 版默认 + setTimeout 备选）"
     },
-    "js_random_string": {
+    "生成随机字符串": {
         "prefix": "js_random_string",
         "body": [
             "// ============ 实现 1：crypto.randomBytes（密码学安全，推荐 token/密码）============",
@@ -325,6 +325,6 @@
             "//     return result",
             "// }"
         ],
-        "description": "JavaScript 生成随机字符串（crypto 默认 + Math.random 备选）"
+        "description": "生成随机字符串（crypto 默认 + Math.random 备选）"
     }
 }

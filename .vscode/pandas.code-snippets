@@ -1,99 +1,99 @@
 {
-  "Pandas Init": {
-    "prefix": "pd_init",
-    "body": [
-      "import pandas as pd",
-      "import numpy as np",
-      "",
-      "df = pd.read_csv('${1:data.csv}')",
-      "print(df.head())"
-    ],
-    "description": "导入 pandas 并读取 CSV"
-  },
-  "Pandas Check": {
-    "prefix": "pd_check",
-    "body": [
-      "print(\"--- Info ---\")",
-      "print(${1:df}.info())",
-      "print(\"\\n--- Null Values ---\")",
-      "print(${1:df}.isnull().sum())",
-      "print(\"\\n--- Statistics ---\")",
-      "print(${1:df}.describe())"
-    ],
-    "description": "数据质量快速检查"
-  },
-  "Pandas Create DataFrame": {
-    "prefix": "pd_create",
-    "body": [
-      "data = {",
-      "\t'${1:column1}': [${2:1, 2, 3}],",
-      "\t'${3:column2}': [${4:'A', 'B', 'C'}]",
-      "}",
-      "df = pd.DataFrame(data)",
-      "$0"
-    ],
-    "description": "从字典创建一个新的 DataFrame"
-  },
-  "Pandas Merge": {
-    "prefix": "pd_merge",
-    "body": [
-      "df_merged = pd.merge(",
-      "\tleft=${1:df1},",
-      "\tright=${2:df2},",
-      "\ton='${3:key_column}',",
-      "\thow='${4|left,right,inner,outer|}'",
-      ")",
-      "$0"
-    ],
-    "description": "合并两个 DataFrame (Join)"
-  },
-  "Pandas Pivot Table": {
-    "prefix": "pd_pivot",
-    "body": [
-      "df_pivot = ${1:df}.pivot_table(",
-      "\tindex='${2:column1}',",
-      "\tvalues='${3:column2}',",
-      "\taggfunc='${4|mean,sum,count|}'",
-      ")"
-    ],
-    "description": "快速创建透视表"
-  },
-  "Pandas Groupby Loop": {
-    "prefix": "pd_group_loop",
-    "body": [
-      "for ${1:name}, ${2:group} in ${3:df}.groupby('${4:column}'):",
-      "\tprint(f\"Processing group: {${1:name}}\")",
-      "\t# group 是一个包含该分组数据的 DataFrame",
-      "\t$0"
-    ],
-    "description": "遍历分组数据进行循环操作"
-  },
-  "Pandas Groupby Apply/Modify": {
-    "prefix": "pd_group_apply",
-    "body": [
-      "def ${1:modify_func}(group):",
-      "\t# 在这里对每个分组进行修改",
-      "\tgroup['${2:new_col}'] = group['${3:existing_col}'].mean()",
-      "\treturn group",
-      "",
-      "${4:df} = ${4:df}.groupby('${5:key_col}').apply(${1:modify_func}, include_groups=False)",
-      "$0"
-    ],
-    "description": "使用 groupby.apply 对分组进行批量修改"
-  },
-  "Pandas Rename Columns": {
-    "prefix": "pd_rename",
-    "body": [
-      "# 方式一：按映射重命名（部分列）",
-      "${1:df} = ${1:df}.rename(columns={",
-      "\t'${2:old_col1}': '${3:new_col1}',",
-      "\t'${4:old_col2}': '${5:new_col2}'",
-      "})",
-      "",
-      "# 方式二：整体重命名（所有列）",
-      "# ${1:df}.columns = ['${6:col1}', '${7:col2}', '${8:col3}']",
-      "$0"
-    ],
-    "description": "重命名列名（支持映射或整体替换）"
-  }
+    "导入 pandas 并读取 CSV": {
+        "prefix": "pd_init",
+        "body": [
+            "import pandas as pd",
+            "import numpy as np",
+            "",
+            "df = pd.read_csv('${1:data.csv}')",
+            "print(df.head())"
+        ],
+        "description": "导入 pandas 并读取 CSV"
+    },
+    "数据质量快速检查": {
+        "prefix": "pd_check",
+        "body": [
+            "print(\"--- Info ---\")",
+            "print(${1:df}.info())",
+            "print(\"\\n--- Null Values ---\")",
+            "print(${1:df}.isnull().sum())",
+            "print(\"\\n--- Statistics ---\")",
+            "print(${1:df}.describe())"
+        ],
+        "description": "数据质量快速检查"
+    },
+    "从字典创建一个新的 DataFrame": {
+        "prefix": "pd_create",
+        "body": [
+            "data = {",
+            "\t'${1:column1}': [${2:1, 2, 3}],",
+            "\t'${3:column2}': [${4:'A', 'B', 'C'}]",
+            "}",
+            "df = pd.DataFrame(data)",
+            "$0"
+        ],
+        "description": "从字典创建一个新的 DataFrame"
+    },
+    "合并两个 DataFrame": {
+        "prefix": "pd_merge",
+        "body": [
+            "df_merged = pd.merge(",
+            "\tleft=${1:df1},",
+            "\tright=${2:df2},",
+            "\ton='${3:key_column}',",
+            "\thow='${4|left,right,inner,outer|}'",
+            ")",
+            "$0"
+        ],
+        "description": "合并两个 DataFrame (Join)"
+    },
+    "快速创建透视表": {
+        "prefix": "pd_pivot",
+        "body": [
+            "df_pivot = ${1:df}.pivot_table(",
+            "\tindex='${2:column1}',",
+            "\tvalues='${3:column2}',",
+            "\taggfunc='${4|mean,sum,count|}'",
+            ")"
+        ],
+        "description": "快速创建透视表"
+    },
+    "遍历分组数据进行循环操作": {
+        "prefix": "pd_group_loop",
+        "body": [
+            "for ${1:name}, ${2:group} in ${3:df}.groupby('${4:column}'):",
+            "\tprint(f\"Processing group: {${1:name}}\")",
+            "\t# group 是一个包含该分组数据的 DataFrame",
+            "\t$0"
+        ],
+        "description": "遍历分组数据进行循环操作"
+    },
+    "使用 groupby.apply 对分组进行批量修改": {
+        "prefix": "pd_group_apply",
+        "body": [
+            "def ${1:modify_func}(group):",
+            "\t# 在这里对每个分组进行修改",
+            "\tgroup['${2:new_col}'] = group['${3:existing_col}'].mean()",
+            "\treturn group",
+            "",
+            "${4:df} = ${4:df}.groupby('${5:key_col}').apply(${1:modify_func}, include_groups=False)",
+            "$0"
+        ],
+        "description": "使用 groupby.apply 对分组进行批量修改"
+    },
+    "重命名列名": {
+        "prefix": "pd_rename",
+        "body": [
+            "# 方式一：按映射重命名（部分列）",
+            "${1:df} = ${1:df}.rename(columns={",
+            "\t'${2:old_col1}': '${3:new_col1}',",
+            "\t'${4:old_col2}': '${5:new_col2}'",
+            "})",
+            "",
+            "# 方式二：整体重命名（所有列）",
+            "# ${1:df}.columns = ['${6:col1}', '${7:col2}', '${8:col3}']",
+            "$0"
+        ],
+        "description": "重命名列名（支持映射或整体替换）"
+    }
 }

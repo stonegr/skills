@@ -1,5 +1,5 @@
 {
-    "ms_schema_basic": {
+    "定义最简 Schema 类": {
         "prefix": "ms_schema_basic",
         "body": [
             "from marshmallow import Schema",
@@ -9,7 +9,7 @@
         ],
         "description": "定义最简 Schema 类"
     },
-    "ms_schema_fields": {
+    "定义带字段的 Schema": {
         "prefix": "ms_schema_fields",
         "body": [
             "from marshmallow import Schema, fields",
@@ -19,7 +19,7 @@
         ],
         "description": "定义带字段的 Schema"
     },
-    "ms_schema_meta": {
+    "用 class Meta 配置 Schema 字段": {
         "prefix": "ms_schema_meta",
         "body": [
             "from marshmallow import Schema, fields",
@@ -34,7 +34,7 @@
         ],
         "description": "用 class Meta 配置 Schema 字段"
     },
-    "ms_schema_load": {
+    "反序列化": {
         "prefix": "ms_schema_load",
         "body": [
             "from marshmallow import Schema, fields",
@@ -46,7 +46,7 @@
         ],
         "description": "反序列化（dict 校验后转 dict）"
     },
-    "ms_schema_dump": {
+    "序列化": {
         "prefix": "ms_schema_dump",
         "body": [
             "from marshmallow import Schema, fields",
@@ -58,7 +58,7 @@
         ],
         "description": "序列化（对象转 dict）"
     },
-    "ms_field_str": {
+    "字符串字段": {
         "prefix": "ms_field_str",
         "body": [
             "from marshmallow import fields",
@@ -67,7 +67,7 @@
         ],
         "description": "字符串字段"
     },
-    "ms_field_int": {
+    "整数字段": {
         "prefix": "ms_field_int",
         "body": [
             "from marshmallow import fields",
@@ -76,7 +76,7 @@
         ],
         "description": "整数字段"
     },
-    "ms_field_float": {
+    "浮点数字段": {
         "prefix": "ms_field_float",
         "body": [
             "from marshmallow import fields",
@@ -85,7 +85,7 @@
         ],
         "description": "浮点数字段"
     },
-    "ms_field_bool": {
+    "布尔字段": {
         "prefix": "ms_field_bool",
         "body": [
             "from marshmallow import fields",
@@ -94,7 +94,7 @@
         ],
         "description": "布尔字段"
     },
-    "ms_field_datetime": {
+    "日期时间字段": {
         "prefix": "ms_field_datetime",
         "body": [
             "from marshmallow import fields",
@@ -103,7 +103,7 @@
         ],
         "description": "日期时间字段"
     },
-    "ms_field_date": {
+    "日期字段": {
         "prefix": "ms_field_date",
         "body": [
             "from marshmallow import fields",
@@ -112,7 +112,7 @@
         ],
         "description": "日期字段"
     },
-    "ms_field_list": {
+    "列表字段": {
         "prefix": "ms_field_list",
         "body": [
             "from marshmallow import fields",
@@ -121,7 +121,7 @@
         ],
         "description": "列表字段"
     },
-    "ms_field_dict": {
+    "字典字段": {
         "prefix": "ms_field_dict",
         "body": [
             "from marshmallow import fields",
@@ -130,7 +130,7 @@
         ],
         "description": "字典字段"
     },
-    "ms_valid_length": {
+    "字符串长度验证": {
         "prefix": "ms_valid_length",
         "body": [
             "from marshmallow import Schema, fields, validate",
@@ -140,7 +140,7 @@
         ],
         "description": "字符串长度验证"
     },
-    "ms_valid_range": {
+    "数值范围验证": {
         "prefix": "ms_valid_range",
         "body": [
             "from marshmallow import Schema, fields, validate",
@@ -150,7 +150,7 @@
         ],
         "description": "数值范围验证"
     },
-    "ms_valid_regexp": {
+    "正则验证": {
         "prefix": "ms_valid_regexp",
         "body": [
             "from marshmallow import Schema, fields, validate",
@@ -160,7 +160,7 @@
         ],
         "description": "正则验证"
     },
-    "ms_valid_oneof": {
+    "枚举值验证": {
         "prefix": "ms_valid_oneof",
         "body": [
             "from marshmallow import Schema, fields, validate",
@@ -170,7 +170,7 @@
         ],
         "description": "枚举值验证"
     },
-    "ms_valid_email": {
+    "邮箱格式验证": {
         "prefix": "ms_valid_email",
         "body": [
             "from marshmallow import Schema, fields, validate",
@@ -180,7 +180,7 @@
         ],
         "description": "邮箱格式验证"
     },
-    "ms_valid_custom": {
+    "自定义验证函数": {
         "prefix": "ms_valid_custom",
         "body": [
             "from marshmallow import Schema, fields, ValidationError",
@@ -194,7 +194,7 @@
         ],
         "description": "自定义验证函数"
     },
-    "ms_nested": {
+    "嵌套另一个 Schema": {
         "prefix": "ms_nested",
         "body": [
             "from marshmallow import Schema, fields",
@@ -207,7 +207,7 @@
         ],
         "description": "嵌套另一个 Schema"
     },
-    "ms_nested_many": {
+    "嵌套列表": {
         "prefix": "ms_nested_many",
         "body": [
             "from marshmallow import Schema, fields",
@@ -220,7 +220,7 @@
         ],
         "description": "嵌套列表"
     },
-    "ms_nested_self": {
+    "自嵌套": {
         "prefix": "ms_nested_self",
         "body": [
             "from marshmallow import Schema, fields",
@@ -231,7 +231,7 @@
         ],
         "description": "自嵌套（树形结构）"
     },
-    "ms_nested_load_from": {
+    "从其他 attribute 加载嵌套": {
         "prefix": "ms_nested_load_from",
         "body": [
             "from marshmallow import Schema, fields",
@@ -244,7 +244,7 @@
         ],
         "description": "从其他 attribute 加载嵌套"
     },
-    "ms_pre_load": {
+    "加载前预处理数据": {
         "prefix": "ms_pre_load",
         "body": [
             "from marshmallow import Schema, fields, pre_load",
@@ -259,7 +259,7 @@
         ],
         "description": "加载前预处理数据"
     },
-    "ms_post_load": {
+    "加载后构造领域对象": {
         "prefix": "ms_post_load",
         "body": [
             "from marshmallow import Schema, fields, post_load",
@@ -274,7 +274,7 @@
         ],
         "description": "加载后构造领域对象"
     },
-    "ms_pre_dump": {
+    "序列化前预处理对象": {
         "prefix": "ms_pre_dump",
         "body": [
             "from marshmallow import Schema, fields, pre_dump",
@@ -289,7 +289,7 @@
         ],
         "description": "序列化前预处理对象"
     },
-    "ms_post_dump": {
+    "序列化后处理输出": {
         "prefix": "ms_post_dump",
         "body": [
             "from marshmallow import Schema, fields, post_dump",
@@ -304,7 +304,7 @@
         ],
         "description": "序列化后处理输出"
     },
-    "ms_field_method": {
+    "Method 字段": {
         "prefix": "ms_field_method",
         "body": [
             "from marshmallow import Schema, fields",
@@ -317,7 +317,7 @@
         ],
         "description": "Method 字段（可访问 self）"
     },
-    "ms_field_function": {
+    "Function 字段": {
         "prefix": "ms_field_function",
         "body": [
             "from marshmallow import Schema, fields",
@@ -330,7 +330,7 @@
         ],
         "description": "Function 字段（纯函数）"
     },
-    "ms_field_constant": {
+    "常量字段": {
         "prefix": "ms_field_constant",
         "body": [
             "from marshmallow import Schema, fields",
@@ -340,7 +340,7 @@
         ],
         "description": "常量字段（固定值）"
     },
-    "ms_validates": {
+    "字段级校验装饰器": {
         "prefix": "ms_validates",
         "body": [
             "from marshmallow import Schema, fields, validates, ValidationError",
@@ -355,7 +355,7 @@
         ],
         "description": "字段级校验装饰器"
     },
-    "ms_validates_schema": {
+    "整 Schema 校验装饰器": {
         "prefix": "ms_validates_schema",
         "body": [
             "from marshmallow import Schema, fields, validates_schema, ValidationError",
@@ -371,7 +371,7 @@
         ],
         "description": "整 Schema 校验装饰器"
     },
-    "ms_partial": {
+    "部分加载": {
         "prefix": "ms_partial",
         "body": [
             "from marshmallow import Schema, fields",
@@ -384,7 +384,7 @@
         ],
         "description": "部分加载（PATCH 更新）"
     },
-    "ms_exclude": {
+    "排除指定字段": {
         "prefix": "ms_exclude",
         "body": [
             "from marshmallow import Schema, fields",
@@ -398,7 +398,7 @@
         ],
         "description": "排除指定字段"
     },
-    "ms_only": {
+    "仅包含指定字段": {
         "prefix": "ms_only",
         "body": [
             "from marshmallow import Schema, fields",
@@ -413,7 +413,7 @@
         ],
         "description": "仅包含指定字段"
     },
-    "ms_data_key": {
+    "输入键重命名": {
         "prefix": "ms_data_key",
         "body": [
             "from marshmallow import Schema, fields",
@@ -423,7 +423,7 @@
         ],
         "description": "输入键重命名（data_key）"
     },
-    "ms_field_default": {
+    "字段默认值": {
         "prefix": "ms_field_default",
         "body": [
             "from marshmallow import Schema, fields",
@@ -433,7 +433,7 @@
         ],
         "description": "字段默认值（load 时使用）"
     },
-    "ms_field_metadata": {
+    "字段元数据 metadata": {
         "prefix": "ms_field_metadata",
         "body": [
             "from marshmallow import Schema, fields",
@@ -443,7 +443,7 @@
         ],
         "description": "字段元数据 metadata"
     },
-    "ms_catch_error": {
+    "捕获 ValidationError": {
         "prefix": "ms_catch_error",
         "body": [
             "from marshmallow import Schema, fields, ValidationError",
@@ -459,7 +459,7 @@
         ],
         "description": "捕获 ValidationError"
     },
-    "ms_error_messages": {
+    "自定义字段错误消息": {
         "prefix": "ms_error_messages",
         "body": [
             "from marshmallow import Schema, fields",

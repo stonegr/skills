@@ -1,47 +1,47 @@
 {
-    "sh_for": {
+    "for 数字范围循环": {
         "prefix": "sh_for",
         "body": [
             "for ((${1:i}=${2:0}; $1 < ${3:10}; $1++)); do",
             "    ${4:# body}",
             "done"
         ],
-        "description": "Shell for 数字范围循环（C 风格）"
+        "description": "for 数字范围循环（C 风格）"
     },
-    "sh_for_range": {
+    "for 遍历列表": {
         "prefix": "sh_for_range",
         "body": [
             "for ${1:item} in ${2:list}; do",
             "    ${3:# body}",
             "done"
         ],
-        "description": "Shell for 遍历列表"
+        "description": "for 遍历列表"
     },
-    "sh_while": {
+    "while 循环": {
         "prefix": "sh_while",
         "body": [
             "while [[ ${1:condition} ]]; do",
             "    ${2:# body}",
             "done"
         ],
-        "description": "Shell while 循环"
+        "description": "while 循环"
     },
-    "sh_try": {
+    "错误处理": {
         "prefix": "sh_try",
         "body": [
             "${1:command} || { echo \"error\" >&2; ${2:exit 1}; }"
         ],
-        "description": "Shell 错误处理（用 || 链）"
+        "description": "错误处理（用 || 链）"
     },
-    "sh_throw": {
+    "输出错误并退出": {
         "prefix": "sh_throw",
         "body": [
             "echo \"${1:error message}\" >&2",
             "exit ${2:1}"
         ],
-        "description": "Shell 输出错误并退出（throw）"
+        "description": "输出错误并退出（throw）"
     },
-    "sh_error_define": {
+    "错误处理函数": {
         "prefix": "sh_error_define",
         "body": [
             "${1:err_handler}() {",
@@ -49,9 +49,9 @@
             "    return ${3:1}",
             "}"
         ],
-        "description": "Shell 错误处理函数"
+        "description": "错误处理函数"
     },
-    "sh_if": {
+    "if 判断": {
         "prefix": "sh_if",
         "body": [
             "if [[ ${1:condition} ]]; then",
@@ -62,32 +62,32 @@
             "    ${5:# body}",
             "fi"
         ],
-        "description": "Shell if 判断"
+        "description": "if 判断"
     },
-    "sh_read_file": {
+    "读取文件": {
         "prefix": "sh_read_file",
         "body": [
             "while IFS= read -r ${1:line}; do",
             "    ${2:echo \"$line\"}",
             "done < ${3:file}"
         ],
-        "description": "Shell 读取文件（按行）"
+        "description": "读取文件（按行）"
     },
-    "sh_read_env": {
+    "读取环境变量": {
         "prefix": "sh_read_env",
         "body": [
             "${1:value}=\\${${2:KEY}:-${3:default}}"
         ],
-        "description": "Shell 读取环境变量"
+        "description": "读取环境变量"
     },
-    "sh_shell": {
+    "命令替换": {
         "prefix": "sh_shell",
         "body": [
             "${1:output}=${2:$(command)}"
         ],
-        "description": "Shell 命令替换"
+        "description": "命令替换"
     },
-    "sh_time": {
+    "获取程序运行耗时": {
         "prefix": "sh_time",
         "body": [
             "start=\\$(date +%s%N)",
@@ -95,16 +95,16 @@
             "end=\\$(date +%s%N)",
             "echo \"耗时: \\$(( (end - start) / 1000000 ))ms\""
         ],
-        "description": "Shell 获取程序运行耗时"
+        "description": "获取程序运行耗时"
     },
-    "sh_cwd": {
+    "获取当前目录": {
         "prefix": "sh_cwd",
         "body": [
             "${1:dir}=$(pwd)"
         ],
-        "description": "Shell 获取当前目录"
+        "description": "获取当前目录"
     },
-    "sh_args": {
+    "命令行参数": {
         "prefix": "sh_args",
         "body": [
             "while getopts \"${1:o:vh}\" opt; do",
@@ -121,16 +121,16 @@
             "    esac",
             "done"
         ],
-        "description": "Shell 命令行参数 (getopts)"
+        "description": "命令行参数 (getopts)"
     },
-    "sh_input": {
+    "获取用户输入": {
         "prefix": "sh_input",
         "body": [
             "read -p \"${1:请输入}: \" ${2:input}"
         ],
-        "description": "Shell 获取用户输入"
+        "description": "获取用户输入"
     },
-    "sh_thread_lock": {
+    "文件锁": {
         "prefix": "sh_thread_lock",
         "body": [
             "${1:lock_file}=$(mktemp)",
@@ -139,16 +139,16 @@
             "${2:# critical section}",
             "exec 200>&-"
         ],
-        "description": "Shell 文件锁（flock）"
+        "description": "文件锁（flock）"
     },
-    "sh_thread_rlock": {
+    "读写锁": {
         "prefix": "sh_thread_rlock",
         "body": [
             "# Shell 无内置读写锁，可用 flock 配合两个文件实现"
         ],
-        "description": "Shell 读写锁（flock 模拟）"
+        "description": "读写锁（flock 模拟）"
     },
-    "sh_thread_semaphore": {
+    "信号量": {
         "prefix": "sh_thread_semaphore",
         "body": [
             "# Shell 信号量：用 mkdir 原子性实现互斥，循环控制并发数",
@@ -157,9 +157,9 @@
             "${2:# critical section}",
             "rmdir \"\\$${1:dir}/lock\""
         ],
-        "description": "Shell 信号量（基于文件）"
+        "description": "信号量（基于文件）"
     },
-    "sh_thread_condition": {
+    "条件变量": {
         "prefix": "sh_thread_condition",
         "body": [
             "# ============ 实现 1：文件轮询（跨平台，简单）============",
@@ -174,9 +174,9 @@
             "# ${1:event_file}=$(mktemp)",
             "# inotifywait -e modify \"${2:$1}\""
         ],
-        "description": "Shell 条件变量（文件轮询 + inotifywait 备选）"
+        "description": "条件变量（文件轮询 + inotifywait 备选）"
     },
-    "sh_thread_event": {
+    "事件": {
         "prefix": "sh_thread_event",
         "body": [
             "# Shell 事件：用文件存在与否作为信号",
@@ -184,84 +184,84 @@
             "# 触发方: touch \\$${1:event_file}",
             "while [[ ! -f \\$${1:event_file} ]]; do sleep 0.1; done"
         ],
-        "description": "Shell 事件（基于文件）"
+        "description": "事件（基于文件）"
     },
-    "sh_thread_barrier": {
+    "屏障": {
         "prefix": "sh_thread_barrier",
         "body": [
             "wait"
         ],
-        "description": "Shell 屏障（wait 所有后台进程）"
+        "description": "屏障（wait 所有后台进程）"
     },
-    "sh_process": {
+    "后台进程": {
         "prefix": "sh_process",
         "body": [
             "${1:command} &",
             "pid=\\$!",
             "wait \\$pid"
         ],
-        "description": "Shell 后台进程"
+        "description": "后台进程"
     },
-    "sh_log": {
+    "日志打印": {
         "prefix": "sh_log",
         "body": [
             "echo \"[\\$(date '+%Y-%m-%d %H:%M:%S')] ${1:level}: ${2:message}\" | tee -a ${3:log_file}"
         ],
-        "description": "Shell 日志打印（带时间戳）"
+        "description": "日志打印（带时间戳）"
     },
-    "sh_read_json": {
+    "读取 JSON 配置文件": {
         "prefix": "sh_read_json",
         "body": [
             "${1:value}=$(jq -r ${2:.path.to.value} ${3:config.json})"
         ],
-        "description": "Shell 读取 JSON 配置文件 (jq)"
+        "description": "读取 JSON 配置文件 (jq)"
     },
-    "sh_signal": {
+    "信号监听": {
         "prefix": "sh_signal",
         "body": [
             "trap '${1:echo \"收到信号\"; cleanup; exit 0}' ${2|SIGHUP,SIGINT,SIGTERM|}"
         ],
-        "description": "Shell 信号监听（trap）"
+        "description": "信号监听（trap）"
     },
-    "sh_write_file": {
+    "写入文件": {
         "prefix": "sh_write_file",
         "body": [
             "cat > ${1:path} << 'EOF'",
             "${2:content}",
             "EOF"
         ],
-        "description": "Shell 写入文件（多行）"
+        "description": "写入文件（多行）"
     },
-    "sh_copy_file": {
+    "拷贝文件": {
         "prefix": "sh_copy_file",
         "body": [
             "# -P 表示直接复制链接而不是跟随链接复制",
             "cp ${1:src} ${2:dst}"
         ],
-        "description": "Shell 拷贝文件"
+        "description": "拷贝文件"
     },
-    "sh_move_file": {
+    "移动/重命名文件": {
         "prefix": "sh_move_file",
         "body": [
             "mv ${1:src} ${2:dst}"
         ],
-        "description": "Shell 移动/重命名文件"
+        "description": "移动/重命名文件"
     },
-    "sh_delete_file": {
+    "删除文件": {
         "prefix": "sh_delete_file",
         "body": [
             "rm ${1:path}"
         ],
-        "description": "Shell 删除文件"
+        "description": "删除文件"
     },
-    "sh_sleep": {
+    "时间等待": {
         "prefix": "sh_sleep",
         "body": [
             "sleep ${1:seconds}"
         ],
-        "description": "Shell 时间等待（秒）"
+        "description": "时间等待（秒）"
     },
-    "sh_random_string": {
+    "生成随机字符串": {
         "prefix": "sh_random_string",
         "body": [
             "# ============ 实现 1：/dev/urandom + tr（密码学安全，Linux/Mac）============",
@@ -271,6 +271,6 @@
             "# ============ 实现 2：openssl rand（更可控，可指定字符集）============",
             "# ${1:str}=$(openssl rand -base64 ${3:24} | tr -d '=+/' | cut -c1-${2:16})"
         ],
-        "description": "Shell 生成随机字符串（/dev/urandom 默认 + openssl 备选）"
+        "description": "生成随机字符串（/dev/urandom 默认 + openssl 备选）"
     }
 }

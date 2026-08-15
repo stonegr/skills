@@ -1,32 +1,32 @@
 {
-    "ja_for": {
+    "for 数字范围循环": {
         "prefix": "ja_for",
         "body": [
             "for (int ${1:i} = ${2:0}; ${1:i} < ${3:n}; ${1:i}++) {",
             "    ${4:// body}",
             "}"
         ],
-        "description": "Java for 数字范围循环"
+        "description": "for 数字范围循环"
     },
-    "ja_for_range": {
+    "for-each 遍历集合": {
         "prefix": "ja_for_range",
         "body": [
             "for (${1:String} ${2:item} : ${3:collection}) {",
             "    ${4:// body}",
             "}"
         ],
-        "description": "Java for-each 遍历集合"
+        "description": "for-each 遍历集合"
     },
-    "ja_while": {
+    "while 循环": {
         "prefix": "ja_while",
         "body": [
             "while (${1:condition}) {",
             "    ${2:// body}",
             "}"
         ],
-        "description": "Java while 循环"
+        "description": "while 循环"
     },
-    "ja_try": {
+    "try-catch-finally 错误捕获": {
         "prefix": "ja_try",
         "body": [
             "try {",
@@ -37,16 +37,16 @@
             "    ${5:// cleanup}",
             "}"
         ],
-        "description": "Java try-catch-finally 错误捕获"
+        "description": "try-catch-finally 错误捕获"
     },
-    "ja_throw": {
+    "抛出异常": {
         "prefix": "ja_throw",
         "body": [
             "throw new ${1:IllegalArgumentException}(${2:\"message\"});"
         ],
-        "description": "Java 抛出异常"
+        "description": "抛出异常"
     },
-    "ja_error_define": {
+    "自定义异常类": {
         "prefix": "ja_error_define",
         "body": [
             "public class ${1:MyException} extends ${2:Exception} {",
@@ -55,9 +55,9 @@
             "    }",
             "}"
         ],
-        "description": "Java 自定义异常类"
+        "description": "自定义异常类"
     },
-    "ja_if": {
+    "if 判断": {
         "prefix": "ja_if",
         "body": [
             "if (${1:condition}) {",
@@ -66,59 +66,59 @@
             "    $0",
             "}"
         ],
-        "description": "Java if 判断"
+        "description": "if 判断"
     },
-    "ja_read_file": {
+    "读取文件为字符串": {
         "prefix": "ja_read_file",
         "body": [
             "String ${1:content} = Files.readString(Path.of(\"${2:path}\"));"
         ],
-        "description": "Java 读取文件为字符串（需要 java.nio.file.*）"
+        "description": "读取文件为字符串（需要 java.nio.file.*）"
     },
-    "ja_write_file": {
+    "写入字符串到文件": {
         "prefix": "ja_write_file",
         "body": [
             "Files.writeString(Path.of(\"${1:path}\"), ${2:content});"
         ],
-        "description": "Java 写入字符串到文件（需要 java.nio.file.*）"
+        "description": "写入字符串到文件（需要 java.nio.file.*）"
     },
-    "ja_copy_file": {
+    "拷贝文件": {
         "prefix": "ja_copy_file",
         "body": [
             "Files.copy(Path.of(\"${1:src}\"), Path.of(\"${2:dst}\"), StandardCopyOption.REPLACE_EXISTING);"
         ],
-        "description": "Java 拷贝文件（需要 java.nio.file.*）"
+        "description": "拷贝文件（需要 java.nio.file.*）"
     },
-    "ja_move_file": {
+    "移动/重命名文件": {
         "prefix": "ja_move_file",
         "body": [
             "Files.move(Path.of(\"${1:src}\"), Path.of(\"${2:dst}\"), StandardCopyOption.REPLACE_EXISTING);"
         ],
-        "description": "Java 移动/重命名文件（需要 java.nio.file.*）"
+        "description": "移动/重命名文件（需要 java.nio.file.*）"
     },
-    "ja_delete_file": {
+    "删除文件": {
         "prefix": "ja_delete_file",
         "body": [
             "Files.delete(Path.of(\"${1:path}\"));"
         ],
-        "description": "Java 删除文件（需要 java.nio.file.*）"
+        "description": "删除文件（需要 java.nio.file.*）"
     },
-    "ja_read_env": {
+    "读取环境变量": {
         "prefix": "ja_read_env",
         "body": [
             "String ${1:value} = System.getenv(\"${2:VAR_NAME}\");"
         ],
-        "description": "Java 读取环境变量"
+        "description": "读取环境变量"
     },
-    "ja_read_json": {
+    "读取 JSON 配置文件": {
         "prefix": "ja_read_json",
         "body": [
             "Gson gson = new Gson();",
             "${1:MyClass} ${2:config} = gson.fromJson(new FileReader(\"${3:config.json}\"), ${1:MyClass}.class);"
         ],
-        "description": "Java 读取 JSON 配置文件（使用 Gson，需要 com.google.gson.* 和 java.io.FileReader）"
+        "description": "读取 JSON 配置文件（使用 Gson，需要 com.google.gson.* 和 java.io.FileReader）"
     },
-    "ja_shell": {
+    "执行 shell 命令并捕获输出": {
         "prefix": "ja_shell",
         "body": [
             "Process ${1:process} = new ProcessBuilder(\"${2:cmd}\", \"${3:arg1}\").start();",
@@ -130,25 +130,25 @@
             "    int ${5:exitCode} = ${1:process}.waitFor();",
             "}"
         ],
-        "description": "Java 执行 shell 命令并捕获输出（需要 java.io.*）"
+        "description": "执行 shell 命令并捕获输出（需要 java.io.*）"
     },
-    "ja_time": {
+    "计算程序耗时": {
         "prefix": "ja_time",
         "body": [
             "long ${1:startTime} = System.nanoTime();",
             "${2:// code}",
             "long ${3:durationMs} = (System.nanoTime() - ${1:startTime}) / 1_000_000;"
         ],
-        "description": "Java 计算程序耗时（毫秒）"
+        "description": "计算程序耗时（毫秒）"
     },
-    "ja_sleep": {
+    "线程休眠": {
         "prefix": "ja_sleep",
         "body": [
             "Thread.sleep(${1:1000});"
         ],
-        "description": "Java 线程休眠（毫秒）"
+        "description": "线程休眠（毫秒）"
     },
-    "ja_random_string": {
+    "生成随机字符串": {
         "prefix": "ja_random_string",
         "body": [
             "String chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\";",
@@ -159,16 +159,16 @@
             "}",
             "String ${2:result} = sb.toString();"
         ],
-        "description": "Java 生成随机字符串（需要 java.util.Random）"
+        "description": "生成随机字符串（需要 java.util.Random）"
     },
-    "ja_cwd": {
+    "获取当前工作目录": {
         "prefix": "ja_cwd",
         "body": [
             "String ${1:cwd} = System.getProperty(\"user.dir\");"
         ],
-        "description": "Java 获取当前工作目录"
+        "description": "获取当前工作目录"
     },
-    "ja_args": {
+    "遍历命令行参数": {
         "prefix": "ja_args",
         "body": [
             "for (int i = 0; i < args.length; i++) {",
@@ -176,17 +176,17 @@
             "    $0",
             "}"
         ],
-        "description": "Java 遍历命令行参数"
+        "description": "遍历命令行参数"
     },
-    "ja_input": {
+    "读取用户输入一行": {
         "prefix": "ja_input",
         "body": [
             "Scanner ${1:scanner} = new Scanner(System.in);",
             "String ${2:input} = ${1:scanner}.nextLine();"
         ],
-        "description": "Java 读取用户输入一行（需要 java.util.Scanner）"
+        "description": "读取用户输入一行（需要 java.util.Scanner）"
     },
-    "ja_thread_lock": {
+    "互斥锁 ReentrantLock": {
         "prefix": "ja_thread_lock",
         "body": [
             "ReentrantLock ${1:lock} = new ReentrantLock();",
@@ -197,9 +197,9 @@
             "    ${1:lock}.unlock();",
             "}"
         ],
-        "description": "Java 互斥锁 ReentrantLock（需要 java.util.concurrent.locks.*）"
+        "description": "互斥锁 ReentrantLock（需要 java.util.concurrent.locks.*）"
     },
-    "ja_thread_rlock": {
+    "读写锁 ReentrantReadWriteLock": {
         "prefix": "ja_thread_rlock",
         "body": [
             "ReentrantReadWriteLock ${1:rwlock} = new ReentrantReadWriteLock();",
@@ -210,9 +210,9 @@
             "    ${1:rwlock}.readLock().unlock();",
             "}"
         ],
-        "description": "Java 读写锁 ReentrantReadWriteLock（需要 java.util.concurrent.locks.*）"
+        "description": "读写锁 ReentrantReadWriteLock（需要 java.util.concurrent.locks.*）"
     },
-    "ja_thread_semaphore": {
+    "信号量 Semaphore": {
         "prefix": "ja_thread_semaphore",
         "body": [
             "Semaphore ${1:semaphore} = new Semaphore(${2:permits});",
@@ -223,9 +223,9 @@
             "    ${1:semaphore}.release();",
             "}"
         ],
-        "description": "Java 信号量 Semaphore（需要 java.util.concurrent.Semaphore）"
+        "description": "信号量 Semaphore（需要 java.util.concurrent.Semaphore）"
     },
-    "ja_thread_condition": {
+    "条件变量 Condition": {
         "prefix": "ja_thread_condition",
         "body": [
             "ReentrantLock ${1:lock} = new ReentrantLock();",
@@ -240,18 +240,18 @@
             "    ${1:lock}.unlock();",
             "}"
         ],
-        "description": "Java 条件变量 Condition（需要 java.util.concurrent.locks.*）"
+        "description": "条件变量 Condition（需要 java.util.concurrent.locks.*）"
     },
-    "ja_thread_event": {
+    "事件 CountDownLatch": {
         "prefix": "ja_thread_event",
         "body": [
             "CountDownLatch ${1:event} = new CountDownLatch(1);",
             "// 等待端: ${1:event}.await();",
             "// 触发端: ${1:event}.countDown();"
         ],
-        "description": "Java 事件 CountDownLatch（需要 java.util.concurrent.CountDownLatch）"
+        "description": "事件 CountDownLatch（需要 java.util.concurrent.CountDownLatch）"
     },
-    "ja_thread_barrier": {
+    "屏障 CyclicBarrier": {
         "prefix": "ja_thread_barrier",
         "body": [
             "CyclicBarrier ${1:barrier} = new CyclicBarrier(${2:parties}, () -> {",
@@ -259,9 +259,9 @@
             "});",
             "${1:barrier}.await();"
         ],
-        "description": "Java 屏障 CyclicBarrier（需要 java.util.concurrent.CyclicBarrier）"
+        "description": "屏障 CyclicBarrier（需要 java.util.concurrent.CyclicBarrier）"
     },
-    "ja_process": {
+    "多进程并行执行并等待全部完成": {
         "prefix": "ja_process",
         "body": [
             "List<Process> ${1:processes} = new ArrayList<>();",
@@ -272,17 +272,17 @@
             "    ${4:p}.waitFor();",
             "}"
         ],
-        "description": "Java 多进程并行执行并等待全部完成（需要 java.util.*）"
+        "description": "多进程并行执行并等待全部完成（需要 java.util.*）"
     },
-    "ja_log": {
+    "日志输出": {
         "prefix": "ja_log",
         "body": [
             "private static final Logger logger = Logger.getLogger(${1:ClassName}.class.getName());",
             "logger.${2|info,warning,severe|}(\"${3:message}\");"
         ],
-        "description": "Java 日志输出（需要 java.util.logging.*）"
+        "description": "日志输出（需要 java.util.logging.*）"
     },
-    "ja_signal": {
+    "信号监听": {
         "prefix": "ja_signal",
         "body": [
             "Signal.handle(new Signal(\"${1:SIGTERM}\"), sig -> {",
@@ -291,6 +291,6 @@
             "    System.exit(0);",
             "});"
         ],
-        "description": "Java 信号监听（需要 import sun.misc.Signal，注意 sun.* 是内部 API）"
+        "description": "信号监听（需要 import sun.misc.Signal，注意 sun.* 是内部 API）"
     }
 }

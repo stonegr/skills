@@ -1,561 +1,561 @@
 {
-  "fa_route_get": {
-    "prefix": "fa_route_get",
-    "body": [
-      "from fastapi import FastAPI",
-      "app = FastAPI()",
-      "",
-      "@app.get(${1:'/items'})",
-      "async def ${2:read_items}():",
-      "    return ${3:{'message': 'Hello'}}"
-    ],
-    "description": "FastAPI 定义 GET 路由"
-  },
-  "fa_route_post": {
-    "prefix": "fa_route_post",
-    "body": [
-      "from fastapi import FastAPI",
-      "app = FastAPI()",
-      "",
-      "@app.post(${1:'/items'})",
-      "async def ${2:create_item}(${3:item}: dict):",
-      "    return ${3:item}"
-    ],
-    "description": "FastAPI 定义 POST 路由"
-  },
-  "fa_route_put": {
-    "prefix": "fa_route_put",
-    "body": [
-      "from fastapi import FastAPI",
-      "app = FastAPI()",
-      "",
-      "@app.put(${1:'/items/{id}'})",
-      "async def ${2:update_item}(${3:id: int}, ${4:item: dict}):",
-      "    return ${5:{'id': id, **item}}"
-    ],
-    "description": "FastAPI 定义 PUT 路由"
-  },
-  "fa_route_delete": {
-    "prefix": "fa_route_delete",
-    "body": [
-      "from fastapi import FastAPI",
-      "app = FastAPI()",
-      "",
-      "@app.delete(${1:'/items/{id}'})",
-      "async def ${2:delete_item}(${3:id: int}):",
-      "    return ${4:{'deleted': id}}"
-    ],
-    "description": "FastAPI 定义 DELETE 路由"
-  },
-  "fa_router": {
-    "prefix": "fa_router",
-    "body": [
-      "from fastapi import APIRouter, FastAPI",
-      "router = APIRouter(prefix=${1:'/items'}, tags=[${2:'items'}])",
-      "",
-      "@router.get(${3:'/'})",
-      "async def ${4:list_items}():",
-      "    return ${5:[]}",
-      "",
-      "app = FastAPI()",
-      "app.include_router(router)"
-    ],
-    "description": "APIRouter 模块化路由"
-  },
-  "fa_include_router": {
-    "prefix": "fa_include_router",
-    "body": [
-      "from fastapi import FastAPI",
-      "app = FastAPI()",
-      "",
-      "app.include_router(${1:router}, prefix=${2:'/api'}, tags=${3:None})"
-    ],
-    "description": "包含路由到应用"
-  },
-  "fa_path_param": {
-    "prefix": "fa_path_param",
-    "body": [
-      "from fastapi import FastAPI",
-      "app = FastAPI()",
-      "",
-      "@app.get(${1:'/items/{id}'})",
-      "async def ${2:read_item}(${3:id: int}):",
-      "    return ${4:{'id': id}}"
-    ],
-    "description": "路径参数 id"
-  },
-  "fa_query_param": {
-    "prefix": "fa_query_param",
-    "body": [
-      "from fastapi import FastAPI",
-      "app = FastAPI()",
-      "",
-      "@app.get(${1:'/items'})",
-      "async def ${2:list_items}(${3:skip: int = 0}, ${4:limit: int = 10}):",
-      "    return ${5:{'skip': skip, 'limit': limit}}"
-    ],
-    "description": "查询参数 skip/limit"
-  },
-  "fa_body_param": {
-    "prefix": "fa_body_param",
-    "body": [
-      "from fastapi import FastAPI",
-      "from fastapi import Body",
-      "app = FastAPI()",
-      "",
-      "@app.post(${1:'/items'})",
-      "async def ${2:create_item}(${3:item}: dict = Body(...)):",
-      "    return ${3:item}"
-    ],
-    "description": "请求体参数"
-  },
-  "fa_header_param": {
-    "prefix": "fa_header_param",
-    "body": [
-      "from fastapi import FastAPI, Header",
-      "app = FastAPI()",
-      "",
-      "@app.get(${1:'/items'})",
-      "async def ${2:read_items}(${3:x_token: str = Header(...)}):",
-      "    return ${4:{'token': x_token}}"
-    ],
-    "description": "Header 参数"
-  },
-  "fa_form_param": {
-    "prefix": "fa_form_param",
-    "body": [
-      "from fastapi import FastAPI, Form",
-      "app = FastAPI()",
-      "",
-      "@app.post(${1:'/login'})",
-      "async def ${2:login}(${3:username: str = Form(...)}):",
-      "    return ${4:{'username': username}}"
-    ],
-    "description": "Form 表单参数"
-  },
-  "fa_json_response": {
-    "prefix": "fa_json_response",
-    "body": [
-      "from fastapi import FastAPI",
-      "from fastapi.responses import JSONResponse",
-      "app = FastAPI()",
-      "",
-      "@app.get(${1:'/items'})",
-      "async def ${2:read_items}():",
-      "    return JSONResponse(content=${3:{'key': 'value'}}, status_code=${4:200})"
-    ],
-    "description": "返回 JSONResponse"
-  },
-  "fa_file_response": {
-    "prefix": "fa_file_response",
-    "body": [
-      "from fastapi import FastAPI",
-      "from fastapi.responses import FileResponse",
-      "app = FastAPI()",
-      "",
-      "@app.get(${1:'/file'})",
-      "async def ${2:download_file}():",
-      "    return FileResponse(${3:path}, filename=${4:'file.txt'})"
-    ],
-    "description": "返回文件 FileResponse"
-  },
-  "fa_html_response": {
-    "prefix": "fa_html_response",
-    "body": [
-      "from fastapi import FastAPI",
-      "from fastapi.responses import HTMLResponse",
-      "app = FastAPI()",
-      "",
-      "@app.get(${1:'/page'}, response_class=HTMLResponse)",
-      "async def ${2:page}():",
-      "    return ${3:'<h1>Hello</h1>'}"
-    ],
-    "description": "返回 HTMLResponse"
-  },
-  "fa_middleware_http": {
-    "prefix": "fa_middleware_http",
-    "body": [
-      "from fastapi import FastAPI",
-      "app = FastAPI()",
-      "",
-      "@app.middleware(${1|'http','websocket'|})",
-      "async def ${2:my_middleware}(request, call_next):",
-      "    ${3:response} = await call_next(request)",
-      "    return ${3:response}"
-    ],
-    "description": "HTTP 中间件"
-  },
-  "fa_cors": {
-    "prefix": "fa_cors",
-    "body": [
-      "from fastapi import FastAPI",
-      "from fastapi.middleware.cors import CORSMiddleware",
-      "app = FastAPI()",
-      "",
-      "app.add_middleware(",
-      "    CORSMiddleware,",
-      "    allow_origins=[${1:'*'}],",
-      "    allow_credentials=${2|True,False|},",
-      "    allow_methods=[${3:'*'}],",
-      "    allow_headers=[${4:'*'}]",
-      ")"
-    ],
-    "description": "CORS 跨域中间件"
-  },
-  "fa_dependency": {
-    "prefix": "fa_dependency",
-    "body": [
-      "from fastapi import Depends, FastAPI",
-      "app = FastAPI()",
-      "",
-      "def ${1:common_param}(${2:q}: str = None):",
-      "    return ${2:q}",
-      "",
-      "@app.get(${3:'/items'})",
-      "async def ${4:read_items}(${5:param}: str = Depends(${1:common_param})):",
-      "    return ${6:{'param': param}}"
-    ],
-    "description": "Depends 依赖注入"
-  },
-  "fa_exception_handler": {
-    "prefix": "fa_exception_handler",
-    "body": [
-      "from fastapi import FastAPI, Request",
-      "from fastapi.responses import JSONResponse",
-      "app = FastAPI()",
-      "",
-      "@app.exception_handler(${1:Exception})",
-      "async def ${2:custom_handler}(request: Request, exc: ${1:Exception}):",
-      "    return JSONResponse(status_code=${3:500}, content=${4:{'message': str(exc)}})"
-    ],
-    "description": "注册全局异常处理器"
-  },
-  "fa_http_exception": {
-    "prefix": "fa_http_exception",
-    "body": [
-      "from fastapi import FastAPI, HTTPException",
-      "app = FastAPI()",
-      "",
-      "@app.get(${1:'/items/{id}'})",
-      "async def ${2:read_item}(${3:id: int}):",
-      "    if ${4:id <= 0}:",
-      "        raise HTTPException(status_code=${5:404}, detail=${6:'Item not found'})",
-      "    return ${7:{'id': id}}"
-    ],
-    "description": "抛出 HTTPException"
-  },
-  "fa_custom_exception": {
-    "prefix": "fa_custom_exception",
-    "body": [
-      "class ${1:CustomException}(Exception):",
-      "    def __init__(self, ${2:name}: str):",
-      "        self.name = ${2:name}",
-      "        super().__init__(${3:f'Item not found'})"
-    ],
-    "description": "定义自定义异常类"
-  },
-  "fa_basemodel": {
-    "prefix": "fa_basemodel",
-    "body": [
-      "from pydantic import BaseModel",
-      "",
-      "class ${1:Item}(BaseModel):",
-      "    ${2:name: str}",
-      "    ${3:price: float}",
-      "    ${4:is_offer: bool = False}"
-    ],
-    "description": "Pydantic BaseModel 模型"
-  },
-  "fa_field": {
-    "prefix": "fa_field",
-    "body": [
-      "from pydantic import BaseModel, Field",
-      "",
-      "class ${1:Item}(BaseModel):",
-      "    ${2:name: str} = Field(default=${3:'unknown'}, min_length=${4:1}, max_length=${5:50})",
-      "    ${6:price: float} = Field(ge=${7:0}, le=${8:10000})"
-    ],
-    "description": "Pydantic Field 字段约束"
-  },
-  "fa_nested_model": {
-    "prefix": "fa_nested_model",
-    "body": [
-      "from typing import Optional",
-      "from pydantic import BaseModel",
-      "",
-      "class ${1:Tag}(BaseModel):",
-      "    ${2:name}: str",
-      "",
-      "class ${3:Item}(BaseModel):",
-      "    ${4:name}: str",
-      "    ${5:tags}: list[${1:Tag}] = []",
-      "    ${6:owner}: Optional[str] = None"
-    ],
-    "description": "嵌套 Pydantic 模型"
-  },
-  "fa_validator": {
-    "prefix": "fa_validator",
-    "body": [
-      "from pydantic import BaseModel, field_validator",
-      "",
-      "class ${1:Item}(BaseModel):",
-      "    ${2:name}: str",
-      "",
-      "    @field_validator(${2|'name','age','email'|})",
-      "    @classmethod",
-      "    def ${3:check_name}(cls, v: str) -> str:",
-      "        if ${4:not v.strip()}:",
-      "            raise ValueError(${5:'name cannot be empty'})",
-      "        return v.strip()"
-    ],
-    "description": "Pydantic 字段校验器"
-  },
-  "fa_model_config": {
-    "prefix": "fa_model_config",
-    "body": [
-      "from pydantic import BaseModel, ConfigDict",
-      "",
-      "class ${1:Item}(BaseModel):",
-      "    model_config = ConfigDict(",
-      "        ${2:from_attributes=True},",
-      "        ${3:extra='forbid'},",
-      "    )",
-      "    ${4:name: str}"
-    ],
-    "description": "Pydantic 模型配置"
-  },
-  "fa_async_route": {
-    "prefix": "fa_async_route",
-    "body": [
-      "from fastapi import FastAPI",
-      "app = FastAPI()",
-      "",
-      "@app.get(${1:'/items'})",
-      "async def ${2:read_items}():",
-      "    ${3:result = await some_async_call()}",
-      "    return ${4:result}"
-    ],
-    "description": "定义 async 异步路由"
-  },
-  "fa_async_dependency": {
-    "prefix": "fa_async_dependency",
-    "body": [
-      "from fastapi import Depends, FastAPI",
-      "app = FastAPI()",
-      "",
-      "async def ${1:get_db}():",
-      "    ${2:db} = await ${3:connect_db()}",
-      "    try:",
-      "        yield ${2:db}",
-      "    finally:",
-      "        await ${2:db}.close()",
-      "",
-      "@app.get(${4:'/items'})",
-      "async def ${5:read_items}(${6:db_param} = Depends(${1:get_db})):",
-      "    return ${7:[]}"
-    ],
-    "description": "异步依赖注入"
-  },
-  "fa_background_task": {
-    "prefix": "fa_background_task",
-    "body": [
-      "from fastapi import BackgroundTasks, FastAPI",
-      "app = FastAPI()",
-      "",
-      "def ${1:write_log}(${2:message}: str):",
-      "    ${3:print}(${2:message})",
-      "",
-      "@app.post(${4:'/send'})",
-      "async def ${5:send}(background_tasks: BackgroundTasks):",
-      "    background_tasks.add_task(${1:write_log}, ${2:message})",
-      "    return ${6:{'status': 'ok'}}"
-    ],
-    "description": "BackgroundTasks 后台任务"
-  },
-  "fa_app_create": {
-    "prefix": "fa_app_create",
-    "body": [
-      "from fastapi import FastAPI",
-      "app = FastAPI(",
-      "    title=${1:'My API'},",
-      "    version=${2:'1.0.0'},",
-      "    description=${3:'API description'}",
-      ")"
-    ],
-    "description": "创建 FastAPI 应用实例"
-  },
-  "fa_lifespan": {
-    "prefix": "fa_lifespan",
-    "body": [
-      "from contextlib import asynccontextmanager",
-      "from fastapi import FastAPI",
-      "",
-      "@asynccontextmanager",
-      "async def ${1:lifespan}(app: FastAPI):",
-      "    ${2:# startup}",
-      "    yield",
-      "    ${3:# shutdown}",
-      "",
-      "app = FastAPI(lifespan=${1:lifespan})"
-    ],
-    "description": "lifespan 启动/关闭钩子"
-  },
-  "fa_mount": {
-    "prefix": "fa_mount",
-    "body": [
-      "from fastapi import FastAPI",
-      "app = FastAPI()",
-      "${2:sub_app} = FastAPI()",
-      "",
-      "app.mount(${1:'/sub'}, ${2:sub_app})"
-    ],
-    "description": "挂载子应用"
-  },
-  "fa_static_files": {
-    "prefix": "fa_static_files",
-    "body": [
-      "from fastapi import FastAPI",
-      "from fastapi.staticfiles import StaticFiles",
-      "app = FastAPI()",
-      "",
-      "app.mount(${1:'/static'}, StaticFiles(directory=${2:'static'}), name=${3:'static'})"
-    ],
-    "description": "挂载静态文件目录"
-  },
-  "fa_security_bearer": {
-    "prefix": "fa_security_bearer",
-    "body": [
-      "from fastapi import Depends, FastAPI",
-      "from fastapi.security import OAuth2PasswordBearer",
-      "app = FastAPI()",
-      "",
-      "oauth2_scheme = OAuth2PasswordBearer(tokenUrl=${1:'token'})",
-      "",
-      "@app.get(${2:'/users/me'})",
-      "async def ${3:read_users_me}(${4:token: str = Depends(oauth2_scheme)}):",
-      "    return ${5:{'token': token}}"
-    ],
-    "description": "Bearer Token 鉴权"
-  },
-  "fa_security_api_key": {
-    "prefix": "fa_security_api_key",
-    "body": [
-      "from fastapi import Depends, FastAPI, Security",
-      "from fastapi.security import APIKeyHeader",
-      "app = FastAPI()",
-      "",
-      "api_key_header = APIKeyHeader(name=${1:'X-API-Key'})",
-      "",
-      "@app.get(${2:'/items'})",
-      "async def ${3:read_items}(${4:api_key: str = Security(api_key_header)}):",
-      "    return ${5:{'api_key': api_key}}"
-    ],
-    "description": "API Key Header 鉴权"
-  },
-  "fa_upload_file": {
-    "prefix": "fa_upload_file",
-    "body": [
-      "from fastapi import FastAPI, File, UploadFile",
-      "app = FastAPI()",
-      "",
-      "@app.post(${1:'/upload'})",
-      "async def ${2:upload}(${3:file: UploadFile} = File(...)):",
-      "    ${4:contents = await file.read()}",
-      "    return ${5:{'filename': file.filename, 'size': len(contents)}}"
-    ],
-    "description": "文件上传 UploadFile"
-  },
-  "fa_websocket": {
-    "prefix": "fa_websocket",
-    "body": [
-      "from fastapi import FastAPI, WebSocket",
-      "app = FastAPI()",
-      "",
-      "@app.websocket(${1:'/ws'})",
-      "async def ${2:websocket_endpoint}(websocket: WebSocket):",
-      "    await websocket.accept()",
-      "    while True:",
-      "        ${3:data = await websocket.receive_text()}",
-      "        await websocket.send_text(${4:f'Message: {data}'})"
-    ],
-    "description": "WebSocket 端点"
-  },
-  "fa_test_get": {
-    "prefix": "fa_test_get",
-    "body": [
-      "from fastapi import FastAPI",
-      "from fastapi.testclient import TestClient",
-      "",
-      "app = FastAPI()",
-      "",
-      "@app.get(${1:'/'})",
-      "async def ${2:read_root}():",
-      "    return ${3:{'hello': 'world'}}",
-      "",
-      "client = TestClient(app)",
-      "response = client.get(${1:'/'})",
-      "assert response.status_code == ${4:200}",
-      "assert response.json() == ${3:{'hello': 'world'}}"
-    ],
-    "description": "TestClient 测试 GET 接口"
-  },
-  "fa_test_post": {
-    "prefix": "fa_test_post",
-    "body": [
-      "from fastapi import FastAPI",
-      "from fastapi.testclient import TestClient",
-      "",
-      "app = FastAPI()",
-      "",
-      "@app.post(${1:'/items'})",
-      "async def ${2:create_item}(${3:item}: dict):",
-      "    return ${3:item}",
-      "",
-      "client = TestClient(app)",
-      "response = client.post(${1:'/items'}, json=${4:{'name': 'foo'}})",
-      "assert response.status_code == ${5:200}",
-      "assert response.json()['name'] == ${6:'foo'}"
-    ],
-    "description": "TestClient 测试 POST 接口"
-  },
-  "fa_async_test": {
-    "prefix": "fa_async_test",
-    "body": [
-      "import httpx",
-      "import pytest",
-      "from fastapi import FastAPI",
-      "",
-      "app = FastAPI()",
-      "",
-      "@app.get(${1:'/'})",
-      "async def ${2:read_root}():",
-      "    return ${3:{'hello': 'world'}}",
-      "",
-      "@pytest.mark.asyncio",
-      "async def ${4:test_async}():",
-      "    async with httpx.AsyncClient(app=app, base_url=${5:'http://test'}) as client:",
-      "        response = await client.get(${1:'/'})",
-      "        assert response.status_code == ${6:200}"
-    ],
-    "description": "httpx 异步接口测试"
-  },
-  "fa_openapi_tags": {
-    "prefix": "fa_openapi_tags",
-    "body": [
-      "from fastapi import FastAPI",
-      "app = FastAPI(",
-      "    openapi_tags=[",
-      "        {",
-      "            'name': ${1:'users'},",
-      "            ${2:'description': '用户相关接口'}",
-      "        },",
-      "    ]",
-      ")",
-      "",
-      "@app.get(${3:'/users'}, tags=[${1:'users'}])",
-      "async def ${4:list_users}():",
-      "    return ${5:[]}"
-    ],
-    "description": "OpenAPI 标签元数据"
-  }
+    "定义 GET 路由": {
+        "prefix": "fa_route_get",
+        "body": [
+            "from fastapi import FastAPI",
+            "app = FastAPI()",
+            "",
+            "@app.get(${1:'/items'})",
+            "async def ${2:read_items}():",
+            "    return ${3:{'message': 'Hello'}}"
+        ],
+        "description": "定义 GET 路由"
+    },
+    "定义 POST 路由": {
+        "prefix": "fa_route_post",
+        "body": [
+            "from fastapi import FastAPI",
+            "app = FastAPI()",
+            "",
+            "@app.post(${1:'/items'})",
+            "async def ${2:create_item}(${3:item}: dict):",
+            "    return ${3:item}"
+        ],
+        "description": "定义 POST 路由"
+    },
+    "定义 PUT 路由": {
+        "prefix": "fa_route_put",
+        "body": [
+            "from fastapi import FastAPI",
+            "app = FastAPI()",
+            "",
+            "@app.put(${1:'/items/{id}'})",
+            "async def ${2:update_item}(${3:id: int}, ${4:item: dict}):",
+            "    return ${5:{'id': id, **item}}"
+        ],
+        "description": "定义 PUT 路由"
+    },
+    "定义 DELETE 路由": {
+        "prefix": "fa_route_delete",
+        "body": [
+            "from fastapi import FastAPI",
+            "app = FastAPI()",
+            "",
+            "@app.delete(${1:'/items/{id}'})",
+            "async def ${2:delete_item}(${3:id: int}):",
+            "    return ${4:{'deleted': id}}"
+        ],
+        "description": "定义 DELETE 路由"
+    },
+    "模块化路由": {
+        "prefix": "fa_router",
+        "body": [
+            "from fastapi import APIRouter, FastAPI",
+            "router = APIRouter(prefix=${1:'/items'}, tags=[${2:'items'}])",
+            "",
+            "@router.get(${3:'/'})",
+            "async def ${4:list_items}():",
+            "    return ${5:[]}",
+            "",
+            "app = FastAPI()",
+            "app.include_router(router)"
+        ],
+        "description": "模块化路由"
+    },
+    "包含路由到应用": {
+        "prefix": "fa_include_router",
+        "body": [
+            "from fastapi import FastAPI",
+            "app = FastAPI()",
+            "",
+            "app.include_router(${1:router}, prefix=${2:'/api'}, tags=${3:None})"
+        ],
+        "description": "包含路由到应用"
+    },
+    "路径参数 id": {
+        "prefix": "fa_path_param",
+        "body": [
+            "from fastapi import FastAPI",
+            "app = FastAPI()",
+            "",
+            "@app.get(${1:'/items/{id}'})",
+            "async def ${2:read_item}(${3:id: int}):",
+            "    return ${4:{'id': id}}"
+        ],
+        "description": "路径参数 id"
+    },
+    "查询参数 skip/limit": {
+        "prefix": "fa_query_param",
+        "body": [
+            "from fastapi import FastAPI",
+            "app = FastAPI()",
+            "",
+            "@app.get(${1:'/items'})",
+            "async def ${2:list_items}(${3:skip: int = 0}, ${4:limit: int = 10}):",
+            "    return ${5:{'skip': skip, 'limit': limit}}"
+        ],
+        "description": "查询参数 skip/limit"
+    },
+    "请求体参数": {
+        "prefix": "fa_body_param",
+        "body": [
+            "from fastapi import FastAPI",
+            "from fastapi import Body",
+            "app = FastAPI()",
+            "",
+            "@app.post(${1:'/items'})",
+            "async def ${2:create_item}(${3:item}: dict = Body(...)):",
+            "    return ${3:item}"
+        ],
+        "description": "请求体参数"
+    },
+    "Header 参数": {
+        "prefix": "fa_header_param",
+        "body": [
+            "from fastapi import FastAPI, Header",
+            "app = FastAPI()",
+            "",
+            "@app.get(${1:'/items'})",
+            "async def ${2:read_items}(${3:x_token: str = Header(...)}):",
+            "    return ${4:{'token': x_token}}"
+        ],
+        "description": "Header 参数"
+    },
+    "Form 表单参数": {
+        "prefix": "fa_form_param",
+        "body": [
+            "from fastapi import FastAPI, Form",
+            "app = FastAPI()",
+            "",
+            "@app.post(${1:'/login'})",
+            "async def ${2:login}(${3:username: str = Form(...)}):",
+            "    return ${4:{'username': username}}"
+        ],
+        "description": "Form 表单参数"
+    },
+    "返回 JSONResponse": {
+        "prefix": "fa_json_response",
+        "body": [
+            "from fastapi import FastAPI",
+            "from fastapi.responses import JSONResponse",
+            "app = FastAPI()",
+            "",
+            "@app.get(${1:'/items'})",
+            "async def ${2:read_items}():",
+            "    return JSONResponse(content=${3:{'key': 'value'}}, status_code=${4:200})"
+        ],
+        "description": "返回 JSONResponse"
+    },
+    "返回文件 FileResponse": {
+        "prefix": "fa_file_response",
+        "body": [
+            "from fastapi import FastAPI",
+            "from fastapi.responses import FileResponse",
+            "app = FastAPI()",
+            "",
+            "@app.get(${1:'/file'})",
+            "async def ${2:download_file}():",
+            "    return FileResponse(${3:path}, filename=${4:'file.txt'})"
+        ],
+        "description": "返回文件 FileResponse"
+    },
+    "返回 HTMLResponse": {
+        "prefix": "fa_html_response",
+        "body": [
+            "from fastapi import FastAPI",
+            "from fastapi.responses import HTMLResponse",
+            "app = FastAPI()",
+            "",
+            "@app.get(${1:'/page'}, response_class=HTMLResponse)",
+            "async def ${2:page}():",
+            "    return ${3:'<h1>Hello</h1>'}"
+        ],
+        "description": "返回 HTMLResponse"
+    },
+    "HTTP 中间件": {
+        "prefix": "fa_middleware_http",
+        "body": [
+            "from fastapi import FastAPI",
+            "app = FastAPI()",
+            "",
+            "@app.middleware(${1|'http','websocket'|})",
+            "async def ${2:my_middleware}(request, call_next):",
+            "    ${3:response} = await call_next(request)",
+            "    return ${3:response}"
+        ],
+        "description": "HTTP 中间件"
+    },
+    "CORS 跨域中间件": {
+        "prefix": "fa_cors",
+        "body": [
+            "from fastapi import FastAPI",
+            "from fastapi.middleware.cors import CORSMiddleware",
+            "app = FastAPI()",
+            "",
+            "app.add_middleware(",
+            "    CORSMiddleware,",
+            "    allow_origins=[${1:'*'}],",
+            "    allow_credentials=${2|True,False|},",
+            "    allow_methods=[${3:'*'}],",
+            "    allow_headers=[${4:'*'}]",
+            ")"
+        ],
+        "description": "CORS 跨域中间件"
+    },
+    "Depends 依赖注入": {
+        "prefix": "fa_dependency",
+        "body": [
+            "from fastapi import Depends, FastAPI",
+            "app = FastAPI()",
+            "",
+            "def ${1:common_param}(${2:q}: str = None):",
+            "    return ${2:q}",
+            "",
+            "@app.get(${3:'/items'})",
+            "async def ${4:read_items}(${5:param}: str = Depends(${1:common_param})):",
+            "    return ${6:{'param': param}}"
+        ],
+        "description": "Depends 依赖注入"
+    },
+    "注册全局异常处理器": {
+        "prefix": "fa_exception_handler",
+        "body": [
+            "from fastapi import FastAPI, Request",
+            "from fastapi.responses import JSONResponse",
+            "app = FastAPI()",
+            "",
+            "@app.exception_handler(${1:Exception})",
+            "async def ${2:custom_handler}(request: Request, exc: ${1:Exception}):",
+            "    return JSONResponse(status_code=${3:500}, content=${4:{'message': str(exc)}})"
+        ],
+        "description": "注册全局异常处理器"
+    },
+    "抛出 HTTPException": {
+        "prefix": "fa_http_exception",
+        "body": [
+            "from fastapi import FastAPI, HTTPException",
+            "app = FastAPI()",
+            "",
+            "@app.get(${1:'/items/{id}'})",
+            "async def ${2:read_item}(${3:id: int}):",
+            "    if ${4:id <= 0}:",
+            "        raise HTTPException(status_code=${5:404}, detail=${6:'Item not found'})",
+            "    return ${7:{'id': id}}"
+        ],
+        "description": "抛出 HTTPException"
+    },
+    "定义自定义异常类": {
+        "prefix": "fa_custom_exception",
+        "body": [
+            "class ${1:CustomException}(Exception):",
+            "    def __init__(self, ${2:name}: str):",
+            "        self.name = ${2:name}",
+            "        super().__init__(${3:f'Item not found'})"
+        ],
+        "description": "定义自定义异常类"
+    },
+    "BaseModel 模型": {
+        "prefix": "fa_basemodel",
+        "body": [
+            "from pydantic import BaseModel",
+            "",
+            "class ${1:Item}(BaseModel):",
+            "    ${2:name: str}",
+            "    ${3:price: float}",
+            "    ${4:is_offer: bool = False}"
+        ],
+        "description": "BaseModel 模型"
+    },
+    "Field 字段约束": {
+        "prefix": "fa_field",
+        "body": [
+            "from pydantic import BaseModel, Field",
+            "",
+            "class ${1:Item}(BaseModel):",
+            "    ${2:name: str} = Field(default=${3:'unknown'}, min_length=${4:1}, max_length=${5:50})",
+            "    ${6:price: float} = Field(ge=${7:0}, le=${8:10000})"
+        ],
+        "description": "Field 字段约束"
+    },
+    "嵌套 Pydantic 模型": {
+        "prefix": "fa_nested_model",
+        "body": [
+            "from typing import Optional",
+            "from pydantic import BaseModel",
+            "",
+            "class ${1:Tag}(BaseModel):",
+            "    ${2:name}: str",
+            "",
+            "class ${3:Item}(BaseModel):",
+            "    ${4:name}: str",
+            "    ${5:tags}: list[${1:Tag}] = []",
+            "    ${6:owner}: Optional[str] = None"
+        ],
+        "description": "嵌套 Pydantic 模型"
+    },
+    "字段校验器": {
+        "prefix": "fa_validator",
+        "body": [
+            "from pydantic import BaseModel, field_validator",
+            "",
+            "class ${1:Item}(BaseModel):",
+            "    ${2:name}: str",
+            "",
+            "    @field_validator(${2|'name','age','email'|})",
+            "    @classmethod",
+            "    def ${3:check_name}(cls, v: str) -> str:",
+            "        if ${4:not v.strip()}:",
+            "            raise ValueError(${5:'name cannot be empty'})",
+            "        return v.strip()"
+        ],
+        "description": "字段校验器"
+    },
+    "模型配置": {
+        "prefix": "fa_model_config",
+        "body": [
+            "from pydantic import BaseModel, ConfigDict",
+            "",
+            "class ${1:Item}(BaseModel):",
+            "    model_config = ConfigDict(",
+            "        ${2:from_attributes=True},",
+            "        ${3:extra='forbid'},",
+            "    )",
+            "    ${4:name: str}"
+        ],
+        "description": "模型配置"
+    },
+    "定义 async 异步路由": {
+        "prefix": "fa_async_route",
+        "body": [
+            "from fastapi import FastAPI",
+            "app = FastAPI()",
+            "",
+            "@app.get(${1:'/items'})",
+            "async def ${2:read_items}():",
+            "    ${3:result = await some_async_call()}",
+            "    return ${4:result}"
+        ],
+        "description": "定义 async 异步路由"
+    },
+    "异步依赖注入": {
+        "prefix": "fa_async_dependency",
+        "body": [
+            "from fastapi import Depends, FastAPI",
+            "app = FastAPI()",
+            "",
+            "async def ${1:get_db}():",
+            "    ${2:db} = await ${3:connect_db()}",
+            "    try:",
+            "        yield ${2:db}",
+            "    finally:",
+            "        await ${2:db}.close()",
+            "",
+            "@app.get(${4:'/items'})",
+            "async def ${5:read_items}(${6:db_param} = Depends(${1:get_db})):",
+            "    return ${7:[]}"
+        ],
+        "description": "异步依赖注入"
+    },
+    "BackgroundTasks 后台任务": {
+        "prefix": "fa_background_task",
+        "body": [
+            "from fastapi import BackgroundTasks, FastAPI",
+            "app = FastAPI()",
+            "",
+            "def ${1:write_log}(${2:message}: str):",
+            "    ${3:print}(${2:message})",
+            "",
+            "@app.post(${4:'/send'})",
+            "async def ${5:send}(background_tasks: BackgroundTasks):",
+            "    background_tasks.add_task(${1:write_log}, ${2:message})",
+            "    return ${6:{'status': 'ok'}}"
+        ],
+        "description": "BackgroundTasks 后台任务"
+    },
+    "创建 FastAPI 应用实例": {
+        "prefix": "fa_app_create",
+        "body": [
+            "from fastapi import FastAPI",
+            "app = FastAPI(",
+            "    title=${1:'My API'},",
+            "    version=${2:'1.0.0'},",
+            "    description=${3:'API description'}",
+            ")"
+        ],
+        "description": "创建 FastAPI 应用实例"
+    },
+    "lifespan 启动/关闭钩子": {
+        "prefix": "fa_lifespan",
+        "body": [
+            "from contextlib import asynccontextmanager",
+            "from fastapi import FastAPI",
+            "",
+            "@asynccontextmanager",
+            "async def ${1:lifespan}(app: FastAPI):",
+            "    ${2:# startup}",
+            "    yield",
+            "    ${3:# shutdown}",
+            "",
+            "app = FastAPI(lifespan=${1:lifespan})"
+        ],
+        "description": "lifespan 启动/关闭钩子"
+    },
+    "挂载子应用": {
+        "prefix": "fa_mount",
+        "body": [
+            "from fastapi import FastAPI",
+            "app = FastAPI()",
+            "${2:sub_app} = FastAPI()",
+            "",
+            "app.mount(${1:'/sub'}, ${2:sub_app})"
+        ],
+        "description": "挂载子应用"
+    },
+    "挂载静态文件目录": {
+        "prefix": "fa_static_files",
+        "body": [
+            "from fastapi import FastAPI",
+            "from fastapi.staticfiles import StaticFiles",
+            "app = FastAPI()",
+            "",
+            "app.mount(${1:'/static'}, StaticFiles(directory=${2:'static'}), name=${3:'static'})"
+        ],
+        "description": "挂载静态文件目录"
+    },
+    "Bearer Token 鉴权": {
+        "prefix": "fa_security_bearer",
+        "body": [
+            "from fastapi import Depends, FastAPI",
+            "from fastapi.security import OAuth2PasswordBearer",
+            "app = FastAPI()",
+            "",
+            "oauth2_scheme = OAuth2PasswordBearer(tokenUrl=${1:'token'})",
+            "",
+            "@app.get(${2:'/users/me'})",
+            "async def ${3:read_users_me}(${4:token: str = Depends(oauth2_scheme)}):",
+            "    return ${5:{'token': token}}"
+        ],
+        "description": "Bearer Token 鉴权"
+    },
+    "API Key Header 鉴权": {
+        "prefix": "fa_security_api_key",
+        "body": [
+            "from fastapi import Depends, FastAPI, Security",
+            "from fastapi.security import APIKeyHeader",
+            "app = FastAPI()",
+            "",
+            "api_key_header = APIKeyHeader(name=${1:'X-API-Key'})",
+            "",
+            "@app.get(${2:'/items'})",
+            "async def ${3:read_items}(${4:api_key: str = Security(api_key_header)}):",
+            "    return ${5:{'api_key': api_key}}"
+        ],
+        "description": "API Key Header 鉴权"
+    },
+    "文件上传 UploadFile": {
+        "prefix": "fa_upload_file",
+        "body": [
+            "from fastapi import FastAPI, File, UploadFile",
+            "app = FastAPI()",
+            "",
+            "@app.post(${1:'/upload'})",
+            "async def ${2:upload}(${3:file: UploadFile} = File(...)):",
+            "    ${4:contents = await file.read()}",
+            "    return ${5:{'filename': file.filename, 'size': len(contents)}}"
+        ],
+        "description": "文件上传 UploadFile"
+    },
+    "WebSocket 端点": {
+        "prefix": "fa_websocket",
+        "body": [
+            "from fastapi import FastAPI, WebSocket",
+            "app = FastAPI()",
+            "",
+            "@app.websocket(${1:'/ws'})",
+            "async def ${2:websocket_endpoint}(websocket: WebSocket):",
+            "    await websocket.accept()",
+            "    while True:",
+            "        ${3:data = await websocket.receive_text()}",
+            "        await websocket.send_text(${4:f'Message: {data}'})"
+        ],
+        "description": "WebSocket 端点"
+    },
+    "TestClient 测试 GET 接口": {
+        "prefix": "fa_test_get",
+        "body": [
+            "from fastapi import FastAPI",
+            "from fastapi.testclient import TestClient",
+            "",
+            "app = FastAPI()",
+            "",
+            "@app.get(${1:'/'})",
+            "async def ${2:read_root}():",
+            "    return ${3:{'hello': 'world'}}",
+            "",
+            "client = TestClient(app)",
+            "response = client.get(${1:'/'})",
+            "assert response.status_code == ${4:200}",
+            "assert response.json() == ${3:{'hello': 'world'}}"
+        ],
+        "description": "TestClient 测试 GET 接口"
+    },
+    "TestClient 测试 POST 接口": {
+        "prefix": "fa_test_post",
+        "body": [
+            "from fastapi import FastAPI",
+            "from fastapi.testclient import TestClient",
+            "",
+            "app = FastAPI()",
+            "",
+            "@app.post(${1:'/items'})",
+            "async def ${2:create_item}(${3:item}: dict):",
+            "    return ${3:item}",
+            "",
+            "client = TestClient(app)",
+            "response = client.post(${1:'/items'}, json=${4:{'name': 'foo'}})",
+            "assert response.status_code == ${5:200}",
+            "assert response.json()['name'] == ${6:'foo'}"
+        ],
+        "description": "TestClient 测试 POST 接口"
+    },
+    "httpx 异步接口测试": {
+        "prefix": "fa_async_test",
+        "body": [
+            "import httpx",
+            "import pytest",
+            "from fastapi import FastAPI",
+            "",
+            "app = FastAPI()",
+            "",
+            "@app.get(${1:'/'})",
+            "async def ${2:read_root}():",
+            "    return ${3:{'hello': 'world'}}",
+            "",
+            "@pytest.mark.asyncio",
+            "async def ${4:test_async}():",
+            "    async with httpx.AsyncClient(app=app, base_url=${5:'http://test'}) as client:",
+            "        response = await client.get(${1:'/'})",
+            "        assert response.status_code == ${6:200}"
+        ],
+        "description": "httpx 异步接口测试"
+    },
+    "OpenAPI 标签元数据": {
+        "prefix": "fa_openapi_tags",
+        "body": [
+            "from fastapi import FastAPI",
+            "app = FastAPI(",
+            "    openapi_tags=[",
+            "        {",
+            "            'name': ${1:'users'},",
+            "            ${2:'description': '用户相关接口'}",
+            "        },",
+            "    ]",
+            ")",
+            "",
+            "@app.get(${3:'/users'}, tags=[${1:'users'}])",
+            "async def ${4:list_users}():",
+            "    return ${5:[]}"
+        ],
+        "description": "OpenAPI 标签元数据"
+    }
 }

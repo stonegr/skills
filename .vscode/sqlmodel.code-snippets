@@ -1,574 +1,574 @@
 {
-  "sm_engine_sqlite": {
-    "prefix": "sm_engine_sqlite",
-    "body": [
-      "from sqlmodel import create_engine",
-      "",
-      "engine = create_engine(${1:\"sqlite:///database.db\"}, echo=${2:True})"
-    ],
-    "description": "创建 SQLite 引擎"
-  },
-  "sm_engine_pg": {
-    "prefix": "sm_engine_pg",
-    "body": [
-      "from sqlmodel import create_engine",
-      "",
-      "engine = create_engine(",
-      "    ${1:\"postgresql+psycopg://user:pass@localhost:5432/dbname\"},",
-      "    pool_size=${2:5},",
-      "    pool_pre_ping=${3:True},",
-      "    echo=${4:False},",
-      ")"
-    ],
-    "description": "创建 PostgreSQL 引擎"
-  },
-  "sm_create_tables": {
-    "prefix": "sm_create_tables",
-    "body": [
-      "from sqlmodel import SQLModel",
-      "",
-      "SQLModel.metadata.create_all(${1:engine})"
-    ],
-    "description": "根据模型建表"
-  },
-  "sm_model_table": {
-    "prefix": "sm_model_table",
-    "body": [
-      "from sqlmodel import Field, SQLModel",
-      "",
-      "",
-      "class ${1:Hero}(SQLModel, table=True):",
-      "    id: int | None = Field(default=None, primary_key=True)",
-      "    ${2:name}: str = Field(index=True)",
-      "    ${3:secret_name}: str",
-      "    ${4:age}: int | None = Field(default=None, index=True)"
-    ],
-    "description": "定义表模型"
-  },
-  "sm_field_pk": {
-    "prefix": "sm_field_pk",
-    "body": [
-      "id: int | None = Field(default=None, primary_key=True)"
-    ],
-    "description": "主键字段"
-  },
-  "sm_field_index": {
-    "prefix": "sm_field_index",
-    "body": [
-      "${1:column}: str = Field(index=${2:True}, unique=${3:False})"
-    ],
-    "description": "索引/唯一字段"
-  },
-  "sm_field_fk": {
-    "prefix": "sm_field_fk",
-    "body": [
-      "${1:column}_id: int | None = Field(default=None, foreign_key=\"${2:table.id}\")"
-    ],
-    "description": "外键字段"
-  },
-  "sm_model_inherit": {
-    "prefix": "sm_model_inherit",
-    "body": [
-      "from sqlmodel import Field, SQLModel",
-      "",
-      "",
-      "class ${1:Hero}Base(SQLModel):",
-      "    name: str = Field(index=True)",
-      "    secret_name: str",
-      "    age: int | None = Field(default=None, index=True)",
-      "",
-      "",
-      "class ${1:Hero}(${1:Hero}Base, table=True):",
-      "    id: int | None = Field(default=None, primary_key=True)",
-      "",
-      "",
-      "class ${1:Hero}Create(${1:Hero}Base):",
-      "    pass",
-      "",
-      "",
-      "class ${1:Hero}Public(${1:Hero}Base):",
-      "    id: int",
-      "",
-      "",
-      "class ${1:Hero}Update(SQLModel):",
-      "    name: str | None = None",
-      "    secret_name: str | None = None",
-      "    age: int | None = None"
-    ],
-    "description": "Base/Create/Public/Update 四件套模型"
-  },
-  "sm_link_model": {
-    "prefix": "sm_link_model",
-    "body": [
-      "from sqlmodel import Field, SQLModel",
-      "",
-      "",
-      "class ${1:Hero}${2:Team}Link(SQLModel, table=True):",
-      "    ${2:team}_id: int | None = Field(",
-      "        default=None, foreign_key=\"${2:team}.id\", primary_key=True",
-      "    )",
-      "    ${1:hero}_id: int | None = Field(",
-      "        default=None, foreign_key=\"${1:hero}.id\", primary_key=True",
-      "    )"
-    ],
-    "description": "多对多链接表模型"
-  },
-  "sm_session": {
-    "prefix": "sm_session",
-    "body": [
-      "from sqlmodel import Session",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${0:pass}"
-    ],
-    "description": "with 块打开会话"
-  },
-  "sm_add_commit": {
-    "prefix": "sm_add_commit",
-    "body": [
-      "from sqlmodel import Session",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:db_obj} = ${4:Hero}(name=${5:\"Deadpond\"}, secret_name=${6:\"Dive Wilson\"})",
-      "    ${2:session}.add(${3:db_obj})",
-      "    ${2:session}.commit()",
-      "    ${2:session}.refresh(${3:db_obj})"
-    ],
-    "description": "新增并刷新单条"
-  },
-  "sm_add_all": {
-    "prefix": "sm_add_all",
-    "body": [
-      "from sqlmodel import Session",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${2:session}.add_all([${3:obj1}, ${4:obj2}])",
-      "    ${2:session}.commit()"
-    ],
-    "description": "批量新增"
-  },
-  "sm_get_session": {
-    "prefix": "sm_get_session",
-    "body": [
-      "from sqlmodel import Session",
-      "",
-      "",
-      "def get_session():",
-      "    with Session(${1:engine}) as ${2:session}:",
-      "        yield ${2:session}"
-    ],
-    "description": "FastAPI Session 依赖生成器"
-  },
-  "sm_select_all": {
-    "prefix": "sm_select_all",
-    "body": [
-      "from sqlmodel import Session, SQLModel, select",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:statement} = select(${4:Hero})",
-      "    ${5:results} = ${2:session}.exec(${3:statement}).all()"
-    ],
-    "description": "查询全部"
-  },
-  "sm_select_where": {
-    "prefix": "sm_select_where",
-    "body": [
-      "from sqlmodel import Session, select",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:statement} = select(${4:Hero}).where(${4:Hero}.${5:age} == ${6:30})",
-      "    ${7:results} = ${2:session}.exec(${3:statement}).all()"
-    ],
-    "description": "单条件过滤"
-  },
-  "sm_select_multi": {
-    "prefix": "sm_select_multi",
-    "body": [
-      "from sqlmodel import Session, and_, or_, select",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:statement} = select(${4:Hero}).where(",
-      "        and_(${4:Hero}.${5:age} >= ${6:18}, or_(${4:Hero}.${7:name} == ${8:\"A\"}, ${4:Hero}.${7:name} == ${9:\"B\"}))",
-      "    )",
-      "    ${10:results} = ${2:session}.exec(${3:statement}).all()"
-    ],
-    "description": "多条件 and_/or_ 组合"
-  },
-  "sm_select_op": {
-    "prefix": "sm_select_op",
-    "body": [
-      "from sqlmodel import Session, select",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:statement} = select(${4:Hero}).where(",
-      "        ${4:Hero}.${5:name}.in_([${6:\"A\"}, ${7:\"B\"}]),",
-      "        ${4:Hero}.${8:age}.between(${9:18}, ${10:60}),",
-      "        ${4:Hero}.${11:team_id}.is_(None),",
-      "    )",
-      "    ${12:results} = ${2:session}.exec(${3:statement}).all()"
-    ],
-    "description": "in_/between/is_ 高级运算符"
-  },
-  "sm_select_order": {
-    "prefix": "sm_select_order",
-    "body": [
-      "from sqlmodel import Session, col, select",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:statement} = select(${4:Hero}).order_by(col(${4:Hero}.${5:age}).desc())",
-      "    ${6:results} = ${2:session}.exec(${3:statement}).all()"
-    ],
-    "description": "排序"
-  },
-  "sm_select_page": {
-    "prefix": "sm_select_page",
-    "body": [
-      "from sqlmodel import Session, select",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:statement} = select(${4:Hero}).offset(${5:0}).limit(${6:20})",
-      "    ${7:results} = ${2:session}.exec(${3:statement}).all()"
-    ],
-    "description": "分页 offset/limit"
-  },
-  "sm_select_one": {
-    "prefix": "sm_select_one",
-    "body": [
-      "from sqlmodel import Session, select",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:statement} = select(${4:Hero}).where(${4:Hero}.${5:id} == ${6:1})",
-      "    ${7:result} = ${2:session}.exec(${3:statement}).first()"
-    ],
-    "description": "取首条 first/one/one_or_none"
-  },
-  "sm_get_by_id": {
-    "prefix": "sm_get_by_id",
-    "body": [
-      "from sqlmodel import Session",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:hero} = ${2:session}.get(${4:Hero}, ${5:1})"
-    ],
-    "description": "主键查询"
-  },
-  "sm_update": {
-    "prefix": "sm_update",
-    "body": [
-      "from sqlmodel import Session",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:db_obj} = ${2:session}.get(${4:Hero}, ${5:1})",
-      "    ${3:db_obj}.${6:age} = ${7:30}",
-      "    ${2:session}.add(${3:db_obj})",
-      "    ${2:session}.commit()",
-      "    ${2:session}.refresh(${3:db_obj})"
-    ],
-    "description": "更新单条记录"
-  },
-  "sm_update_partial": {
-    "prefix": "sm_update_partial",
-    "body": [
-      "from sqlmodel import Session, SQLModel",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:db_obj} = ${2:session}.get(${4:Hero}, ${5:1})",
-      "    ${6:data} = ${3:db_obj}.model_dump(exclude_unset=True)",
-      "    ${3:db_obj}.sqlmodel_update(${6:data})",
-      "    ${2:session}.add(${3:db_obj})",
-      "    ${2:session}.commit()",
-      "    ${2:session}.refresh(${3:db_obj})"
-    ],
-    "description": "Pydantic 局部字段更新"
-  },
-  "sm_delete": {
-    "prefix": "sm_delete",
-    "body": [
-      "from sqlmodel import Session",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:db_obj} = ${2:session}.get(${4:Hero}, ${5:1})",
-      "    ${2:session}.delete(${3:db_obj})",
-      "    ${2:session}.commit()"
-    ],
-    "description": "删除单条"
-  },
-  "sm_delete_where": {
-    "prefix": "sm_delete_where",
-    "body": [
-      "from sqlmodel import Session, select",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:statement} = select(${4:Hero}).where(${4:Hero}.${5:team_id} == ${6:1})",
-      "    ${7:objs} = ${2:session}.exec(${3:statement}).all()",
-      "    for ${8:obj} in ${7:objs}:",
-      "        ${2:session}.delete(${8:obj})",
-      "    ${2:session}.commit()"
-    ],
-    "description": "条件批量删除"
-  },
-  "sm_rel_one2many": {
-    "prefix": "sm_rel_one2many",
-    "body": [
-      "from sqlmodel import Field, Relationship, SQLModel",
-      "",
-      "",
-      "class ${1:Team}(SQLModel, table=True):",
-      "    id: int | None = Field(default=None, primary_key=True)",
-      "    name: str",
-      "    heroes: list[\"${2:Hero}\"] = Relationship(back_populates=\"team\")",
-      "",
-      "",
-      "class ${2:Hero}(SQLModel, table=True):",
-      "    id: int | None = Field(default=None, primary_key=True)",
-      "    name: str",
-      "    team_id: int | None = Field(default=None, foreign_key=\"${1:team}.id\")",
-      "    team: \"${1:Team}\" | None = Relationship(back_populates=\"heroes\")"
-    ],
-    "description": "一对多 Relationship"
-  },
-  "sm_rel_many2many": {
-    "prefix": "sm_rel_many2many",
-    "body": [
-      "from sqlmodel import Field, Relationship, SQLModel",
-      "",
-      "",
-      "class ${1:Hero}${2:Team}Link(SQLModel, table=True):",
-      "    ${2:team}_id: int | None = Field(default=None, foreign_key=\"${2:team}.id\", primary_key=True)",
-      "    ${1:hero}_id: int | None = Field(default=None, foreign_key=\"${1:hero}.id\", primary_key=True)",
-      "",
-      "",
-      "class ${2:Team}(SQLModel, table=True):",
-      "    id: int | None = Field(default=None, primary_key=True)",
-      "    name: str",
-      "    heroes: list[\"${1:Hero}\"] = Relationship(back_populates=\"${3:teams}\", link_model=${1:Hero}${2:Team}Link)",
-      "",
-      "",
-      "class ${1:Hero}(SQLModel, table=True):",
-      "    id: int | None = Field(default=None, primary_key=True)",
-      "    name: str",
-      "    ${3:teams}: list[\"${2:Team}\"] = Relationship(back_populates=\"heroes\", link_model=${1:Hero}${2:Team}Link)"
-    ],
-    "description": "多对多 Relationship + link_model"
-  },
-  "sm_rel_cascade": {
-    "prefix": "sm_rel_cascade",
-    "body": [
-      "from sqlmodel import Field, Relationship, SQLModel",
-      "",
-      "",
-      "class ${1:Team}(SQLModel, table=True):",
-      "    id: int | None = Field(default=None, primary_key=True)",
-      "    name: str",
-      "    heroes: list[\"${2:Hero}\"] = Relationship(back_populates=\"team\", cascade_delete=True)",
-      "",
-      "",
-      "class ${2:Hero}(SQLModel, table=True):",
-      "    id: int | None = Field(default=None, primary_key=True)",
-      "    name: str",
-      "    ${3:team}_id: int | None = Field(default=None, foreign_key=\"${1:team}.id\", ondelete=\"CASCADE\")",
-      "    ${1:team}: \"${1:Team}\" | None = Relationship(back_populates=\"heroes\")"
-    ],
-    "description": "级联删除"
-  },
-  "sm_rel_read": {
-    "prefix": "sm_rel_read",
-    "body": [
-      "from sqlmodel import Session",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:hero} = ${2:session}.get(${4:Hero}, ${5:1})",
-      "    ${6:team_name} = ${3:hero}.team.name if ${3:hero}.team else ${7:None}",
-      "    ${8:hero_names} = [${9:h}.name for ${9:h} in ${10:team}.heroes]"
-    ],
-    "description": "读取关联对象"
-  },
-  "sm_join": {
-    "prefix": "sm_join",
-    "body": [
-      "from sqlmodel import Session, select",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:statement} = select(${4:Hero}, ${5:Team}).join(${5:Team})",
-      "    ${6:results} = ${2:session}.exec(${3:statement}).all()"
-    ],
-    "description": "内连接 join"
-  },
-  "sm_selectinload": {
-    "prefix": "sm_selectinload",
-    "body": [
-      "from sqlmodel import Session, select",
-      "from sqlalchemy.orm import selectinload",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:statement} = select(${4:Hero}).options(selectinload(${4:Hero}.${5:team}))",
-      "    ${6:results} = ${2:session}.exec(${3:statement}).all()"
-    ],
-    "description": "关联预加载 selectinload"
-  },
-  "sm_count": {
-    "prefix": "sm_count",
-    "body": [
-      "from sqlmodel import Session, func, select",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:statement} = select(func.count()).select_from(${4:Hero})",
-      "    ${5:total} = ${2:session}.exec(${3:statement}).one()"
-    ],
-    "description": "统计行数"
-  },
-  "sm_raw_sql": {
-    "prefix": "sm_raw_sql",
-    "body": [
-      "from sqlmodel import Session, text",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    ${3:statement} = text(\"SELECT * FROM ${4:hero} WHERE ${5:age} > :${6:age}\")",
-      "    ${7:results} = ${2:session}.exec(${3:statement}, params={\"${6:age}\": ${8:18}}).all()"
-    ],
-    "description": "执行原始 SQL"
-  },
-  "sm_fa_lifespan": {
-    "prefix": "sm_fa_lifespan",
-    "body": [
-      "from contextlib import asynccontextmanager",
-      "",
-      "from fastapi import FastAPI",
-      "from sqlmodel import SQLModel",
-      "",
-      "",
-      "@asynccontextmanager",
-      "async def lifespan(${1:app}: FastAPI):",
-      "    SQLModel.metadata.create_all(${2:engine})",
-      "    yield",
-      "",
-      "",
-      "app = FastAPI(lifespan=lifespan)"
-    ],
-    "description": "FastAPI 启动建表 lifespan"
-  },
-  "sm_fa_session_dep": {
-    "prefix": "sm_fa_session_dep",
-    "body": [
-      "from typing import Annotated",
-      "",
-      "from fastapi import Depends",
-      "from sqlmodel import Session",
-      "",
-      "",
-      "def get_session():",
-      "    with Session(${1:engine}) as ${2:session}:",
-      "        yield ${2:session}",
-      "",
-      "",
-      "SessionDep = Annotated[Session, Depends(get_session)]"
-    ],
-    "description": "Session 依赖注入 SessionDep"
-  },
-  "sm_fa_crud_create": {
-    "prefix": "sm_fa_crud_create",
-    "body": [
-      "from fastapi import APIRouter",
-      "",
-      "router = APIRouter(prefix=\"${1:/heroes}\", tags=[\"${2:Heroes}\"])",
-      "",
-      "",
-      "@router.post(\"/\", response_model=${3:HeroPublic})",
-      "def create_${4:hero}(*, ${5:session}: ${6:SessionDep}, ${4:hero}: ${7:HeroCreate}):",
-      "    ${8:db_hero} = ${4:Hero}.model_validate(${4:hero})",
-      "    ${5:session}.add(${8:db_hero})",
-      "    ${5:session}.commit()",
-      "    ${5:session}.refresh(${8:db_hero})",
-      "    return ${8:db_hero}"
-    ],
-    "description": "FastAPI 新增路由 POST"
-  },
-  "sm_fa_crud_list": {
-    "prefix": "sm_fa_crud_list",
-    "body": [
-      "from fastapi import APIRouter, Query",
-      "",
-      "router = APIRouter(prefix=\"${1:/heroes}\", tags=[\"${2:Heroes}\"])",
-      "",
-      "",
-      "@router.get(\"/\", response_model=list[${3:HeroPublic}])",
-      "def read_${4:heroes}(",
-      "    *,",
-      "    ${5:session}: ${6:SessionDep},",
-      "    ${7:offset}: int = ${8:0},",
-      "    ${9:limit}: int = Query(default=${10:100}, le=${11:100}),",
-      "):",
-      "    ${12:heroes} = ${5:session}.exec(select(${13:Hero}).offset(${7:offset}).limit(${9:limit})).all()",
-      "    return ${12:heroes}"
-    ],
-    "description": "FastAPI 列表路由 GET"
-  },
-  "sm_rollback": {
-    "prefix": "sm_rollback",
-    "body": [
-      "from sqlmodel import Session",
-      "",
-      "with Session(${1:engine}) as ${2:session}:",
-      "    try:",
-      "        ${3:db_obj} = ${4:Hero}(name=${5:\"X\"})",
-      "        ${2:session}.add(${3:db_obj})",
-      "        ${2:session}.commit()",
-      "    except Exception:",
-      "        ${2:session}.rollback()",
-      "        raise"
-    ],
-    "description": "异常时事务回滚"
-  },
-  "sm_test_fixture": {
-    "prefix": "sm_test_fixture",
-    "body": [
-      "import pytest",
-      "from fastapi.testclient import TestClient",
-      "from sqlalchemy.pool import StaticPool",
-      "from sqlmodel import Session, SQLModel, create_engine",
-      "",
-      "from ${1:app.main} import app, get_session",
-      "",
-      "",
-      "@pytest.fixture(name=\"${2:client}\")",
-      "def ${2:client}_fixture():",
-      "    ${3:engine} = create_engine(",
-      "        \"sqlite://\",",
-      "        connect_args={\"check_same_thread\": False},",
-      "        poolclass=StaticPool,",
-      "    )",
-      "    SQLModel.metadata.create_all(${3:engine})",
-      "",
-      "    def ${4:override_get_session}():",
-      "        with Session(${3:engine}) as ${5:session}:",
-      "            yield ${5:session}",
-      "",
-      "    app.dependency_overrides[get_session] = ${4:override_get_session}",
-      "    with TestClient(app) as ${6:c}:",
-      "        yield ${6:c}",
-      "    app.dependency_overrides.clear()"
-    ],
-    "description": "pytest 内存 SQLite fixture"
-  },
-  "sm_async_engine": {
-    "prefix": "sm_async_engine",
-    "body": [
-      "from sqlmodel import SQLModel",
-      "from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine",
-      "",
-      "${1:engine} = create_async_engine(${2:\"sqlite+aiosqlite:///database.db\"}, echo=${3:True})",
-      "${4:async_session} = async_sessionmaker(${1:engine}, class_=AsyncSession, expire_on_commit=False)",
-      "",
-      "",
-      "async def create_db_and_tables():",
-      "    async with ${1:engine}.begin() as ${5:conn}:",
-      "        await ${5:conn}.run_sync(SQLModel.metadata.create_all)",
-      "",
-      "",
-      "async def get_async_session():",
-      "    async with ${4:async_session}() as ${6:session}:",
-      "        yield ${6:session}"
-    ],
-    "description": "异步引擎与 AsyncSession"
-  }
+    "创建 SQLite 引擎": {
+        "prefix": "sm_engine_sqlite",
+        "body": [
+            "from sqlmodel import create_engine",
+            "",
+            "engine = create_engine(${1:\"sqlite:///database.db\"}, echo=${2:True})"
+        ],
+        "description": "创建 SQLite 引擎"
+    },
+    "创建 PostgreSQL 引擎": {
+        "prefix": "sm_engine_pg",
+        "body": [
+            "from sqlmodel import create_engine",
+            "",
+            "engine = create_engine(",
+            "    ${1:\"postgresql+psycopg://user:pass@localhost:5432/dbname\"},",
+            "    pool_size=${2:5},",
+            "    pool_pre_ping=${3:True},",
+            "    echo=${4:False},",
+            ")"
+        ],
+        "description": "创建 PostgreSQL 引擎"
+    },
+    "根据模型建表": {
+        "prefix": "sm_create_tables",
+        "body": [
+            "from sqlmodel import SQLModel",
+            "",
+            "SQLModel.metadata.create_all(${1:engine})"
+        ],
+        "description": "根据模型建表"
+    },
+    "定义表模型": {
+        "prefix": "sm_model_table",
+        "body": [
+            "from sqlmodel import Field, SQLModel",
+            "",
+            "",
+            "class ${1:Hero}(SQLModel, table=True):",
+            "    id: int | None = Field(default=None, primary_key=True)",
+            "    ${2:name}: str = Field(index=True)",
+            "    ${3:secret_name}: str",
+            "    ${4:age}: int | None = Field(default=None, index=True)"
+        ],
+        "description": "定义表模型"
+    },
+    "主键字段": {
+        "prefix": "sm_field_pk",
+        "body": [
+            "id: int | None = Field(default=None, primary_key=True)"
+        ],
+        "description": "主键字段"
+    },
+    "索引/唯一字段": {
+        "prefix": "sm_field_index",
+        "body": [
+            "${1:column}: str = Field(index=${2:True}, unique=${3:False})"
+        ],
+        "description": "索引/唯一字段"
+    },
+    "外键字段": {
+        "prefix": "sm_field_fk",
+        "body": [
+            "${1:column}_id: int | None = Field(default=None, foreign_key=\"${2:table.id}\")"
+        ],
+        "description": "外键字段"
+    },
+    "Base/Create/Public/Update 四件套模型": {
+        "prefix": "sm_model_inherit",
+        "body": [
+            "from sqlmodel import Field, SQLModel",
+            "",
+            "",
+            "class ${1:Hero}Base(SQLModel):",
+            "    name: str = Field(index=True)",
+            "    secret_name: str",
+            "    age: int | None = Field(default=None, index=True)",
+            "",
+            "",
+            "class ${1:Hero}(${1:Hero}Base, table=True):",
+            "    id: int | None = Field(default=None, primary_key=True)",
+            "",
+            "",
+            "class ${1:Hero}Create(${1:Hero}Base):",
+            "    pass",
+            "",
+            "",
+            "class ${1:Hero}Public(${1:Hero}Base):",
+            "    id: int",
+            "",
+            "",
+            "class ${1:Hero}Update(SQLModel):",
+            "    name: str | None = None",
+            "    secret_name: str | None = None",
+            "    age: int | None = None"
+        ],
+        "description": "Base/Create/Public/Update 四件套模型"
+    },
+    "多对多链接表模型": {
+        "prefix": "sm_link_model",
+        "body": [
+            "from sqlmodel import Field, SQLModel",
+            "",
+            "",
+            "class ${1:Hero}${2:Team}Link(SQLModel, table=True):",
+            "    ${2:team}_id: int | None = Field(",
+            "        default=None, foreign_key=\"${2:team}.id\", primary_key=True",
+            "    )",
+            "    ${1:hero}_id: int | None = Field(",
+            "        default=None, foreign_key=\"${1:hero}.id\", primary_key=True",
+            "    )"
+        ],
+        "description": "多对多链接表模型"
+    },
+    "with 块打开会话": {
+        "prefix": "sm_session",
+        "body": [
+            "from sqlmodel import Session",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${0:pass}"
+        ],
+        "description": "with 块打开会话"
+    },
+    "新增并刷新单条": {
+        "prefix": "sm_add_commit",
+        "body": [
+            "from sqlmodel import Session",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:db_obj} = ${4:Hero}(name=${5:\"Deadpond\"}, secret_name=${6:\"Dive Wilson\"})",
+            "    ${2:session}.add(${3:db_obj})",
+            "    ${2:session}.commit()",
+            "    ${2:session}.refresh(${3:db_obj})"
+        ],
+        "description": "新增并刷新单条"
+    },
+    "批量新增": {
+        "prefix": "sm_add_all",
+        "body": [
+            "from sqlmodel import Session",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${2:session}.add_all([${3:obj1}, ${4:obj2}])",
+            "    ${2:session}.commit()"
+        ],
+        "description": "批量新增"
+    },
+    "FastAPI Session 依赖生成器": {
+        "prefix": "sm_get_session",
+        "body": [
+            "from sqlmodel import Session",
+            "",
+            "",
+            "def get_session():",
+            "    with Session(${1:engine}) as ${2:session}:",
+            "        yield ${2:session}"
+        ],
+        "description": "FastAPI Session 依赖生成器"
+    },
+    "查询全部": {
+        "prefix": "sm_select_all",
+        "body": [
+            "from sqlmodel import Session, SQLModel, select",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:statement} = select(${4:Hero})",
+            "    ${5:results} = ${2:session}.exec(${3:statement}).all()"
+        ],
+        "description": "查询全部"
+    },
+    "单条件过滤": {
+        "prefix": "sm_select_where",
+        "body": [
+            "from sqlmodel import Session, select",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:statement} = select(${4:Hero}).where(${4:Hero}.${5:age} == ${6:30})",
+            "    ${7:results} = ${2:session}.exec(${3:statement}).all()"
+        ],
+        "description": "单条件过滤"
+    },
+    "多条件 and_/or_ 组合": {
+        "prefix": "sm_select_multi",
+        "body": [
+            "from sqlmodel import Session, and_, or_, select",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:statement} = select(${4:Hero}).where(",
+            "        and_(${4:Hero}.${5:age} >= ${6:18}, or_(${4:Hero}.${7:name} == ${8:\"A\"}, ${4:Hero}.${7:name} == ${9:\"B\"}))",
+            "    )",
+            "    ${10:results} = ${2:session}.exec(${3:statement}).all()"
+        ],
+        "description": "多条件 and_/or_ 组合"
+    },
+    "in_/between/is_ 高级运算符": {
+        "prefix": "sm_select_op",
+        "body": [
+            "from sqlmodel import Session, select",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:statement} = select(${4:Hero}).where(",
+            "        ${4:Hero}.${5:name}.in_([${6:\"A\"}, ${7:\"B\"}]),",
+            "        ${4:Hero}.${8:age}.between(${9:18}, ${10:60}),",
+            "        ${4:Hero}.${11:team_id}.is_(None),",
+            "    )",
+            "    ${12:results} = ${2:session}.exec(${3:statement}).all()"
+        ],
+        "description": "in_/between/is_ 高级运算符"
+    },
+    "排序": {
+        "prefix": "sm_select_order",
+        "body": [
+            "from sqlmodel import Session, col, select",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:statement} = select(${4:Hero}).order_by(col(${4:Hero}.${5:age}).desc())",
+            "    ${6:results} = ${2:session}.exec(${3:statement}).all()"
+        ],
+        "description": "排序"
+    },
+    "分页 offset/limit": {
+        "prefix": "sm_select_page",
+        "body": [
+            "from sqlmodel import Session, select",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:statement} = select(${4:Hero}).offset(${5:0}).limit(${6:20})",
+            "    ${7:results} = ${2:session}.exec(${3:statement}).all()"
+        ],
+        "description": "分页 offset/limit"
+    },
+    "取首条 first/one/one_or_none": {
+        "prefix": "sm_select_one",
+        "body": [
+            "from sqlmodel import Session, select",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:statement} = select(${4:Hero}).where(${4:Hero}.${5:id} == ${6:1})",
+            "    ${7:result} = ${2:session}.exec(${3:statement}).first()"
+        ],
+        "description": "取首条 first/one/one_or_none"
+    },
+    "主键查询": {
+        "prefix": "sm_get_by_id",
+        "body": [
+            "from sqlmodel import Session",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:hero} = ${2:session}.get(${4:Hero}, ${5:1})"
+        ],
+        "description": "主键查询"
+    },
+    "更新单条记录": {
+        "prefix": "sm_update",
+        "body": [
+            "from sqlmodel import Session",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:db_obj} = ${2:session}.get(${4:Hero}, ${5:1})",
+            "    ${3:db_obj}.${6:age} = ${7:30}",
+            "    ${2:session}.add(${3:db_obj})",
+            "    ${2:session}.commit()",
+            "    ${2:session}.refresh(${3:db_obj})"
+        ],
+        "description": "更新单条记录"
+    },
+    "Pydantic 局部字段更新": {
+        "prefix": "sm_update_partial",
+        "body": [
+            "from sqlmodel import Session, SQLModel",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:db_obj} = ${2:session}.get(${4:Hero}, ${5:1})",
+            "    ${6:data} = ${3:db_obj}.model_dump(exclude_unset=True)",
+            "    ${3:db_obj}.sqlmodel_update(${6:data})",
+            "    ${2:session}.add(${3:db_obj})",
+            "    ${2:session}.commit()",
+            "    ${2:session}.refresh(${3:db_obj})"
+        ],
+        "description": "Pydantic 局部字段更新"
+    },
+    "删除单条": {
+        "prefix": "sm_delete",
+        "body": [
+            "from sqlmodel import Session",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:db_obj} = ${2:session}.get(${4:Hero}, ${5:1})",
+            "    ${2:session}.delete(${3:db_obj})",
+            "    ${2:session}.commit()"
+        ],
+        "description": "删除单条"
+    },
+    "条件批量删除": {
+        "prefix": "sm_delete_where",
+        "body": [
+            "from sqlmodel import Session, select",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:statement} = select(${4:Hero}).where(${4:Hero}.${5:team_id} == ${6:1})",
+            "    ${7:objs} = ${2:session}.exec(${3:statement}).all()",
+            "    for ${8:obj} in ${7:objs}:",
+            "        ${2:session}.delete(${8:obj})",
+            "    ${2:session}.commit()"
+        ],
+        "description": "条件批量删除"
+    },
+    "一对多 Relationship": {
+        "prefix": "sm_rel_one2many",
+        "body": [
+            "from sqlmodel import Field, Relationship, SQLModel",
+            "",
+            "",
+            "class ${1:Team}(SQLModel, table=True):",
+            "    id: int | None = Field(default=None, primary_key=True)",
+            "    name: str",
+            "    heroes: list[\"${2:Hero}\"] = Relationship(back_populates=\"team\")",
+            "",
+            "",
+            "class ${2:Hero}(SQLModel, table=True):",
+            "    id: int | None = Field(default=None, primary_key=True)",
+            "    name: str",
+            "    team_id: int | None = Field(default=None, foreign_key=\"${1:team}.id\")",
+            "    team: \"${1:Team}\" | None = Relationship(back_populates=\"heroes\")"
+        ],
+        "description": "一对多 Relationship"
+    },
+    "多对多 Relationship + link_model": {
+        "prefix": "sm_rel_many2many",
+        "body": [
+            "from sqlmodel import Field, Relationship, SQLModel",
+            "",
+            "",
+            "class ${1:Hero}${2:Team}Link(SQLModel, table=True):",
+            "    ${2:team}_id: int | None = Field(default=None, foreign_key=\"${2:team}.id\", primary_key=True)",
+            "    ${1:hero}_id: int | None = Field(default=None, foreign_key=\"${1:hero}.id\", primary_key=True)",
+            "",
+            "",
+            "class ${2:Team}(SQLModel, table=True):",
+            "    id: int | None = Field(default=None, primary_key=True)",
+            "    name: str",
+            "    heroes: list[\"${1:Hero}\"] = Relationship(back_populates=\"${3:teams}\", link_model=${1:Hero}${2:Team}Link)",
+            "",
+            "",
+            "class ${1:Hero}(SQLModel, table=True):",
+            "    id: int | None = Field(default=None, primary_key=True)",
+            "    name: str",
+            "    ${3:teams}: list[\"${2:Team}\"] = Relationship(back_populates=\"heroes\", link_model=${1:Hero}${2:Team}Link)"
+        ],
+        "description": "多对多 Relationship + link_model"
+    },
+    "级联删除": {
+        "prefix": "sm_rel_cascade",
+        "body": [
+            "from sqlmodel import Field, Relationship, SQLModel",
+            "",
+            "",
+            "class ${1:Team}(SQLModel, table=True):",
+            "    id: int | None = Field(default=None, primary_key=True)",
+            "    name: str",
+            "    heroes: list[\"${2:Hero}\"] = Relationship(back_populates=\"team\", cascade_delete=True)",
+            "",
+            "",
+            "class ${2:Hero}(SQLModel, table=True):",
+            "    id: int | None = Field(default=None, primary_key=True)",
+            "    name: str",
+            "    ${3:team}_id: int | None = Field(default=None, foreign_key=\"${1:team}.id\", ondelete=\"CASCADE\")",
+            "    ${1:team}: \"${1:Team}\" | None = Relationship(back_populates=\"heroes\")"
+        ],
+        "description": "级联删除"
+    },
+    "读取关联对象": {
+        "prefix": "sm_rel_read",
+        "body": [
+            "from sqlmodel import Session",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:hero} = ${2:session}.get(${4:Hero}, ${5:1})",
+            "    ${6:team_name} = ${3:hero}.team.name if ${3:hero}.team else ${7:None}",
+            "    ${8:hero_names} = [${9:h}.name for ${9:h} in ${10:team}.heroes]"
+        ],
+        "description": "读取关联对象"
+    },
+    "内连接 join": {
+        "prefix": "sm_join",
+        "body": [
+            "from sqlmodel import Session, select",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:statement} = select(${4:Hero}, ${5:Team}).join(${5:Team})",
+            "    ${6:results} = ${2:session}.exec(${3:statement}).all()"
+        ],
+        "description": "内连接 join"
+    },
+    "关联预加载 selectinload": {
+        "prefix": "sm_selectinload",
+        "body": [
+            "from sqlmodel import Session, select",
+            "from sqlalchemy.orm import selectinload",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:statement} = select(${4:Hero}).options(selectinload(${4:Hero}.${5:team}))",
+            "    ${6:results} = ${2:session}.exec(${3:statement}).all()"
+        ],
+        "description": "关联预加载 selectinload"
+    },
+    "统计行数": {
+        "prefix": "sm_count",
+        "body": [
+            "from sqlmodel import Session, func, select",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:statement} = select(func.count()).select_from(${4:Hero})",
+            "    ${5:total} = ${2:session}.exec(${3:statement}).one()"
+        ],
+        "description": "统计行数"
+    },
+    "执行原始 SQL": {
+        "prefix": "sm_raw_sql",
+        "body": [
+            "from sqlmodel import Session, text",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    ${3:statement} = text(\"SELECT * FROM ${4:hero} WHERE ${5:age} > :${6:age}\")",
+            "    ${7:results} = ${2:session}.exec(${3:statement}, params={\"${6:age}\": ${8:18}}).all()"
+        ],
+        "description": "执行原始 SQL"
+    },
+    "FastAPI 启动建表 lifespan": {
+        "prefix": "sm_fa_lifespan",
+        "body": [
+            "from contextlib import asynccontextmanager",
+            "",
+            "from fastapi import FastAPI",
+            "from sqlmodel import SQLModel",
+            "",
+            "",
+            "@asynccontextmanager",
+            "async def lifespan(${1:app}: FastAPI):",
+            "    SQLModel.metadata.create_all(${2:engine})",
+            "    yield",
+            "",
+            "",
+            "app = FastAPI(lifespan=lifespan)"
+        ],
+        "description": "FastAPI 启动建表 lifespan"
+    },
+    "Session 依赖注入 SessionDep": {
+        "prefix": "sm_fa_session_dep",
+        "body": [
+            "from typing import Annotated",
+            "",
+            "from fastapi import Depends",
+            "from sqlmodel import Session",
+            "",
+            "",
+            "def get_session():",
+            "    with Session(${1:engine}) as ${2:session}:",
+            "        yield ${2:session}",
+            "",
+            "",
+            "SessionDep = Annotated[Session, Depends(get_session)]"
+        ],
+        "description": "Session 依赖注入 SessionDep"
+    },
+    "FastAPI 新增路由 POST": {
+        "prefix": "sm_fa_crud_create",
+        "body": [
+            "from fastapi import APIRouter",
+            "",
+            "router = APIRouter(prefix=\"${1:/heroes}\", tags=[\"${2:Heroes}\"])",
+            "",
+            "",
+            "@router.post(\"/\", response_model=${3:HeroPublic})",
+            "def create_${4:hero}(*, ${5:session}: ${6:SessionDep}, ${4:hero}: ${7:HeroCreate}):",
+            "    ${8:db_hero} = ${4:Hero}.model_validate(${4:hero})",
+            "    ${5:session}.add(${8:db_hero})",
+            "    ${5:session}.commit()",
+            "    ${5:session}.refresh(${8:db_hero})",
+            "    return ${8:db_hero}"
+        ],
+        "description": "FastAPI 新增路由 POST"
+    },
+    "FastAPI 列表路由 GET": {
+        "prefix": "sm_fa_crud_list",
+        "body": [
+            "from fastapi import APIRouter, Query",
+            "",
+            "router = APIRouter(prefix=\"${1:/heroes}\", tags=[\"${2:Heroes}\"])",
+            "",
+            "",
+            "@router.get(\"/\", response_model=list[${3:HeroPublic}])",
+            "def read_${4:heroes}(",
+            "    *,",
+            "    ${5:session}: ${6:SessionDep},",
+            "    ${7:offset}: int = ${8:0},",
+            "    ${9:limit}: int = Query(default=${10:100}, le=${11:100}),",
+            "):",
+            "    ${12:heroes} = ${5:session}.exec(select(${13:Hero}).offset(${7:offset}).limit(${9:limit})).all()",
+            "    return ${12:heroes}"
+        ],
+        "description": "FastAPI 列表路由 GET"
+    },
+    "异常时事务回滚": {
+        "prefix": "sm_rollback",
+        "body": [
+            "from sqlmodel import Session",
+            "",
+            "with Session(${1:engine}) as ${2:session}:",
+            "    try:",
+            "        ${3:db_obj} = ${4:Hero}(name=${5:\"X\"})",
+            "        ${2:session}.add(${3:db_obj})",
+            "        ${2:session}.commit()",
+            "    except Exception:",
+            "        ${2:session}.rollback()",
+            "        raise"
+        ],
+        "description": "异常时事务回滚"
+    },
+    "pytest 内存 SQLite fixture": {
+        "prefix": "sm_test_fixture",
+        "body": [
+            "import pytest",
+            "from fastapi.testclient import TestClient",
+            "from sqlalchemy.pool import StaticPool",
+            "from sqlmodel import Session, SQLModel, create_engine",
+            "",
+            "from ${1:app.main} import app, get_session",
+            "",
+            "",
+            "@pytest.fixture(name=\"${2:client}\")",
+            "def ${2:client}_fixture():",
+            "    ${3:engine} = create_engine(",
+            "        \"sqlite://\",",
+            "        connect_args={\"check_same_thread\": False},",
+            "        poolclass=StaticPool,",
+            "    )",
+            "    SQLModel.metadata.create_all(${3:engine})",
+            "",
+            "    def ${4:override_get_session}():",
+            "        with Session(${3:engine}) as ${5:session}:",
+            "            yield ${5:session}",
+            "",
+            "    app.dependency_overrides[get_session] = ${4:override_get_session}",
+            "    with TestClient(app) as ${6:c}:",
+            "        yield ${6:c}",
+            "    app.dependency_overrides.clear()"
+        ],
+        "description": "pytest 内存 SQLite fixture"
+    },
+    "异步引擎与 AsyncSession": {
+        "prefix": "sm_async_engine",
+        "body": [
+            "from sqlmodel import SQLModel",
+            "from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine",
+            "",
+            "${1:engine} = create_async_engine(${2:\"sqlite+aiosqlite:///database.db\"}, echo=${3:True})",
+            "${4:async_session} = async_sessionmaker(${1:engine}, class_=AsyncSession, expire_on_commit=False)",
+            "",
+            "",
+            "async def create_db_and_tables():",
+            "    async with ${1:engine}.begin() as ${5:conn}:",
+            "        await ${5:conn}.run_sync(SQLModel.metadata.create_all)",
+            "",
+            "",
+            "async def get_async_session():",
+            "    async with ${4:async_session}() as ${6:session}:",
+            "        yield ${6:session}"
+        ],
+        "description": "异步引擎与 AsyncSession"
+    }
 }

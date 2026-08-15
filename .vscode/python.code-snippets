@@ -1,36 +1,36 @@
 {
-    "py_for": {
+    "for 数字范围循环": {
         "prefix": "py_for",
         "body": [
             "for ${1:i} in range(${2:10}):",
             "    ${3:# code}"
         ],
-        "description": "Python for 数字范围循环"
+        "description": "for 数字范围循环"
     },
-    "py_for_range": {
+    "for 遍历集合": {
         "prefix": "py_for_range",
         "body": [
             "for ${1:item} in ${2:iterable}:",
             "    ${3:pass}"
         ],
-        "description": "Python for 遍历集合"
+        "description": "for 遍历集合"
     },
-    "py_while": {
+    "while 循环": {
         "prefix": "py_while",
         "body": [
             "while ${1:condition}:",
             "    ${2:pass}"
         ],
-        "description": "Python while 循环"
+        "description": "while 循环"
     },
-    "py_throw": {
+    "抛出异常": {
         "prefix": "py_throw",
         "body": [
             "raise ${1:ValueError}('${2:message}')"
         ],
-        "description": "Python 抛出异常"
+        "description": "抛出异常"
     },
-    "py_error_define": {
+    "自定义异常类": {
         "prefix": "py_error_define",
         "body": [
             "class ${1:CustomError}(${2:Exception}):",
@@ -38,9 +38,9 @@
             "        super().__init__(${4:$3})",
             "        ${5:# extra init}"
         ],
-        "description": "Python 自定义异常类"
+        "description": "自定义异常类"
     },
-    "py_try": {
+    "错误捕获": {
         "prefix": "py_try",
         "body": [
             "try:",
@@ -52,9 +52,9 @@
             "finally:",
             "    ${6:pass}"
         ],
-        "description": "Python 错误捕获"
+        "description": "错误捕获"
     },
-    "py_if": {
+    "if 判断": {
         "prefix": "py_if",
         "body": [
             "if ${1:condition}:",
@@ -64,34 +64,34 @@
             "else:",
             "    ${5:pass}"
         ],
-        "description": "Python if 判断"
+        "description": "if 判断"
     },
-    "py_read_file": {
+    "读取文件": {
         "prefix": "py_read_file",
         "body": [
             "with open(${1:path}, '${2:r}', encoding='${3:utf-8}') as ${4:f}:",
             "    ${5:content = f.read()}"
         ],
-        "description": "Python 读取文件"
+        "description": "读取文件"
     },
-    "py_read_env": {
+    "读取环境变量": {
         "prefix": "py_read_env",
         "body": [
             "import os",
             "${1:value} = os.environ.get('${2:KEY}', '${3:default}')"
         ],
-        "description": "Python 读取环境变量"
+        "description": "读取环境变量"
     },
-    "py_shell": {
+    "执行 shell 命令": {
         "prefix": "py_shell",
         "body": [
             "import subprocess",
             "${1:result} = subprocess.run(${2:['cmd']}, ${3:shell=True, capture_output=True, text=True})",
             "${4:print($1.stdout)}"
         ],
-        "description": "Python 执行 shell 命令"
+        "description": "执行 shell 命令"
     },
-    "py_time": {
+    "获取程序运行耗时": {
         "prefix": "py_time",
         "body": [
             "import time",
@@ -99,17 +99,17 @@
             "${1:# code}",
             "print(f'耗时: {time.time() - start:.2f}s')"
         ],
-        "description": "Python 获取程序运行耗时"
+        "description": "获取程序运行耗时"
     },
-    "py_cwd": {
+    "获取当前目录": {
         "prefix": "py_cwd",
         "body": [
             "import os",
             "${1:cwd} = os.getcwd()"
         ],
-        "description": "Python 获取当前目录"
+        "description": "获取当前目录"
     },
-    "py_args": {
+    "命令行参数": {
         "prefix": "py_args",
         "body": [
             "import argparse",
@@ -117,16 +117,16 @@
             "parser.add_argument('${2:--name}', type=${3:str}, help='${4:参数说明}')",
             "${5:args = parser.parse_args()}"
         ],
-        "description": "Python 命令行参数"
+        "description": "命令行参数"
     },
-    "py_input": {
+    "获取用户输入": {
         "prefix": "py_input",
         "body": [
             "${1:value} = input('${2:请输入}: ')"
         ],
-        "description": "Python 获取用户输入"
+        "description": "获取用户输入"
     },
-    "py_thread_lock": {
+    "线程互斥锁": {
         "prefix": "py_thread_lock",
         "body": [
             "import threading",
@@ -134,9 +134,9 @@
             "with $1:",
             "    ${2:# critical section}"
         ],
-        "description": "Python 线程互斥锁"
+        "description": "线程互斥锁"
     },
-    "py_thread_rlock": {
+    "可重入锁": {
         "prefix": "py_thread_rlock",
         "body": [
             "import threading",
@@ -144,9 +144,9 @@
             "with $1:",
             "    ${2:# critical section}"
         ],
-        "description": "Python 可重入锁"
+        "description": "可重入锁"
     },
-    "py_thread_semaphore": {
+    "信号量": {
         "prefix": "py_thread_semaphore",
         "body": [
             "import threading",
@@ -154,9 +154,9 @@
             "with $1:",
             "    ${3:# critical section}"
         ],
-        "description": "Python 信号量"
+        "description": "信号量"
     },
-    "py_thread_condition": {
+    "条件变量": {
         "prefix": "py_thread_condition",
         "body": [
             "import threading",
@@ -180,9 +180,9 @@
             "        $1.notify()           # 唤醒一个 waiter",
             "        # $1.notify_all()      # 唤醒所有 waiter"
         ],
-        "description": "Python 条件变量（waiter 与 notifier 拆成独立函数）"
+        "description": "条件变量（waiter 与 notifier 拆成独立函数）"
     },
-    "py_thread_event": {
+    "事件": {
         "prefix": "py_thread_event",
         "body": [
             "import threading",
@@ -191,18 +191,18 @@
             "$1.wait()",
             "$1.clear()"
         ],
-        "description": "Python 事件"
+        "description": "事件"
     },
-    "py_thread_barrier": {
+    "屏障": {
         "prefix": "py_thread_barrier",
         "body": [
             "import threading",
             "${1:barrier} = threading.Barrier(${2:3})",
             "$1.wait()"
         ],
-        "description": "Python 屏障"
+        "description": "屏障"
     },
-    "py_process": {
+    "多进程": {
         "prefix": "py_process",
         "body": [
             "from multiprocessing import Process",
@@ -215,27 +215,27 @@
             "    p.start()",
             "    p.join()"
         ],
-        "description": "Python 多进程"
+        "description": "多进程"
     },
-    "py_log": {
+    "日志打印": {
         "prefix": "py_log",
         "body": [
             "import logging",
             "logging.basicConfig(level=logging.${1|DEBUG,INFO,WARNING,ERROR,CRITICAL|}, format='%(asctime)s - %(levelname)s - %(message)s')",
             "${2:logger} = logging.getLogger(${3:__name__})"
         ],
-        "description": "Python 日志打印"
+        "description": "日志打印"
     },
-    "py_read_json": {
+    "读取 JSON 配置文件": {
         "prefix": "py_read_json",
         "body": [
             "import json",
             "with open(${1:config_path}, 'r', encoding='utf-8') as ${2:f}:",
             "    ${3:config} = json.load($2)"
         ],
-        "description": "Python 读取 JSON 配置文件"
+        "description": "读取 JSON 配置文件"
     },
-    "py_signal": {
+    "信号监听": {
         "prefix": "py_signal",
         "body": [
             "import signal",
@@ -282,49 +282,49 @@
             "except TimeoutError as e:",
             "    print(e)"
         ],
-        "description": "Python 信号监听（程序退出前清理）"
+        "description": "信号监听（程序退出前清理）"
     },
-    "py_write_file": {
+    "写入文件": {
         "prefix": "py_write_file",
         "body": [
             "with open(${1:path}, '${2:w}', encoding='${3:utf-8}') as ${4:f}:",
             "    $4.write(${5:content})"
         ],
-        "description": "Python 写入文件"
+        "description": "写入文件"
     },
-    "py_copy_file": {
+    "拷贝文件": {
         "prefix": "py_copy_file",
         "body": [
             "import shutil",
             "shutil.copy2(${1:src}, ${2:dst})"
         ],
-        "description": "Python 拷贝文件（保留元数据）"
+        "description": "拷贝文件（保留元数据）"
     },
-    "py_move_file": {
+    "移动/重命名文件": {
         "prefix": "py_move_file",
         "body": [
             "import shutil",
             "shutil.move(${1:src}, ${2:dst})"
         ],
-        "description": "Python 移动/重命名文件"
+        "description": "移动/重命名文件"
     },
-    "py_delete_file": {
+    "删除文件": {
         "prefix": "py_delete_file",
         "body": [
             "import os",
             "os.remove(${1:path})"
         ],
-        "description": "Python 删除文件"
+        "description": "删除文件"
     },
-    "py_sleep": {
+    "时间等待": {
         "prefix": "py_sleep",
         "body": [
             "import time",
             "time.sleep(${1:seconds})"
         ],
-        "description": "Python 时间等待（秒）"
+        "description": "时间等待（秒）"
     },
-    "py_random_string": {
+    "生成随机字符串": {
         "prefix": "py_random_string",
         "body": [
             "import secrets",
@@ -332,6 +332,6 @@
             "",
             "${1:random_str} = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(${2:16}))"
         ],
-        "description": "Python 生成随机字符串（密码学安全）"
+        "description": "生成随机字符串（密码学安全）"
     }
 }
