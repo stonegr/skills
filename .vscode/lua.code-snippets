@@ -1,0 +1,472 @@
+{
+    "for 数字范围循环": {
+        "prefix": "lua_for",
+        "body": [
+            "for ${1:i} = ${2:1}, ${3:10} do",
+            "    ${4:-- code}",
+            "end"
+        ],
+        "description": "for 数字范围循环（闭区间 [a, b]）"
+    },
+    "for 遍历集合": {
+        "prefix": "lua_for_range",
+        "body": [
+            "for ${1:i}, ${2:v} in ipairs(${3:t}) do",
+            "    ${4:-- code}",
+            "end"
+        ],
+        "description": "for 遍历集合（ipairs 数组 / pairs 表）"
+    },
+    "while 循环": {
+        "prefix": "lua_while",
+        "body": [
+            "while ${1:cond} do",
+            "    ${2:-- code}",
+            "end"
+        ],
+        "description": "while 循环"
+    },
+    "错误捕获": {
+        "prefix": "lua_try",
+        "body": [
+            "-- ============ 实现 1：pcall（基础版）============",
+            "local ${1:ok}, ${2:err} = pcall(${3:func}${4:, arg})",
+            "if not $1 then",
+            "    ${5:-- handle error: print($2)}",
+            "end",
+            "",
+            "",
+            "-- ============ 实现 2：xpcall（带堆栈，推荐）============",
+            "-- local $1, $2 = xpcall($3, debug.traceback)",
+            "-- if not $1 then print($2) end"
+        ],
+        "description": "错误捕获（pcall 默认 + xpcall 带堆栈备选）"
+    },
+    "抛出错误": {
+        "prefix": "lua_throw",
+        "body": [
+            "error(\"${1:message}\")"
+        ],
+        "description": "抛出错误（error）"
+    },
+    "定义错误": {
+        "prefix": "lua_error_define",
+        "body": [
+            "local ${1:MyError} = setmetatable({}, {",
+            "    __tostring = function(self) return self.msg end,",
+            "    __index = {",
+            "        new = function(_, ${2:msg})",
+            "            return setmetatable({ msg = $2 }, ${1:MyError})",
+            "        end,",
+            "    },",
+            "})",
+            "",
+            "-- 使用：error(${3:MyError}:new(\"出错了\"))"
+        ],
+        "description": "定义错误类型（带 msg 的 table + 元表）"
+    },
+    "if 判断": {
+        "prefix": "lua_if",
+        "body": [
+            "if ${1:cond} then",
+            "    ${2:-- code}",
+            "elseif ${3:cond} then",
+            "    ${4:-- code}",
+            "else",
+            "    ${5:-- code}",
+            "end"
+        ],
+        "description": "if 判断"
+    },
+    "读取文件": {
+        "prefix": "lua_read_file",
+        "body": [
+            "local ${1:f}, ${2:err} = io.open(${3:path}, \"r\")",
+            "if not $1 then error($2) end",
+            "local ${4:content} = $1:read(${5:\"*a\"})",
+            "$1:close()"
+        ],
+        "description": "读取文件（io.open 读完关闭）"
+    },
+    "写入文件": {
+        "prefix": "lua_write_file",
+        "body": [
+            "local ${1:f}, ${2:err} = io.open(${3:path}, \"w\")",
+            "if not $1 then error($2) end",
+            "$1:write(${4:content})",
+            "$1:close()"
+        ],
+        "description": "写入文件（io.open 写完关闭）"
+    },
+    "拷贝文件": {
+        "prefix": "lua_copy_file",
+        "body": [
+            "-- ============ 实现 1：io 流式拷贝（推荐，跨平台）============",
+            "local ${1:src_f}, ${2:err1} = io.open(${3:src_path}, \"rb\")",
+            "if not $1 then error($2) end",
+            "local ${4:dst_f}, ${5:err2} = io.open(${6:dst_path}, \"wb\")",
+            "if not $4 then $1:close(); error($5) end",
+            "$4:write($1:read(\"*a\"))",
+            "$1:close()",
+            "$4:close()"
+        ],
+        "description": "拷贝文件（io 流式跨平台）"
+    },
+    "移动/重命名文件": {
+        "prefix": "lua_move_file",
+        "body": [
+            "local ${1:ok}, ${2:err} = os.rename(${3:src}, ${4:dst})",
+            "if not $1 then error($2) end"
+        ],
+        "description": "移动/重命名文件（os.rename）"
+    },
+    "删除文件": {
+        "prefix": "lua_delete_file",
+        "body": [
+            "local ${1:ok}, ${2:err} = os.remove(${3:path})",
+            "if not $1 then error($2) end"
+        ],
+        "description": "删除文件（os.remove）"
+    },
+    "读取环境变量": {
+        "prefix": "lua_read_env",
+        "body": [
+            "local ${1:value} = os.getenv(\"${2:KEY}\")"
+        ],
+        "description": "读取环境变量"
+    },
+    "读取 JSON 配置文件": {
+        "prefix": "lua_read_json",
+        "body": [
+            "-- 需安装 JSON 库：dkjson / lua-cjson / rapidjson",
+            "local ${1:json} = require(\"${2:dkjson}\")",
+            "local ${3:f}, ${4:err1} = io.open(${5:config_path}, \"r\")",
+            "if not $3 then error($4) end",
+            "local ${6:content} = $3:read(\"*a\")",
+            "$3:close()",
+            "local ${7:config}, ${8:err2} = $1.decode($6)",
+            "if not $7 then error($8) end"
+        ],
+        "description": "读取 JSON 配置文件（依赖 dkjson/cjson）"
+    },
+    "执行 shell 命令": {
+        "prefix": "lua_shell",
+        "body": [
+            "-- ============ 实现 1：os.execute（仅退出码）============",
+            "os.execute(${1:\"ls -la\"})",
+            "",
+            "",
+            "-- ============ 实现 2：io.popen（捕获 stdout，Unix）============",
+            "local ${2:p} = io.popen(${3:\"ls -la\"})",
+            "local ${4:output} = $2:read(\"*a\")",
+            "local ${5:ok}, ${6:reason} = $2:close()",
+            "$2 = nil"
+        ],
+        "description": "执行 shell 命令（os.execute 同步 + io.popen 捕获输出）"
+    },
+    "获取程序运行耗时": {
+        "prefix": "lua_time",
+        "body": [
+            "local ${1:start} = os.clock()",
+            "${2:-- code}",
+            "print(string.format(\"耗时: %.3fs\", os.clock() - $1))"
+        ],
+        "description": "获取程序运行耗时（os.clock CPU 时间）"
+    },
+    "时间等待": {
+        "prefix": "lua_sleep",
+        "body": [
+            "-- ============ 实现 1：os.execute + sleep（Unix 最简）============",
+            "os.execute(\"sleep \" .. ${1:1})",
+            "",
+            "",
+            "-- ============ 实现 2：luasocket.socket.sleep（跨平台）============",
+            "-- local socket = require(\"socket\")",
+            "-- socket.sleep(${1:1})"
+        ],
+        "description": "时间等待（os.execute Unix 简单版 + luasocket 跨平台备选）"
+    },
+    "生成随机字符串": {
+        "prefix": "lua_random_string",
+        "body": [
+            "math.randomseed(os.time())",
+            "local ${1:chars} = \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\"",
+            "local ${2:result} = {}",
+            "for ${3:i} = 1, ${4:16} do",
+            "    local ${5:idx} = math.random(1, #$1)",
+            "    $2[#${6:$2}+1] = $1:sub($5, $5)",
+            "end",
+            "${7:str} = table.concat($2)"
+        ],
+        "description": "生成随机字符串（math.random，非密码学安全）"
+    },
+    "获取当前目录": {
+        "prefix": "lua_cwd",
+        "body": [
+            "-- ============ 实现 1：LuaFileSystem（lfs，推荐）============",
+            "-- local lfs = require(\"lfs\")",
+            "-- local ${1:dir} = lfs.currentdir()",
+            "",
+            "",
+            "-- ============ 实现 2：io.popen + pwd（Unix 备选）============",
+            "local ${2:h} = io.popen(\"pwd\")",
+            "local ${3:dir} = $2:read(\"*l\")",
+            "$2:close()"
+        ],
+        "description": "获取当前目录（lfs 推荐 + io.popen Unix 备选）"
+    },
+    "命令行参数": {
+        "prefix": "lua_args",
+        "body": [
+            "-- arg[0] 是脚本路径，arg[1..N] 是用户参数",
+            "local ${1:first} = arg[${2:1}]",
+            "-- 遍历所有参数",
+            "-- for i, v in ipairs(arg) do print(i, v) end"
+        ],
+        "description": "命令行参数（arg 全局表）"
+    },
+    "获取用户输入": {
+        "prefix": "lua_input",
+        "body": [
+            "local ${1:input} = io.read(${2:\"*l\"})"
+        ],
+        "description": "获取用户输入（io.read，*l 按行 / *a 全部 / *n 数字）"
+    },
+    "互斥锁": {
+        "prefix": "lua_thread_lock",
+        "body": [
+            "-- ============ 实现：协程协作式互斥锁（仅在 coroutine 协作中有效）============",
+            "-- 注意：Lua 无真线程，OS 线程需用 lua-ffi / luarings",
+            "local ${1:lock} = { locked = false }",
+            "local ${2:waiters} = {}",
+            "",
+            "function ${3:lock_acquire}(self)",
+            "    if not self.locked then",
+            "        self.locked = true",
+            "        return",
+            "    end",
+            "    table.insert(self.waiters, coroutine.running())",
+            "    coroutine.yield()",
+            "    self.locked = true",
+            "end",
+            "",
+            "function ${4:lock_release}(self)",
+            "    self.locked = false",
+            "    if #self.waiters > 0 then",
+            "        local co = table.remove(self.waiters, 1)",
+            "        coroutine.resume(co)",
+            "    end",
+            "end",
+            "",
+            "-- 使用",
+            "$3($1)",
+            "${5:-- critical section}",
+            "$4($1)"
+        ],
+        "description": "互斥锁（协程协作式，OS 真线程需 lua-ffi / luarings）"
+    },
+    "读写锁": {
+        "prefix": "lua_thread_rlock",
+        "body": [
+            "-- ============ 实现：协程协作式读写锁（多读者单写者）============",
+            "local ${1:rwl} = { readers = 0, writer = false, waiters = {} }",
+            "",
+            "function ${2:rwl_rlock}(self)",
+            "    while self.writer do",
+            "        table.insert(self.waiters, { co = coroutine.running(), mode = \"r\" })",
+            "        coroutine.yield()",
+            "    end",
+            "    self.readers = self.readers + 1",
+            "end",
+            "",
+            "function ${3:rwl_runlock}(self)",
+            "    self.readers = self.readers - 1",
+            "    if self.readers == 0 then self:_wake_waiters() end",
+            "end",
+            "",
+            "function ${4:rwl_wlock}(self)",
+            "    while self.writer or self.readers > 0 do",
+            "        table.insert(self.waiters, { co = coroutine.running(), mode = \"w\" })",
+            "        coroutine.yield()",
+            "    end",
+            "    self.writer = true",
+            "end",
+            "",
+            "function ${5:rwl_wunlock}(self)",
+            "    self.writer = false",
+            "    self:_wake_waiters()",
+            "end",
+            "",
+            "function ${1:rwl}._wake_waiters(self)",
+            "    local w = self.waiters",
+            "    self.waiters = {}",
+            "    for _, item in ipairs(w) do coroutine.resume(item.co) end",
+            "end"
+        ],
+        "description": "读写锁（协程协作式，多读者单写者）"
+    },
+    "信号量": {
+        "prefix": "lua_thread_semaphore",
+        "body": [
+            "-- ============ 实现：协程协作式计数信号量 ============",
+            "local ${1:sem} = { count = ${2:3}, waiters = {} }",
+            "",
+            "function ${3:sem_acquire}(self)",
+            "    if self.count > 0 then",
+            "        self.count = self.count - 1",
+            "        return",
+            "    end",
+            "    table.insert(self.waiters, coroutine.running())",
+            "    coroutine.yield()",
+            "end",
+            "",
+            "function ${4:sem_release}(self)",
+            "    if #self.waiters > 0 then",
+            "        local co = table.remove(self.waiters, 1)",
+            "        coroutine.resume(co)",
+            "    else",
+            "        self.count = self.count + 1",
+            "    end",
+            "end",
+            "",
+            "-- 使用",
+            "$3($1)",
+            "${5:-- critical section}",
+            "$4($1)"
+        ],
+        "description": "信号量（协程协作式计数信号量）"
+    },
+    "条件变量": {
+        "prefix": "lua_thread_condition",
+        "body": [
+            "-- ============ 实现：协程协作式条件变量 ============",
+            "local ${1:cond} = { waiters = {} }",
+            "",
+            "function ${2:cond_wait}(self, ${3:pred})",
+            "    while not $3() do",
+            "        table.insert(self.waiters, coroutine.running())",
+            "        coroutine.yield()",
+            "    end",
+            "end",
+            "",
+            "function ${4:cond_signal}(self)",
+            "    if #self.waiters > 0 then",
+            "        coroutine.resume(table.remove(self.waiters, 1))",
+            "    end",
+            "end",
+            "",
+            "function ${5:cond_broadcast}(self)",
+            "    local w = self.waiters",
+            "    self.waiters = {}",
+            "    for _, co in ipairs(w) do coroutine.resume(co) end",
+            "end",
+            "",
+            "-- 使用",
+            "$2($1, function() return ${6:ready} end)",
+            "${7:-- after predicate true}"
+        ],
+        "description": "条件变量（协程协作式，signal/broadcast 唤醒等待者）"
+    },
+    "事件": {
+        "prefix": "lua_thread_event",
+        "body": [
+            "-- ============ 实现：协程协作式一次性事件 ============",
+            "local ${1:evt} = { signaled = false, waiters = {} }",
+            "",
+            "function ${2:evt_wait}(self)",
+            "    if self.signaled then return end",
+            "    table.insert(self.waiters, coroutine.running())",
+            "    coroutine.yield()",
+            "end",
+            "",
+            "function ${3:evt_set}(self)",
+            "    self.signaled = true",
+            "    local w = self.waiters",
+            "    self.waiters = {}",
+            "    for _, co in ipairs(w) do coroutine.resume(co) end",
+            "end",
+            "",
+            "-- 使用",
+            "$2($1)",
+            "${4:-- after event set}"
+        ],
+        "description": "事件（协程协作式一次性事件，set 后 wait 立即返回）"
+    },
+    "屏障": {
+        "prefix": "lua_thread_barrier",
+        "body": [
+            "-- ============ 实现：协程协作式屏障（N 个协程全部到齐才放行）============",
+            "local ${1:bar} = { target = ${2:3}, arrived = 0, waiters = {} }",
+            "",
+            "function ${3:bar_wait}(self)",
+            "    self.arrived = self.arrived + 1",
+            "    if self.arrived >= self.target then",
+            "        local w = self.waiters",
+            "        self.waiters = {}",
+            "        self.arrived = 0",
+            "        for _, co in ipairs(w) do coroutine.resume(co) end",
+            "        return",
+            "    end",
+            "    table.insert(self.waiters, coroutine.running())",
+            "    coroutine.yield()",
+            "end",
+            "",
+            "-- 使用",
+            "$3($1)",
+            "${4:-- all coroutines arrived}"
+        ],
+        "description": "屏障（协程协作式，N 个到齐一起放行）"
+    },
+    "启动协程": {
+        "prefix": "lua_process",
+        "body": [
+            "-- ============ 实现 1：coroutine.create（Lua 原生协程，协作式）============",
+            "local ${1:co} = coroutine.create(function(${2:arg})",
+            "    ${3:-- code}",
+            "end)",
+            "coroutine.resume($1, ${4:arg})",
+            "",
+            "",
+            "-- ============ 实现 2：luasystem / luaposix 真进程 ============",
+            "-- local sys = require(\"system\")",
+            "-- sys.spawn(${5:\"ls -la\"}, { stdio = { stdout = io.stdout } })"
+        ],
+        "description": "启动协程（coroutine.create 协作式，luasystem 备选真进程）"
+    },
+    "日志打印": {
+        "prefix": "lua_log",
+        "body": [
+            "-- ============ 实现 1：控制台 print（带时间戳）============",
+            "print(string.format(\"[%s] ${1:INFO}: ${2:message}\", os.date(\"%Y-%m-%d %H:%M:%S\")))",
+            "",
+            "",
+            "-- ============ 实现 2：写入日志文件 ============",
+            "-- local ${3:f} = io.open(${4:log_file}, \"a\")",
+            "-- if $3 then",
+            "--     $3:write(string.format(\"[%s] $1: $2\\n\", os.date(\"%Y-%m-%d %H:%M:%S\")))",
+            "--     $3:close()",
+            "-- end"
+        ],
+        "description": "日志打印（控制台 print 默认 + 文件写入备选）"
+    },
+    "信号监听": {
+        "prefix": "lua_signal",
+        "body": [
+            "-- ============ 实现 1：luasystem（推荐，跨平台）============",
+            "-- local sys = require(\"system\")",
+            "-- sys.signal(\"sigint\", function()",
+            "--     ${1:-- cleanup}",
+            "--     os.exit(0)",
+            "-- end)",
+            "",
+            "",
+            "-- ============ 实现 2：luaposix.signal（POSIX）============",
+            "-- local posix = require(\"posix\")",
+            "-- posix.signal(${2|SIGHUP,SIGINT,SIGTERM|}, function(signum)",
+            "--     ${1:-- cleanup}",
+            "--     os.exit(128 + signum)",
+            "-- end)"
+        ],
+        "description": "信号监听（luasystem 跨平台 + luaposix POSIX 备选）"
+    }
+}

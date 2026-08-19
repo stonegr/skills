@@ -28,6 +28,7 @@ language_name_map = {
     'typescript': 'typescript',
     'rust': 'rust',
     'java': 'java',
+    'lua': 'lua',
 }
 
 
