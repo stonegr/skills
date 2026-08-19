@@ -12,8 +12,10 @@ system = platform.system()
 FILE_DIR = Path(__file__).absolute().parent
 
 VSCODE_SNIPPETS_DIR = Path()
-if system == 'Windows' or system == 'Linux':
+if system == 'Windows':
     raise NotImplementedError
+elif system == 'Linux':
+    VSCODE_SNIPPETS_DIR = Path('/home/mine/template_snippet')
 elif system == 'Darwin':
     VSCODE_SNIPPETS_DIR = Path('/Users/stone/Documents/code/mine/template_snippet')
 

@@ -1,99 +1,316 @@
 {
-    "导入 pandas 并读取 CSV": {
-        "prefix": "pd_init",
+    "读取 CSV 文件": {
+        "prefix": "pd_read_csv",
         "body": [
             "import pandas as pd",
-            "import numpy as np",
             "",
-            "df = pd.read_csv('${1:data.csv}')",
-            "print(df.head())"
+            "${1:df} = pd.read_csv(${2:path}, encoding=${3|'utf-8','gbk','gb2312'|}, sep=${4:','}, dtype=${5:None})"
         ],
-        "description": "导入 pandas 并读取 CSV"
+        "description": "读取 CSV 文件"
     },
-    "数据质量快速检查": {
-        "prefix": "pd_check",
+    "读取 Excel 文件": {
+        "prefix": "pd_read_excel",
         "body": [
-            "print(\"--- Info ---\")",
-            "print(${1:df}.info())",
-            "print(\"\\n--- Null Values ---\")",
-            "print(${1:df}.isnull().sum())",
-            "print(\"\\n--- Statistics ---\")",
-            "print(${1:df}.describe())"
+            "import pandas as pd",
+            "",
+            "${1:df} = pd.read_excel(${2:path}, sheet_name=${3:0})"
         ],
-        "description": "数据质量快速检查"
+        "description": "读取 Excel 文件（指定 sheet）"
     },
-    "从字典创建一个新的 DataFrame": {
-        "prefix": "pd_create",
+    "读取 JSON 文件": {
+        "prefix": "pd_read_json",
         "body": [
-            "data = {",
-            "\t'${1:column1}': [${2:1, 2, 3}],",
-            "\t'${3:column2}': [${4:'A', 'B', 'C'}]",
-            "}",
-            "df = pd.DataFrame(data)",
-            "$0"
+            "import pandas as pd",
+            "",
+            "${1:df} = pd.read_json(${2:path}, orient=${3|'records','index','columns','values'|})"
         ],
-        "description": "从字典创建一个新的 DataFrame"
+        "description": "读取 JSON 文件"
     },
-    "合并两个 DataFrame": {
-        "prefix": "pd_merge",
+    "读取 SQL 表或查询": {
+        "prefix": "pd_read_sql",
         "body": [
-            "df_merged = pd.merge(",
-            "\tleft=${1:df1},",
-            "\tright=${2:df2},",
-            "\ton='${3:key_column}',",
-            "\thow='${4|left,right,inner,outer|}'",
-            ")",
-            "$0"
+            "import pandas as pd",
+            "",
+            "${1:df} = pd.read_sql(${2:sql}, ${3:conn})"
         ],
-        "description": "合并两个 DataFrame (Join)"
+        "description": "读取 SQL 表或查询结果"
     },
-    "快速创建透视表": {
-        "prefix": "pd_pivot",
+    "读取 Parquet 文件": {
+        "prefix": "pd_read_parquet",
         "body": [
-            "df_pivot = ${1:df}.pivot_table(",
-            "\tindex='${2:column1}',",
-            "\tvalues='${3:column2}',",
-            "\taggfunc='${4|mean,sum,count|}'",
+            "import pandas as pd",
+            "",
+            "${1:df} = pd.read_parquet(${2:path})"
+        ],
+        "description": "读取 Parquet 文件"
+    },
+    "写出 CSV 文件": {
+        "prefix": "pd_to_csv",
+        "body": [
+            "${1:df}.to_csv(${2:path}, index=${3:False}, encoding=${4|'utf-8','gbk'|})"
+        ],
+        "description": "写出 CSV 文件（默认不写索引）"
+    },
+    "写出 Excel 文件": {
+        "prefix": "pd_to_excel",
+        "body": [
+            "${1:df}.to_excel(${2:path}, sheet_name=${3:'Sheet1'}, index=${4:False})"
+        ],
+        "description": "写出 Excel 文件（默认不写索引）"
+    },
+    "写入数据库表": {
+        "prefix": "pd_to_sql",
+        "body": [
+            "${1:df}.to_sql(name=${2:table_name}, con=${3:engine}, if_exists=${4|'fail','replace','append'|}, index=${5:False})"
+        ],
+        "description": "写入数据库表（控制覆盖策略）"
+    },
+    "从字典创建 DataFrame": {
+        "prefix": "pd_create_dict",
+        "body": [
+            "import pandas as pd",
+            "",
+            "${1:df} = pd.DataFrame({",
+            "    ${2:'col1'}: [${3:1, 2, 3}],",
+            "    ${4:'col2'}: [${5:'a', 'b', 'c'}]",
+            "})"
+        ],
+        "description": "从字典创建 DataFrame"
+    },
+    "从二维列表创建 DataFrame": {
+        "prefix": "pd_create_from_list",
+        "body": [
+            "import pandas as pd",
+            "",
+            "${1:df} = pd.DataFrame(",
+            "    ${2:data},",
+            "    columns=[${3:'col1', 'col2'}]",
             ")"
         ],
-        "description": "快速创建透视表"
+        "description": "从二维列表+列名创建 DataFrame"
     },
-    "遍历分组数据进行循环操作": {
-        "prefix": "pd_group_loop",
+    "创建 Series": {
+        "prefix": "pd_series",
         "body": [
-            "for ${1:name}, ${2:group} in ${3:df}.groupby('${4:column}'):",
-            "\tprint(f\"Processing group: {${1:name}}\")",
-            "\t# group 是一个包含该分组数据的 DataFrame",
-            "\t$0"
-        ],
-        "description": "遍历分组数据进行循环操作"
-    },
-    "使用 groupby.apply 对分组进行批量修改": {
-        "prefix": "pd_group_apply",
-        "body": [
-            "def ${1:modify_func}(group):",
-            "\t# 在这里对每个分组进行修改",
-            "\tgroup['${2:new_col}'] = group['${3:existing_col}'].mean()",
-            "\treturn group",
+            "import pandas as pd",
             "",
-            "${4:df} = ${4:df}.groupby('${5:key_col}').apply(${1:modify_func}, include_groups=False)",
-            "$0"
+            "${1:s} = pd.Series(${2:data}, name=${3:'values'}, index=${4:None})"
         ],
-        "description": "使用 groupby.apply 对分组进行批量修改"
+        "description": "创建带名字和索引的 Series"
     },
-    "重命名列名": {
+    "多 Series 横向拼接成 DataFrame": {
+        "prefix": "pd_concat_cols",
+        "body": [
+            "import pandas as pd",
+            "",
+            "${1:df} = pd.concat([${2:s1}, ${3:s2}], axis=${4:1})"
+        ],
+        "description": "多 Series 横向拼接成 DataFrame"
+    },
+    "查看前 N 行": {
+        "prefix": "pd_head",
+        "body": [
+            "${1:df}.head(${2:5})"
+        ],
+        "description": "查看前 N 行"
+    },
+    "查看列类型与缺失情况": {
+        "prefix": "pd_info",
+        "body": [
+            "${1:df}.info()"
+        ],
+        "description": "查看列类型与缺失情况"
+    },
+    "数值列统计摘要": {
+        "prefix": "pd_describe",
+        "body": [
+            "${1:df}.describe(include=${2|'all','object','number'|})"
+        ],
+        "description": "数值列统计摘要（可指定包含类型）"
+    },
+    "查看形状与列类型": {
+        "prefix": "pd_shape_dtypes",
+        "body": [
+            "print(${1:df}.shape)",
+            "print(${1:df}.dtypes)"
+        ],
+        "description": "查看形状与列类型"
+    },
+    "按标签选择行列": {
+        "prefix": "pd_loc",
+        "body": [
+            "${1:sub} = ${2:df}.loc[${3:row_label}, ${4:'col_name'}]"
+        ],
+        "description": "按标签选择行列"
+    },
+    "按位置选择行列": {
+        "prefix": "pd_iloc",
+        "body": [
+            "${1:sub} = ${2:df}.iloc[${3:0:5}, ${4:0:3}]"
+        ],
+        "description": "按位置选择行列"
+    },
+    "表达式过滤行": {
+        "prefix": "pd_query",
+        "body": [
+            "${1:filtered} = ${2:df}.query(${3:'col > 0 and col2 == \"x\"'})"
+        ],
+        "description": "表达式过滤行（query）"
+    },
+    "按列名筛选列": {
+        "prefix": "pd_filter_cols",
+        "body": [
+            "${1:sub} = ${2:df}.filter(items=${3:['c1','c2']})",
+            "# 或按正则: ${2:df}.filter(regex=${3:'^col_'})",
+            "# 或按包含: ${2:df}.filter(like=${3:'name_'})"
+        ],
+        "description": "按列名筛选列（items/like/regex）"
+    },
+    "新增或覆盖列": {
+        "prefix": "pd_assign",
+        "body": [
+            "${1:df} = ${1:df}.assign(${2:new_col}=${3:lambda d: d['${4:existing}'] * ${5:2}})"
+        ],
+        "description": "新增或覆盖列（assign）"
+    },
+    "删除指定列": {
+        "prefix": "pd_drop_cols",
+        "body": [
+            "${1:df} = ${1:df}.drop(columns=[${2:'col1', 'col2'}])"
+        ],
+        "description": "删除指定列"
+    },
+    "列类型转换": {
+        "prefix": "pd_astype",
+        "body": [
+            "${1:df} = ${1:df}.astype({${2:'col1': '${3:int64}', ${4:'col2': '${5|category,float64,str|'}}})"
+        ],
+        "description": "按列做类型转换"
+    },
+    "对列应用自定义函数": {
+        "prefix": "pd_apply",
+        "body": [
+            "def ${1:func}(x):",
+            "    ${2:return x}",
+            "",
+            "${3:df}[${4:'col'}] = ${3:df}[${4:'col'}].apply(${1:func})"
+        ],
+        "description": "对列应用自定义函数"
+    },
+    "按列排序": {
+        "prefix": "pd_sort",
+        "body": [
+            "${1:sorted} = ${2:df}.sort_values(by=${3:['col1']}, ascending=${4:True})"
+        ],
+        "description": "按列排序"
+    },
+    "重命名列": {
         "prefix": "pd_rename",
         "body": [
-            "# 方式一：按映射重命名（部分列）",
-            "${1:df} = ${1:df}.rename(columns={",
-            "\t'${2:old_col1}': '${3:new_col1}',",
-            "\t'${4:old_col2}': '${5:new_col2}'",
-            "})",
-            "",
-            "# 方式二：整体重命名（所有列）",
-            "# ${1:df}.columns = ['${6:col1}', '${7:col2}', '${8:col3}']",
-            "$0"
+            "${1:df} = ${1:df}.rename(columns={${2:'old': '${3:new}'}})"
         ],
-        "description": "重命名列名（支持映射或整体替换）"
+        "description": "按映射重命名列"
+    },
+    "填充缺失值": {
+        "prefix": "pd_fillna",
+        "body": [
+            "${1:filled} = ${2:df}.fillna(value=${3:0})",
+            "# 按列填充: ${2:df}.fillna(value=${3:{'col1': 0, 'col2': 'unknown'}})",
+            "# 前向填充: ${2:df}.fillna(method=${3:'ffill'})"
+        ],
+        "description": "填充缺失值"
+    },
+    "删除含缺失值的行或列": {
+        "prefix": "pd_dropna",
+        "body": [
+            "${1:cleaned} = ${2:df}.dropna(axis=${3:0}, how=${4|'any','all'|})"
+        ],
+        "description": "删除含缺失值的行或列"
+    },
+    "单键分组聚合": {
+        "prefix": "pd_groupby",
+        "body": [
+            "${1:agg} = ${2:df}.groupby(${3:'key'}).agg(${4:'col1': '${5|sum,mean,count|}', ${6:'col2': '${7|max,min,std|'}})"
+        ],
+        "description": "按单键分组多列聚合"
+    },
+    "分组计数": {
+        "prefix": "pd_groupby_size",
+        "body": [
+            "${1:counts} = ${2:df}.groupby(${3:'key'}).size().reset_index(name=${4:'count'})"
+        ],
+        "description": "分组计数（含重置索引与命名）"
+    },
+    "频次统计": {
+        "prefix": "pd_value_counts",
+        "body": [
+            "${1:counts} = ${2:df}[${3:'col'}].value_counts(normalize=${4:False})"
+        ],
+        "description": "频次统计（可选归一化）"
+    },
+    "分组内变换": {
+        "prefix": "pd_groupby_transform",
+        "body": [
+            "${1:df}[${2:'norm_col'}] = ${1:df}.groupby(${3:'key'})[${4:'value'}].transform(${5:'mean'})"
+        ],
+        "description": "分组内变换（如组内归一化）"
+    },
+    "表连接": {
+        "prefix": "pd_merge",
+        "body": [
+            "${1:merged} = pd.merge(${2:left}, ${3:right}, on=${4:'key'}, how=${5|'left','right','inner','outer'|})"
+        ],
+        "description": "表连接（merge/join）"
+    },
+    "纵向拼接多个 DataFrame": {
+        "prefix": "pd_concat",
+        "body": [
+            "${1:combined} = pd.concat([${2:df1}, ${3:df2}], axis=${4:0}, ignore_index=${5:True})"
+        ],
+        "description": "纵向拼接多个 DataFrame"
+    },
+    "按索引连接": {
+        "prefix": "pd_join",
+        "body": [
+            "${1:joined} = ${2:df1}.join(${3:df2}, how=${4|'left','right','inner','outer'|})"
+        ],
+        "description": "按索引连接（join）"
+    },
+    "长宽转换 pivot": {
+        "prefix": "pd_pivot",
+        "body": [
+            "${1:pivoted} = ${2:df}.pivot(index=${3:'id'}, columns=${4:'cat'}, values=${5:'value'})"
+        ],
+        "description": "长宽转换（pivot）"
+    },
+    "透视表聚合": {
+        "prefix": "pd_pivot_table",
+        "body": [
+            "${1:pivot} = ${2:df}.pivot_table(index=${3:'row_col'}, values=${4:'val_col'}, aggfunc=${5|'mean','sum','count'|}, fill_value=${6:0})"
+        ],
+        "description": "透视表聚合（pivot_table）"
+    },
+    "宽转长 melt": {
+        "prefix": "pd_melt",
+        "body": [
+            "${1:long} = ${2:df}.melt(id_vars=[${3:'id'}], var_name=${4:'variable'}, value_name=${5:'value'})"
+        ],
+        "description": "宽转长（melt）"
+    },
+    "字符串转时间类型": {
+        "prefix": "pd_to_datetime",
+        "body": [
+            "import pandas as pd",
+            "",
+            "${1:df}[${2:'date_col'}] = pd.to_datetime(${1:df}[${2:'date_col'}], format=${3|'%Y-%m-%d','%Y-%m-%d %H:%M:%S','%Y/%m/%d'|})"
+        ],
+        "description": "字符串转时间类型（指定 format）"
+    },
+    "字符串包含过滤": {
+        "prefix": "pd_str_contains",
+        "body": [
+            "${1:filtered} = ${2:df}[${2:df}[${3:'col'}].str.contains(${4:'pattern'}, na=${5:False}, regex=${6:True})]"
+        ],
+        "description": "按字符串包含模式过滤行"
     }
 }

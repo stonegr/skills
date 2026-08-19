@@ -1,4 +1,23 @@
+# base
 .vscode/*
+!.vscode/*.json
 !.vscode/*.code-snippets
+wheels
+*.egg-info
+logs
+# python
+venv
+.venv
 __pycache__
+.DS_Store
+
+# node
 node_modules
+build
+dist
+
+# project
+backup
+
+# self
+self

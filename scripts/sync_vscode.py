@@ -12,8 +12,10 @@ system = platform.system()
 FILE_DIR = Path(__file__).absolute().parent
 
 VSCODE_SNIPPETS_DIR = Path()
-if system == 'Windows' or system == 'Linux':
+if system == 'Windows':
     raise NotImplementedError
+elif system == 'Linux':
+    VSCODE_SNIPPETS_DIR = Path('/C:/Users/stone/scoop/apps/vscode/1.116.0/data/user-data/User/snippets')
 elif system == 'Darwin':
     VSCODE_SNIPPETS_DIR = Path('~/Library/Application Support/Code/User/snippets').expanduser()
 
