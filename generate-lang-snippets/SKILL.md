@@ -229,3 +229,47 @@ python3 references/expand.py shell.code-snippets
 - 以python为例子
   - 文件名: python.code-snippets 放在当前项目的.vscode目录下
   - prefix: 如果是if -> py_if 用-连接
+
+# 生成完成后：同步 AGENTS.md
+
+生成完 `<lang>.code-snippets` 并通过校验后，**必须**做一次 AGENTS.md 同步检查，避免仓库里多出一份未登记的 snippet 文件。
+
+## 检查流程
+
+1. 定位当前工作目录（cwd）下的 `AGENTS.md`
+2. 在文件中查找分类小节标题：
+   - `generate-lang-snippets` → `## .vscode中通过 generate-lang-snippets 添加的snippets`
+   - `generate-func-snippets` → `## .vscode中通过 generate-func-snippets 添加的snippets`
+3. 检查当前生成的 `<file>.code-snippets` 是否已列在该小节的列表里
+4. 根据情况处理：
+
+| 场景 | 处理 |
+|---|---|
+| AGENTS.md 不存在 | 提示用户：`AGENTS.md 不存在，是否创建并登记 <file>.code-snippets？`，不要擅自创建 |
+| 小节不存在 | 在文件末尾追加小节（用本 skill 对应的标题）+ 条目 `- <file>.code-snippets` |
+| 小节存在但未列出 | 在该小节列表末尾追加 `- <file>.code-snippets`，保持字母序插入即可 |
+| 已列出 | 跳过，最后一句话告知用户「AGENTS.md 已登记」 |
+
+## 写入规则
+
+- 条目格式：`- <file>.code-snippets`（按文件名排序追加，方便 diff）
+- 不修改 AGENTS.md 的其他内容
+- 写完后用 `grep -F '<file>.code-snippets' AGENTS.md` 确认已写入
+- 同步结果一并写进交付总结：例如 `✓ AGENTS.md 已登记 (新增) / ✓ AGENTS.md 已存在 (跳过)`
+
+## 示例（更新前 → 更新后）
+
+更新前 `AGENTS.md`：
+```markdown
+## .vscode中通过 generate-lang-snippets 添加的snippets
+- go.code-snippets
+- python.code-snippets
+```
+
+生成 `typescript.code-snippets` 后应变成：
+```markdown
+## .vscode中通过 generate-lang-snippets 添加的snippets
+- go.code-snippets
+- python.code-snippets
+- typescript.code-snippets
+```

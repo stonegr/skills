@@ -108,6 +108,49 @@ python3 references/expand.py .vscode/<library>.code-snippets
 - 输出 snippets 文件路径 + snippet 总数 + 校验结果
 - 提示用户到产物 review
 
+### Step 6：同步 AGENTS.md（必做）
+
+生成完 `<library>.code-snippets` 并通过校验后，必须做一次 AGENTS.md 同步检查，避免仓库里多出一份未登记的 snippet 文件。
+
+**流程**：
+
+1. 定位 cwd 下的 `AGENTS.md`
+2. 在文件中查找分类小节：
+   - `## .vscode中通过 generate-func-snippets 添加的snippets`
+3. 检查当前生成的 `<library>.code-snippets` 是否已列在该小节里
+4. 按下表处理：
+
+| 场景 | 处理 |
+|---|---|
+| AGENTS.md 不存在 | 提示用户：`AGENTS.md 不存在，是否创建并登记 <library>.code-snippets？`，**不要擅自创建** |
+| 小节不存在 | 在文件末尾追加小节 + 条目 `- <library>.code-snippets` |
+| 小节存在但未列出 | 在该小节列表末尾追加 `- <library>.code-snippets`，按字母序插入即可 |
+| 已列出 | 跳过，告知用户「AGENTS.md 已登记」 |
+
+**写入规则**：
+
+- 条目格式：`- <library>.code-snippets`
+- 不修改 AGENTS.md 的其他内容
+- 写完后用 `grep -F '<library>.code-snippets' AGENTS.md` 确认已写入
+- 同步结果写进交付总结：`✓ AGENTS.md 已登记 (新增) / ✓ AGENTS.md 已存在 (跳过)`
+
+**示例**：
+
+更新前 `AGENTS.md`：
+```markdown
+## .vscode中通过 generate-func-snippets 添加的snippets
+- fastapi.code-snippets
+- pandas.code-snippets
+```
+
+生成 `gorm.code-snippets` 后应变成：
+```markdown
+## .vscode中通过 generate-func-snippets 添加的snippets
+- fastapi.code-snippets
+- gorm.code-snippets
+- pandas.code-snippets
+```
+
 ---
 
 ## prefix 命名规范
