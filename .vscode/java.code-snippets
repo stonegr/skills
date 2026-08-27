@@ -292,5 +292,31 @@
             "});"
         ],
         "description": "信号监听（需要 import sun.misc.Signal，注意 sun.* 是内部 API）"
+    },
+    "函数定义": {
+        "prefix": "ja_function",
+        "body": [
+            "public ${1:static} ${2:void} ${3:methodName}(${4:params}) {",
+            "    ${5:// code}",
+            "}"
+        ],
+        "description": "函数定义（方法，static 默认可去掉）"
+    },
+    "类定义": {
+        "prefix": "ja_class",
+        "body": [
+            "public class ${1:Name} {",
+            "    private ${2:String} ${3:field};",
+            "",
+            "    public ${1:Name}(${4:String} ${3:field}) {",
+            "        this.${3:field} = ${3:field};",
+            "    }",
+            "",
+            "    public ${5:void} ${6:method}() {",
+            "        ${7:// code}",
+            "    }",
+            "}"
+        ],
+        "description": "类定义（含字段、构造器、方法）"
     }
 }

@@ -402,5 +402,36 @@
             "// })?;"
         ],
         "description": "信号监听（signal-hook 推荐 + ctrlc 备选）"
+    },
+    "函数定义": {
+        "prefix": "rs_function",
+        "body": [
+            "fn ${1:name}(${2:params}) ${3:-> ReturnType} {",
+            "    ${4:// code}",
+            "}"
+        ],
+        "description": "函数定义"
+    },
+    "类定义": {
+        "prefix": "rs_class",
+        "body": [
+            "#[derive(Debug, Default)]",
+            "struct ${1:Name} {",
+            "    ${2:// fields}",
+            "}",
+            "",
+            "impl ${1:Name} {",
+            "    fn new(${3:params}) -> Self {",
+            "        Self {",
+            "            ${4:// fields}",
+            "        }",
+            "    }",
+            "",
+            "    fn ${5:method}(&self, ${6:params}) {",
+            "        ${7:// code}",
+            "    }",
+            "}"
+        ],
+        "description": "类定义（struct + impl，含构造器和方法）"
     }
 }

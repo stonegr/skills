@@ -327,5 +327,31 @@
             "// }"
         ],
         "description": "生成随机字符串（crypto 默认 + Math.random 备选）"
+    },
+    "函数定义": {
+        "prefix": "ts_function",
+        "body": [
+            "function ${1:name}(${2:params}: ${3:any}): ${4:void} {",
+            "    ${5:// code}",
+            "}"
+        ],
+        "description": "函数定义"
+    },
+    "类定义": {
+        "prefix": "ts_class",
+        "body": [
+            "class ${1:Name} {",
+            "    private ${2:field}: ${3:string};",
+            "",
+            "    constructor(${4:params}) {",
+            "        ${5:// init}",
+            "    }",
+            "",
+            "    public ${6:method}(${7:params}): ${8:void} {",
+            "        ${9:// code}",
+            "    }",
+            "}"
+        ],
+        "description": "类定义（含字段、构造器、方法）"
     }
 }

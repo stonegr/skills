@@ -349,5 +349,35 @@
             "// }"
         ],
         "description": "生成随机字符串（crypto/rand 安全版默认，math/rand 注释备选）"
+    },
+    "函数定义": {
+        "prefix": "go_function",
+        "body": [
+            "func ${1:name}(${2:params}) ${3:error} {",
+            "    ${4:// code}",
+            "    return nil",
+            "}"
+        ],
+        "description": "函数定义"
+    },
+    "类定义": {
+        "prefix": "go_class",
+        "body": [
+            "type ${1:Name} struct {",
+            "    ${2:// fields}",
+            "}",
+            "",
+            "func New${1:Name}(${3:params}) *$1 {",
+            "    return &$1{",
+            "        ${4:// fields}",
+            "    }",
+            "}",
+            "",
+            "func (${5:r} *$1) ${6:Method}(${7:params}) ${8:error} {",
+            "    ${9:// code}",
+            "    return nil",
+            "}"
+        ],
+        "description": "类定义（struct + 构造器 + receiver 方法）"
     }
 }

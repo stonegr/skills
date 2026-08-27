@@ -468,5 +468,34 @@
             "-- end)"
         ],
         "description": "信号监听（luasystem 跨平台 + luaposix POSIX 备选）"
+    },
+    "函数定义": {
+        "prefix": "lua_function",
+        "body": [
+            "local function ${1:name}(${2:params})",
+            "    ${3:-- code}",
+            "end"
+        ],
+        "description": "函数定义"
+    },
+    "类定义": {
+        "prefix": "lua_class",
+        "body": [
+            "local ${1:Name} = {}",
+            "${1:Name}.__index = ${1:Name}",
+            "",
+            "function ${1:Name}:new(${2:params})",
+            "    local self = setmetatable({}, ${1:Name})",
+            "    ${3:-- init fields}",
+            "    return self",
+            "end",
+            "",
+            "function ${1:Name}:${4:method}(${5:params})",
+            "    ${6:-- code}",
+            "end",
+            "",
+            "return ${1:Name}"
+        ],
+        "description": "类定义（table + 元表，模拟 OO）"
     }
 }

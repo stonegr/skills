@@ -333,5 +333,23 @@
             "${1:random_str} = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(${2:16}))"
         ],
         "description": "生成随机字符串（密码学安全）"
+    },
+    "函数定义": {
+        "prefix": "py_function",
+        "body": [
+            "def ${1:name}(${2:params}) -> ${3:None}:",
+            "    ${4:pass}"
+        ],
+        "description": "函数定义"
+    },
+    "类定义": {
+        "prefix": "py_class",
+        "body": [
+            "class ${1:Name}(${2:object}):",
+            "    def __init__(self, ${3:params}):",
+            "        super().__init__()",
+            "        ${4:# init fields}"
+        ],
+        "description": "类定义"
     }
 }

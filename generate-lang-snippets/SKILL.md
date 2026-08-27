@@ -110,6 +110,8 @@ python3 references/expand.py shell.code-snippets
 - 循环(数组，range)
 - 错误捕获（错误定义、错误抛出、错误捕获）
 - if判断逻辑
+- 函数定义
+- 类定义
 - 文件操作（读、写、拷贝、移动、删除）
 - 读取env
 - 执行shell命令
@@ -205,15 +207,21 @@ python3 references/expand.py shell.code-snippets
 | `process` | 多进程 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `log` | 日志 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `signal` | 信号监听 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `function` | 函数定义 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `class` | 类定义 | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ |
 
 **规则**：
 - Go 习惯用 `if err != nil` 而不是 try/catch，所以用 `err_check` 替代 `try`（其他语言都用 `try`）
 - Rust 用 `?` + `Result`/match 替代 try/catch，所以也跳过 `try`
 - Java 用 checked/unchecked + try-catch-finally，所以 `try` ✓、`err_check` ✗（仅 Go 使用）
 - Go 没有 `while` 关键字，用 `for cond {}` 等价实现，sufix 仍叫 `while`（body 是 for 写法）
+- Go 没有 `class`，用 `type Name struct {}` + receiver 方法模拟，sufix 仍叫 `class`
+- Rust 没有 `class`，用 `struct` + `impl` 块模拟，sufix 仍叫 `class`
+- Shell 没有 `class`，`class` sufix 整体不出现
 - 错误抛出统一 `throw`（不管语言里叫 raise/throw/return err/panic）
 - 错误定义统一 `error_define`（不管实现是 class/var/func/enum）
-- 语言没有的特性，sufix 整体不出现（如 Go 无 `try`、Rust 无 `try`、仅 Go 用 `err_check`）
+- 函数定义统一 `function`（不管语言里叫 def/func/function/fn/method）
+- 语言没有的特性，sufix 整体不出现（如 Go 无 `try`、Rust 无 `try`、Shell 无 `class`、仅 Go 用 `err_check`）
 - 跨语言 sufix 必须完全一致，方便 IDE 自动补全跨语言切换
 - **跨语言 key 也保持一致**：同名功能的 snippet 在所有语言文件里用相同的中文 key（如 `while 循环`、`if 判断`、`信号监听`），VSCode 按文件后缀匹配，互不冲突
 

@@ -326,5 +326,29 @@
             "// }"
         ],
         "description": "生成随机字符串（crypto 默认 + Math.random 备选）"
+    },
+    "函数定义": {
+        "prefix": "js_function",
+        "body": [
+            "function ${1:name}(${2:params}) {",
+            "    ${3:// code}",
+            "}"
+        ],
+        "description": "函数定义"
+    },
+    "类定义": {
+        "prefix": "js_class",
+        "body": [
+            "class ${1:Name} {",
+            "    constructor(${2:params}) {",
+            "        ${3:// init}",
+            "    }",
+            "",
+            "    ${4:method}(${5:params}) {",
+            "        ${6:// code}",
+            "    }",
+            "}"
+        ],
+        "description": "类定义（含构造器、方法）"
     }
 }

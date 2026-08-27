@@ -272,5 +272,14 @@
             "# ${1:str}=$(openssl rand -base64 ${3:24} | tr -d '=+/' | cut -c1-${2:16})"
         ],
         "description": "生成随机字符串（/dev/urandom 默认 + openssl 备选）"
+    },
+    "函数定义": {
+        "prefix": "sh_function",
+        "body": [
+            "${1:name}() {",
+            "    ${2:# body}",
+            "}"
+        ],
+        "description": "函数定义"
     }
 }
