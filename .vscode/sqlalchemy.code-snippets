@@ -424,5 +424,126 @@
             "${1:created_at} = Column(DateTime, default=datetime.utcnow, nullable=False)"
         ],
         "description": "字段默认值 default"
+    },
+    // 下面为测试snippets
+    "内存 SQLite 测试引擎": {
+        "prefix": "sa_test_engine",
+        "body": [
+            "import pytest",
+            "from sqlalchemy import create_engine",
+            "from sqlalchemy.orm import sessionmaker",
+            "",
+            "from ${1:app.models} import Base",
+            "",
+            "",
+            "@pytest.fixture",
+            "def ${2:engine}():",
+            "    ${2:engine} = create_engine(\"sqlite:///:memory:\")",
+            "    Base.metadata.create_all(${2:engine})",
+            "    yield ${2:engine}",
+            "    ${2:engine}.dispose()",
+            "",
+            "",
+            "@pytest.fixture",
+            "def ${3:session}(${2:engine}):",
+            "    ${4:SessionLocal} = sessionmaker(bind=${2:engine})",
+            "    ${3:session} = ${4:SessionLocal}()",
+            "    yield ${3:session}",
+            "    ${3:session}.close()"
+        ],
+        "description": "sqlite:///:memory: 测试引擎 + session fixture"
+    },
+    "每用例独立 session": {
+        "prefix": "sa_test_session",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "@pytest.fixture",
+            "def ${1:db_session}():",
+            "    ${2:connection} = ${3:engine}.connect()",
+            "    ${4:transaction} = ${2:connection}.begin()",
+            "    ${5:Session} = sessionmaker(bind=${2:connection})",
+            "    ${6:session} = ${5:Session}()",
+            "",
+            "    yield ${6:session}",
+            "",
+            "    ${6:session}.close()",
+            "    ${4:transaction}.rollback()",
+            "    ${2:connection}.close()"
+        ],
+        "description": "每个用例独立 session + 事务回滚"
+    },
+    "事务回滚 fixture": {
+        "prefix": "sa_test_rollback",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "@pytest.fixture(autouse=True)",
+            "def ${1:_rollback}():",
+            "    yield",
+            "    ${2:db_session}.rollback()"
+        ],
+        "description": "每个用例后自动回滚"
+    },
+    "alembic 迁移测试": {
+        "prefix": "sa_test_alembic",
+        "body": [
+            "import pytest",
+            "from alembic.config import Config",
+            "from alembic import command",
+            "",
+            "",
+            "@pytest.fixture",
+            "def ${1:alembic_cfg}(tmp_path):",
+            "    ${2:cfg} = Config()",
+            "    ${2:cfg}.set_main_option(\"script_location\", \"${3:migrations}\")",
+            "    ${2:cfg}.set_main_option(\"sqlalchemy.url\", \"sqlite:///:memory:\")",
+            "    return ${2:cfg}",
+            "",
+            "",
+            "def test_${4:upgrade_head}(${1:alembic_cfg}):",
+            "    command.upgrade(${1:alembic_cfg}, \"head\")"
+        ],
+        "description": "alembic 迁移测试"
+    },
+    "单表 CRUD 测试": {
+        "prefix": "sa_test_model_crud",
+        "body": [
+            "def test_${1:model}_crud(${2:db_session}):",
+            "    # Create",
+            "    ${3:obj} = ${4:Model}(name=\"${5:test}\")",
+            "    ${2:db_session}.add(${3:obj})",
+            "    ${2:db_session}.commit()",
+            "    assert ${3:obj}.id is not None",
+            "",
+            "    # Read",
+            "    ${6:got} = ${2:db_session}.query(${4:Model}).filter_by(name=\"${5:test}\").first()",
+            "    assert ${6:got}.id == ${3:obj}.id",
+            "",
+            "    # Update",
+            "    ${6:got}.name = \"${7:updated}\"",
+            "    ${2:db_session}.commit()",
+            "",
+            "    # Delete",
+            "    ${2:db_session}.delete(${6:got})",
+            "    ${2:db_session}.commit()"
+        ],
+        "description": "单模型 CRUD 测试"
+    },
+    "join 查询测试": {
+        "prefix": "sa_test_join",
+        "body": [
+            "def test_${1:join_query}(${2:db_session}):",
+            "    ${3:result} = (",
+            "        ${2:db_session}.query(${4:User}, ${5:Order})",
+            "        .join(${5:Order}, ${4:User}.id == ${5:Order}.user_id)",
+            "        .filter(${4:User}.name == \"${6:alice}\")",
+            "        .all()",
+            "    )",
+            "    assert len(${3:result}) == ${7:1}"
+        ],
+        "description": "join 多表查询测试"
     }
 }

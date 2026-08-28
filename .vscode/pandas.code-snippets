@@ -312,5 +312,79 @@
             "${1:filtered} = ${2:df}[${2:df}[${3:'col'}].str.contains(${4:'pattern'}, na=${5:False}, regex=${6:True})]"
         ],
         "description": "按字符串包含模式过滤行"
+    },
+    // 下面为测试snippets
+    "DataFrame 等值断言": {
+        "prefix": "pd_test_eq",
+        "body": [
+            "import pandas as pd",
+            "",
+            "",
+            "def test_${1:df_equal}():",
+            "    ${2:expected} = pd.DataFrame({'${3:a}': [${4:1, 2}], '${5:b}': [${6:3, 4}]})",
+            "    ${7:actual} = ${8:func_returns_df()}",
+            "    pd.testing.assert_frame_equal(${2:expected}, ${7:actual})"
+        ],
+        "description": "pd.testing.assert_frame_equal 等值断言"
+    },
+    "CSV 读写后比对": {
+        "prefix": "pd_test_csv_io",
+        "body": [
+            "import pandas as pd",
+            "",
+            "",
+            "def test_${1:csv_roundtrip}(tmp_path):",
+            "    ${2:path} = tmp_path / \"${3:test}.csv\"",
+            "    ${4:df}.to_csv(${2:path}, index=${5:False})",
+            "    ${6:loaded} = pd.read_csv(${2:path})",
+            "    pd.testing.assert_frame_equal(${4:df}, ${6:loaded})"
+        ],
+        "description": "DataFrame 写 CSV → 读回 → 比对"
+    },
+    "groupby 结果比对": {
+        "prefix": "pd_test_groupby",
+        "body": [
+            "import pandas as pd",
+            "",
+            "",
+            "def test_${1:groupby_sum}():",
+            "    ${2:df} = pd.DataFrame({",
+            "        '${3:group}': ['${4:a}', '${4:a}', '${5:b}'],",
+            "        '${6:value}': [${7:1}, ${8:2}, ${9:3}],",
+            "    })",
+            "    ${10:got} = ${2:df}.groupby('${3:group}')['${6:value}'].sum()",
+            "    ${11:expected} = pd.Series([${8:3}, ${9:3}], index=['${4:a}', '${5:b}'], name='${6:value}')",
+            "    pd.testing.assert_series_equal(${11:expected}, ${10:got})"
+        ],
+        "description": "groupby 结果断言"
+    },
+    "apply 结果比对": {
+        "prefix": "pd_test_apply",
+        "body": [
+            "import pandas as pd",
+            "",
+            "",
+            "def test_${1:apply_func}():",
+            "    ${2:df} = pd.DataFrame({'${3:x}': [${4:1}, ${5:2}, ${6:3}]})",
+            "    ${7:got} = ${2:df}['${3:x}'].apply(lambda v: v * ${8:2})",
+            "    ${9:expected} = pd.Series([${10:2}, ${11:4}, ${12:6}], name='${3:x}')",
+            "    pd.testing.assert_series_equal(${9:expected}, ${7:got})"
+        ],
+        "description": "apply 后结果比对"
+    },
+    "缺失值处理测试": {
+        "prefix": "pd_test_na",
+        "body": [
+            "import pandas as pd",
+            "import numpy as np",
+            "",
+            "",
+            "def test_${1:fillna}():",
+            "    ${2:df} = pd.DataFrame({'${3:a}': [${4:1}, np.nan, ${5:3}]})",
+            "    ${6:filled} = ${2:df}.fillna(${7:0})",
+            "    ${8:expected} = pd.DataFrame({'${3:a}': [${4:1}, ${7:0}, ${5:3}]}).astype('float64')",
+            "    pd.testing.assert_frame_equal(${8:expected}, ${6:filled})"
+        ],
+        "description": "fillna / dropna 缺失值处理结果"
     }
 }

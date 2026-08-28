@@ -433,5 +433,350 @@
             "}"
         ],
         "description": "类定义（struct + impl，含构造器和方法）"
+    },
+    // 下面为测试snippets
+    "基本测试函数": {
+        "prefix": "rs_test_func",
+        "body": [
+            "#[cfg(test)]",
+            "mod tests {",
+            "    use super::*;",
+            "",
+            "    #[test]",
+            "    fn ${1:test_name}() {",
+            "        let ${2:actual} = ${3:func()};",
+            "        assert_eq!(${2:actual}, ${4:expected});",
+            "    }",
+            "}"
+        ],
+        "description": "基本测试函数（#[test]）"
+    },
+    "should_panic 预期 panic": {
+        "prefix": "rs_test_should_panic",
+        "body": [
+            "#[test]",
+            "#[should_panic]",
+            "fn ${1:test_name}() {",
+            "    ${2:func_that_panics()};",
+            "}"
+        ],
+        "description": "should_panic 预期 panic"
+    },
+    "ignored 跳过测试": {
+        "prefix": "rs_test_ignore",
+        "body": [
+            "#[test]",
+            "#[ignore = \"${1:reason}\"]",
+            "fn ${1:test_name}() {",
+            "    ${2:// 需要 --ignored 才会运行}",
+            "}"
+        ],
+        "description": "ignored 跳过测试"
+    },
+    "Result 返回测试": {
+        "prefix": "rs_test_result",
+        "body": [
+            "#[test]",
+            "fn ${1:test_name}() -> Result<(), ${2:Box<dyn std::error::Error}>> {",
+            "    ${3:let value = func()?;}",
+            "    assert_eq!(${4:actual}, ${5:expected});",
+            "    Ok(())",
+            "}"
+        ],
+        "description": "fn test() -> Result 测试（? 写法）"
+    },
+    "cfg(test) 模块": {
+        "prefix": "rs_test_cfg_test",
+        "body": [
+            "#[cfg(test)]",
+            "mod tests {",
+            "    #[test]",
+            "    fn ${1:test_name}() {",
+            "        ${2:// test body}",
+            "    }",
+            "}"
+        ],
+        "description": "cfg(test) 模块包裹"
+    },
+    "assert_eq!": {
+        "prefix": "rs_test_assert_eq",
+        "body": [
+            "assert_eq!(${1:actual}, ${2:expected});"
+        ],
+        "description": "assert_eq! 相等断言"
+    },
+    "assert_ne!": {
+        "prefix": "rs_test_assert_ne",
+        "body": [
+            "assert_ne!(${1:actual}, ${2:expected});"
+        ],
+        "description": "assert_ne! 不等断言"
+    },
+    "assert!": {
+        "prefix": "rs_test_assert",
+        "body": [
+            "assert!(${1:condition});"
+        ],
+        "description": "assert! 真值断言"
+    },
+    "浮点近似": {
+        "prefix": "rs_test_assert_close",
+        "body": [
+            "let eps = ${1:1e-6};",
+            "assert!(((${2:actual}) - (${3:expected})).abs() < eps);"
+        ],
+        "description": "浮点近似断言"
+    },
+    "dbg! 调试": {
+        "prefix": "rs_test_dbg",
+        "body": [
+            "dbg!(${1:value});"
+        ],
+        "description": "dbg! 调试输出"
+    },
+    "should_panic 匹配消息": {
+        "prefix": "rs_test_should_panic_msg",
+        "body": [
+            "#[test]",
+            "#[should_panic(expected = \"${1:message}\")]",
+            "fn ${2:test_name}() {",
+            "    ${3:func_that_panics()};",
+            "}"
+        ],
+        "description": "should_panic(expected=) 匹配消息"
+    },
+    "catch_unwind 捕获 panic": {
+        "prefix": "rs_test_catch_unwind",
+        "body": [
+            "use std::panic;",
+            "",
+            "let ${1:result} = panic::catch_unwind(|| ${2:func_that_panics()});",
+            "assert!(${1:result}.is_err());"
+        ],
+        "description": "catch_unwind 捕获 panic"
+    },
+    "测试模块 setup": {
+        "prefix": "rs_test_setup",
+        "body": [
+            "#[cfg(test)]",
+            "mod tests {",
+            "    fn ${1:setup}() -> ${2:TestFixture} {",
+            "        ${3:// 创建测试夹具}",
+            "        ${4:fixture}",
+            "    }",
+            "",
+            "    #[test]",
+            "    fn ${5:test_name}() {",
+            "        let ${6:fixture} = ${1:setup}();",
+            "        ${7:// 使用 fixture}",
+            "    }",
+            "}"
+        ],
+        "description": "测试模块 setup helper"
+    },
+    "每个用例 setup": {
+        "prefix": "rs_test_setup_each",
+        "body": [
+            "#[cfg(test)]",
+            "mod tests {",
+            "    fn ${1:setup_each}() -> ${2:TestFixture} {",
+            "        ${3:// 每个用例前调用}",
+            "        ${4:fixture}",
+            "    }",
+            "}",
+            "",
+            "// 配合 #[test] fn $5() { let fixture = $1(); ... } 使用"
+        ],
+        "description": "每个用例 setup helper"
+    },
+    "嵌套测试模块": {
+        "prefix": "rs_test_cfg_test_mod",
+        "body": [
+            "#[cfg(test)]",
+            "mod ${1:outer_tests} {",
+            "    use super::*;",
+            "",
+            "    mod ${2:inner_tests} {",
+            "        use super::*;",
+            "",
+            "        #[test]",
+            "        fn ${3:test_name}() {",
+            "            ${4:// body}",
+            "        }",
+            "    }",
+            "}"
+        ],
+        "description": "嵌套测试模块"
+    },
+    "mockall trait mock": {
+        "prefix": "rs_test_mockall_trait",
+        "body": [
+            "use mockall::automock;",
+            "",
+            "#[automock]",
+            "pub trait ${1:MyTrait} {",
+            "    fn ${2:method}(&self, ${3:arg}: ${4:Type}) -> ${5:ReturnType};",
+            "}"
+        ],
+        "description": "mockall #[automock] 自动 mock trait"
+    },
+    "mockall expect": {
+        "prefix": "rs_test_mockall_expect",
+        "body": [
+            "let mut ${1:mock} = Mock${2:TraitName}::new();",
+            "${1:mock}.expect_${3:method}()",
+            "    .with(mockall::predicate::eq(${4:arg}))",
+            "    .times(${5:1})",
+            "    .return_const(${6:result});"
+        ],
+        "description": "mockall expect_method() 设定桩"
+    },
+    "手工 mock trait": {
+        "prefix": "rs_test_trait_mock",
+        "body": [
+            "struct ${1:MockImpl};",
+            "",
+            "impl ${2:TraitName} for $1 {",
+            "    fn ${3:method}(&self, ${4:arg}: ${5:Type}) -> ${6:ReturnType} {",
+            "        ${7:result}",
+            "    }",
+            "}"
+        ],
+        "description": "手工 mock 实现 trait"
+    },
+    "httpmock 服务": {
+        "prefix": "rs_test_httpmock",
+        "body": [
+            "use httpmock::MockServer;",
+            "",
+            "let ${1:server} = MockServer::start();",
+            "let ${2:mock} = ${1:server}.mock(|when, then| {",
+            "    when.method(${3|GET,POST|}).path(\"/${4:path}\");",
+            "    then.status(${5:200}).body(\"${6:body}\");",
+            "});"
+        ],
+        "description": "httpmock 模拟 HTTP 服务"
+    },
+    "tokio 异步测试": {
+        "prefix": "rs_test_async",
+        "body": [
+            "#[tokio::test]",
+            "async fn ${1:test_name}() {",
+            "    let ${2:result} = ${3:async_func()}.await;",
+            "    assert_eq!(${2:result}, ${4:expected});",
+            "}"
+        ],
+        "description": "tokio::test 异步测试"
+    },
+    "async-std 异步测试": {
+        "prefix": "rs_test_async_std",
+        "body": [
+            "#[async_std::test]",
+            "async fn ${1:test_name}() {",
+            "    let ${2:result} = ${3:async_func()}.await;",
+            "    assert_eq!(${2:result}, ${4:expected});",
+            "}"
+        ],
+        "description": "async_std::test 异步测试"
+    },
+    "基准测试": {
+        "prefix": "rs_test_bench",
+        "body": [
+            "#![feature(test)]",
+            "",
+            "extern crate test;",
+            "",
+            "use test::Bencher;",
+            "",
+            "#[bench]",
+            "fn ${1:bench_name}(b: &mut Bencher) {",
+            "    b.iter(|| ${2:func_to_bench()});",
+            "}"
+        ],
+        "description": "bench 基准测试（nightly）"
+    },
+    "doctest": {
+        "prefix": "rs_test_doc",
+        "body": [
+            "/// ${1:函数说明}",
+            "///",
+            "/// ```",
+            "/// # use ${2:crate}::${3:item};",
+            "/// let result = ${4:func()};",
+            "/// assert_eq!(result, ${5:expected});",
+            "/// ```"
+        ],
+        "description": "doctest 文档测试（cargo test --doc）"
+    },
+    "单线程运行": {
+        "prefix": "rs_test_thread",
+        "body": [
+            "# 单线程运行 cargo test（避免竞态）",
+            "cargo test -- --test-threads=1"
+        ],
+        "description": "cargo test --test-threads=1"
+    },
+    "tarpaulin 覆盖率": {
+        "prefix": "rs_test_cover",
+        "body": [
+            "# 覆盖率统计（cargo-tarpaulin）",
+            "cargo tarpaulin --out ${1|Html,Stdout,Xml|}"
+        ],
+        "description": "cargo tarpaulin 覆盖率"
+    },
+    "过滤测试名": {
+        "prefix": "rs_test_filter",
+        "body": [
+            "# 只跑名称包含 \"$1\" 的测试",
+            "cargo test ${1:name_filter}"
+        ],
+        "description": "cargo test name_filter 过滤"
+    },
+    "参数化 each macro": {
+        "prefix": "rs_test_param_each",
+        "body": [
+            "macro_rules! ${1:case} {",
+            "    ($($name:ident: $input:expr, $expected:expr),* $(,)?) => {",
+            "        $(#[test] fn $name() {",
+            "            assert_eq!(${2:func}($input), $expected);",
+            "        })*",
+            "    }",
+            "}",
+            "",
+            "${1:case}! {",
+            "    ${3:case1}: ${4:1}, ${5:2},",
+            "    ${6:case2}: ${7:3}, ${8:4},",
+            "}"
+        ],
+        "description": "macro_rules! 参数化测试"
+    },
+    "宏参数化": {
+        "prefix": "rs_test_param_macro",
+        "body": [
+            "use rstest::*;",
+            "",
+            "#[rstest]",
+            "#[case(${1:1}, ${2:2})]",
+            "#[case(${3:2}, ${4:4})]",
+            "fn ${5:test_name}(#[case] ${6:input}: ${7:i32}, #[case] ${8:expected}: ${7:i32}) {",
+            "    assert_eq!(${6:input} + ${6:input}, ${8:expected});",
+            "}"
+        ],
+        "description": "rstest 库的 #[case] 参数化"
+    },
+    "assert! 数值小于": {
+        "prefix": "rs_test_assert_lt",
+        "body": [
+            "assert!(${1:actual} < ${2:upper});",
+            "assert!(${1:actual} > ${3:lower});"
+        ],
+        "description": "数值区间断言"
+    },
+    "包含断言": {
+        "prefix": "rs_test_assert_contains",
+        "body": [
+            "assert!(${1:container}.contains(&${2:item}));"
+        ],
+        "description": "容器包含断言"
     }
 }

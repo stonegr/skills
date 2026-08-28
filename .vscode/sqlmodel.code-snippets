@@ -570,5 +570,103 @@
             "        yield ${6:session}"
         ],
         "description": "异步引擎与 AsyncSession"
+    },
+    // 下面为测试snippets
+    "CRUD 测试": {
+        "prefix": "sm_test_crud",
+        "body": [
+            "from sqlmodel import Session, select",
+            "",
+            "from ${1:app.models} import ${2:Hero}",
+            "",
+            "",
+            "def test_${3:create_and_read}(${4:session}: Session):",
+            "    ${5:hero} = ${2:Hero}(name=\"${6:Spider-Boy}\", secret_name=\"${7:Pedro Parqueador}\")",
+            "    ${4:session}.add(${5:hero})",
+            "    ${4:session}.commit()",
+            "",
+            "    ${8:heroes} = ${4:session}.exec(select(${2:Hero})).all()",
+            "    assert len(${8:heroes}) == 1",
+            "    assert ${8:heroes}[0].name == \"${6:Spider-Boy}\""
+        ],
+        "description": "sqlmodel CRUD 测试"
+    },
+    "FastAPI 集成测试": {
+        "prefix": "sm_test_fa",
+        "body": [
+            "from fastapi.testclient import TestClient",
+            "",
+            "from ${1:app.main} import app",
+            "",
+            "",
+            "def test_${2:create_hero}(${3:client}):",
+            "    response = ${3:client}.post(",
+            "        ${4:'/heroes/'},",
+            "        json={'name': '${5:Spider-Boy}', 'secret_name': '${6:Pedro}'},",
+            "    )",
+            "    data = response.json()",
+            "    assert response.status_code == ${7:200}",
+            "    assert data['name'] == '${5:Spider-Boy}'",
+            "    assert 'id' in data"
+        ],
+        "description": "FastAPI TestClient 集成 sqlmodel"
+    },
+    "关联加载测试": {
+        "prefix": "sm_test_rel",
+        "body": [
+            "from sqlmodel import Session, select",
+            "from sqlmodel.orm import selectinload",
+            "",
+            "from ${1:app.models} import ${2:Team}, ${3:Hero}",
+            "",
+            "",
+            "def test_${4:team_with_heroes}(${5:session}: Session):",
+            "    ${6:team} = ${2:Team}(name=\"${7:Avengers}\", heroes=[${3:Hero}(name=\"${8:Iron Man}\")])",
+            "    ${5:session}.add(${6:team})",
+            "    ${5:session}.commit()",
+            "",
+            "    ${9:got} = ${5:session}.exec(",
+            "        select(${2:Team}).where(${2:Team}.id == ${6:team}.id).options(selectinload(${2:Team}.heroes))",
+            "    ).one()",
+            "    assert len(${9:got}.heroes) == 1"
+        ],
+        "description": "selectinload 关联加载测试"
+    },
+    "异步 session 测试": {
+        "prefix": "sm_test_async",
+        "body": [
+            "import pytest",
+            "from sqlalchemy.ext.asyncio import AsyncSession",
+            "",
+            "",
+            "@pytest.mark.asyncio",
+            "async def test_${1:async_create}(${2:async_session}: AsyncSession):",
+            "    ${3:hero} = ${4:Hero}(name=\"${5:Async Boy}\")",
+            "    ${2:async_session}.add(${3:hero})",
+            "    await ${2:async_session}.commit()",
+            "",
+            "    from sqlmodel import select",
+            "    ${6:result} = (await ${2:async_session}.exec(select(${4:Hero}))).all()",
+            "    assert len(${6:result}) == 1"
+        ],
+        "description": "AsyncSession 异步测试（pytest-asyncio）"
+    },
+    "create_all 迁移测试": {
+        "prefix": "sm_test_migrate",
+        "body": [
+            "from sqlmodel import SQLModel, create_engine",
+            "",
+            "from ${1:app.models} import ${2:Hero}",
+            "",
+            "",
+            "def test_${3:create_all}():",
+            "    ${4:engine} = create_engine(\"sqlite:///:memory:\")",
+            "    SQLModel.metadata.create_all(${4:engine})",
+            "",
+            "    from sqlalchemy import inspect",
+            "    ${5:inspector} = inspect(${4:engine})",
+            "    assert ${5:inspector}.has_table(\"${6:hero}\")"
+        ],
+        "description": "create_all 创建表测试"
     }
 }

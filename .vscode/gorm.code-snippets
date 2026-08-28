@@ -547,5 +547,132 @@
             "${0}"
         ],
         "description": "手动控制事务"
+    },
+    // 下面为测试snippets
+    "sqlmock 测试": {
+        "prefix": "gm_test_sqlmock",
+        "body": [
+            "package ${1:pkg}",
+            "",
+            "import (",
+            "    \"testing\"",
+            "",
+            "    \"github.com/DATA-DOG/go-sqlmock\"",
+            "    \"gorm.io/driver/mysql\"",
+            "    \"gorm.io/gorm\"",
+            ")",
+            "",
+            "func Test${2:FuncName}(t *testing.T) {",
+            "    db, mock, _ := sqlmock.New()",
+            "    defer db.Close()",
+            "",
+            "    gormDB, _ := gorm.Open(mysql.New(mysql.Config{Conn: db, SkipInitializeWithVersion: true}), &gorm.Config{})",
+            "",
+            "    mock.ExpectQuery(\"SELECT.*FROM.*${3:users}\").WillReturnRows(",
+            "        sqlmock.NewRows([]string{\"id\", \"name\"}).AddRow(1, \"${4:alice}\"),",
+            "    )",
+            "",
+            "    ${5:var result []User}",
+            "    if err := gormDB.Find(&$5).Error; err != nil {",
+            "        t.Fatal(err)",
+            "    }",
+            "    if err := mock.ExpectationsWereMet(); err != nil {",
+            "        t.Fatal(err)",
+            "    }",
+            "}"
+        ],
+        "description": "sqlmock 模拟 SQL 测试"
+    },
+    "事务回滚测试": {
+        "prefix": "gm_test_tx",
+        "body": [
+            "func Test${1:FuncName}(t *testing.T) {",
+            "    db := ${2:setupTestDB()}",
+            "    tx := db.Begin()",
+            "    defer tx.Rollback()  // 测试结束自动回滚，不污染数据库",
+            "",
+            "    if err := tx.Create(&${3:Entity}{Name: \"${4:test}\"}).Error; err != nil {",
+            "        t.Fatal(err)",
+            "    }",
+            "",
+            "    var got ${3:Entity}",
+            "    if err := tx.First(&got, \"name = ?\", \"${4:test}\").Error; err != nil {",
+            "        t.Fatal(err)",
+            "    }",
+            "    if got.Name != \"${4:test}\" {",
+            "        t.Errorf(\"got %s, want %s\", got.Name, \"${4:test}\")",
+            "    }",
+            "}"
+        ],
+        "description": "事务回滚隔离每个测试"
+    },
+    "Create 测试": {
+        "prefix": "gm_test_create",
+        "body": [
+            "func TestCreate${1:Entity}(t *testing.T) {",
+            "    db := ${2:setupTestDB()}",
+            "    ${3:u} := ${1:Entity}{Name: \"${4:test}\"}",
+            "    if err := db.Create(&$3).Error; err != nil {",
+            "        t.Fatal(err)",
+            "    }",
+            "    if ${3:u}.ID == 0 {",
+            "        t.Error(\"expected ID to be set after Create\")",
+            "    }",
+            "}"
+        ],
+        "description": "Create 单条插入测试"
+    },
+    "Find 查询测试": {
+        "prefix": "gm_test_query",
+        "body": [
+            "func TestFind${1:Entity}(t *testing.T) {",
+            "    db := ${2:setupTestDB()}",
+            "    db.Create(&${1:Entity}{Name: \"${3:a}\"})",
+            "    db.Create(&${1:Entity}{Name: \"${4:b}\"})",
+            "",
+            "    var got []${1:Entity}",
+            "    if err := db.Where(\"name = ?\", \"${3:a}\").Find(&got).Error; err != nil {",
+            "        t.Fatal(err)",
+            "    }",
+            "    if len(got) != 1 || got[0].Name != \"${3:a}\" {",
+            "        t.Errorf(\"got %v, want [a]\", got)",
+            "    }",
+            "}"
+        ],
+        "description": "First/Find 查询断言"
+    },
+    "关联预加载测试": {
+        "prefix": "gm_test_rel",
+        "body": [
+            "func Test${1:Entity}Preload(t *testing.T) {",
+            "    db := ${2:setupTestDB()}",
+            "    db.Create(&${1:Entity}{Name: \"${3:a}\", ${4:Items: []Item{{Name: \"${5:item1}\"}}})",
+            "",
+            "    var got ${1:Entity}",
+            "    if err := db.Preload(\"${4:Items}\").First(&got, \"name = ?\", \"${3:a}\").Error; err != nil {",
+            "        t.Fatal(err)",
+            "    }",
+            "    if len(got.${4:Items}) != 1 {",
+            "        t.Errorf(\"got %d items, want 1\", len(got.${4:Items}))",
+            "    }",
+            "}"
+        ],
+        "description": "Preload 关联加载测试"
+    },
+    "AutoMigrate 测试": {
+        "prefix": "gm_test_migrate",
+        "body": [
+            "func TestAutoMigrate(t *testing.T) {",
+            "    db := ${1:setupTestDB()}",
+            "    if err := db.AutoMigrate(&${2:Entity}{}); err != nil {",
+            "        t.Fatal(err)",
+            "    }",
+            "    // 验证表存在",
+            "    if !db.Migrator().HasTable(&${2:Entity}{}) {",
+            "        t.Error(\"expected table to exist after AutoMigrate\")",
+            "    }",
+            "}"
+        ],
+        "description": "AutoMigrate 迁移测试"
     }
 }

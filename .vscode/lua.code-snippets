@@ -497,5 +497,301 @@
             "return ${1:Name}"
         ],
         "description": "类定义（table + 元表，模拟 OO）"
+    },
+    // 下面为测试snippets
+    "基本测试函数": {
+        "prefix": "lua_test_func",
+        "body": [
+            "describe('${1:group}', function()",
+            "    it('${2:case}', function()",
+            "        local ${3:actual} = ${4:func()}",
+            "        assert.are.equal(${5:expected}, ${3:actual})",
+            "    end)",
+            "end)"
+        ],
+        "description": "基本测试函数（busted）"
+    },
+    "describe 分组": {
+        "prefix": "lua_test_describe",
+        "body": [
+            "describe('${1:group}', function()",
+            "    it('${2:case}', function()",
+            "        ${3:-- test body}",
+            "    end)",
+            "end)"
+        ],
+        "description": "describe 测试分组"
+    },
+    "pending 占位": {
+        "prefix": "lua_test_pending",
+        "body": [
+            "describe('${1:group}', function()",
+            "    pending('${2:todo}')",
+            "end)"
+        ],
+        "description": "pending 占位（待实现）"
+    },
+    "跳过测试": {
+        "prefix": "lua_test_skip",
+        "body": [
+            "describe('${1:group}', function()",
+            "    it.skip('${2:case}', function()",
+            "        ${3:-- skipped body}",
+            "    end)",
+            "end)"
+        ],
+        "description": "it.skip 跳过测试"
+    },
+    "独占测试": {
+        "prefix": "lua_test_only",
+        "body": [
+            "describe('${1:group}', function()",
+            "    it.only('${2:case}', function()",
+            "        ${3:-- exclusive body}",
+            "    end)",
+            "end)"
+        ],
+        "description": "it.only 独占执行"
+    },
+    "相等断言": {
+        "prefix": "lua_test_assert_eq",
+        "body": [
+            "assert.are.equal(${1:expected}, ${2:actual})"
+        ],
+        "description": "assert.are.equal 相等断言"
+    },
+    "不等断言": {
+        "prefix": "lua_test_assert_ne",
+        "body": [
+            "assert.are_not.equal(${1:not_expected}, ${2:actual})"
+        ],
+        "description": "assert.are_not.equal 不等断言"
+    },
+    "真值断言": {
+        "prefix": "lua_test_assert_true",
+        "body": [
+            "assert.is_true(${1:value})"
+        ],
+        "description": "assert.is_true 真值断言"
+    },
+    "空值断言": {
+        "prefix": "lua_test_assert_nil",
+        "body": [
+            "assert.is_nil(${1:value})"
+        ],
+        "description": "assert.is_nil 空值断言"
+    },
+    "字符串匹配": {
+        "prefix": "lua_test_assert_str",
+        "body": [
+            "assert.matches(${1:pattern}, ${2:string})"
+        ],
+        "description": "assert.matches 字符串匹配"
+    },
+    "has_error 异常断言": {
+        "prefix": "lua_test_has_error",
+        "body": [
+            "assert.has_error(function() ${1:func_that_errs()} end)"
+        ],
+        "description": "assert.has_error 捕获错误"
+    },
+    "no_error 无异常": {
+        "prefix": "lua_test_no_error",
+        "body": [
+            "assert.has_no_error(function() ${1:func_should_pass()} end)"
+        ],
+        "description": "assert.has_no_error 不应抛错"
+    },
+    "setup 全局前置": {
+        "prefix": "lua_test_setup",
+        "body": [
+            "setup(function()",
+            "    ${1:-- 所有测试前执行一次}",
+            "end)"
+        ],
+        "description": "setup 全局前置钩子"
+    },
+    "teardown 全局后置": {
+        "prefix": "lua_test_teardown",
+        "body": [
+            "teardown(function()",
+            "    ${1:-- 所有测试后执行一次}",
+            "end)"
+        ],
+        "description": "teardown 全局后置钩子"
+    },
+    "before_each 前置": {
+        "prefix": "lua_test_before_each",
+        "body": [
+            "describe('${1:group}', function()",
+            "    before_each(function()",
+            "        ${2:-- 每个用例前}",
+            "    end)",
+            "",
+            "    it('${3:case}', function()",
+            "        ${4:-- test body}",
+            "    end)",
+            "end)"
+        ],
+        "description": "before_each 每个用例前"
+    },
+    "after_each 后置": {
+        "prefix": "lua_test_after_each",
+        "body": [
+            "describe('${1:group}', function()",
+            "    after_each(function()",
+            "        ${2:-- 每个用例后}",
+            "    end)",
+            "",
+            "    it('${3:case}', function()",
+            "        ${4:-- test body}",
+            "    end)",
+            "end)"
+        ],
+        "description": "after_each 每个用例后"
+    },
+    "before_each 数据 fixture": {
+        "prefix": "lua_test_setup_each",
+        "body": [
+            "describe('${1:group}', function()",
+            "    local ${2:fixture}",
+            "    before_each(function()",
+            "        ${2:fixture} = ${3:create_data()}",
+            "    end)",
+            "",
+            "    it('${4:case}', function()",
+            "        assert.is_not_nil(${2:fixture})",
+            "    end)",
+            "end)"
+        ],
+        "description": "before_each 数据准备"
+    },
+    "helper 函数": {
+        "prefix": "lua_test_helper",
+        "body": [
+            "-- helper.lua（共享辅助函数）",
+            "local M = {}",
+            "",
+            "function M.${1:helper_name}(${2:args})",
+            "    ${3:-- helper body}",
+            "    return ${4:result}",
+            "end",
+            "",
+            "return M"
+        ],
+        "description": "helper 共享辅助函数"
+    },
+    "factory 工厂": {
+        "prefix": "lua_test_factory",
+        "body": [
+            "local function ${1:create_${2:entity}}(${3:overrides})",
+            "    local ${2:entity} = {",
+            "        ${4:id = 1},",
+            "        ${5:name = 'default'},",
+            "    }",
+            "    if ${3:overrides} then",
+            "        for k, v in pairs(${3:overrides}) do ${2:entity}[k] = v end",
+            "    end",
+            "    return ${2:entity}",
+            "end"
+        ],
+        "description": "factory 工厂生成测试数据"
+    },
+    "module 级别 hook": {
+        "prefix": "lua_test_module_setup",
+        "body": [
+            "describe('${1:group}', function()",
+            "    setup(function()",
+            "        ${2:-- 此 group 第一个用例前}",
+            "    end)",
+            "    teardown(function()",
+            "        ${3:-- 此 group 最后一个用例后}",
+            "    end)",
+            "end)"
+        ],
+        "description": "describe 内 setup/teardown"
+    },
+    "mock 替换函数": {
+        "prefix": "lua_test_mock",
+        "body": [
+            "local ${1:mock} = mock(${2:original_func})",
+            "${1:mock}.returns(${3:value})",
+            "${4:-- 使用 $1 替代 $2}",
+            "${1:mock}:revert()"
+        ],
+        "description": "mock 替换函数"
+    },
+    "spy 监视": {
+        "prefix": "lua_test_spy",
+        "body": [
+            "local ${1:spy} = spy.on(${2:obj}, '${3:method}')",
+            "${4:-- 调用 ${2:obj}:${3:method}()}",
+            "assert.spy(${1:spy}).was_called(${5:1})"
+        ],
+        "description": "spy 监视对象方法"
+    },
+    "stub 桩函数": {
+        "prefix": "lua_test_stub",
+        "body": [
+            "local ${1:stub} = stub(${2:obj}, '${3:method}')",
+            "${1:stub}.returns(${4:value})",
+            "${5:-- 调用 ${2:obj}:${3:method}() 返回 $4}",
+            "${2:obj}:${3:method}:revert()"
+        ],
+        "description": "stub 桩函数设返回值"
+    },
+    "mock revert 还原": {
+        "prefix": "lua_test_mock_revert",
+        "body": [
+            "after_each(function()",
+            "    ${1:mock}:revert()",
+            "end)"
+        ],
+        "description": "after_each 中 revert mock"
+    },
+    "luacov 覆盖率": {
+        "prefix": "lua_test_cover",
+        "body": [
+            "-- 运行：luacov + busted",
+            "busted --coverage",
+            "luacov"
+        ],
+        "description": "luacov 覆盖率命令"
+    },
+    "随机顺序": {
+        "prefix": "lua_test_randomize",
+        "body": [
+            "busted --randomize"
+        ],
+        "description": "busted --randomize 随机顺序"
+    },
+    "详细输出": {
+        "prefix": "lua_test_verbose",
+        "body": [
+            "busted --verbose"
+        ],
+        "description": "busted --verbose 详细输出"
+    },
+    "输出格式": {
+        "prefix": "lua_test_output",
+        "body": [
+            "busted --output=${1|gtest,plainTerminal,tap|}"
+        ],
+        "description": "busted --output 报告格式"
+    },
+    "Tag 过滤": {
+        "prefix": "lua_test_tag",
+        "body": [
+            "busted --tags=${1:fast}",
+            "-- 或 --exclude-tags=slow"
+        ],
+        "description": "busted --tags 过滤"
+    },
+    "helper 加载": {
+        "prefix": "lua_test_helper_load",
+        "body": [
+            "local ${1:helper} = require('helpers.${2:name}')"
+        ],
+        "description": "require('helper') 加载共享辅助"
     }
 }

@@ -379,5 +379,358 @@
             "}"
         ],
         "description": "类定义（struct + 构造器 + receiver 方法）"
+    },
+    // 下面为测试snippets
+    "基本测试函数": {
+        "prefix": "go_test_func",
+        "body": [
+            "package ${1:pkg}",
+            "",
+            "import \"testing\"",
+            "",
+            "func Test${2:FuncName}(t *testing.T) {",
+            "    ${3:got} := ${4:actualFunc()}",
+            "    if ${3:got} != ${5:expected} {",
+            "        t.Errorf(\"got %v, want %v\", ${3:got}, ${5:expected})",
+            "    }",
+            "}"
+        ],
+        "description": "基本测试函数（testing）"
+    },
+    "表驱动测试": {
+        "prefix": "go_test_table",
+        "body": [
+            "package ${1:pkg}",
+            "",
+            "import \"testing\"",
+            "",
+            "func Test${2:FuncName}(t *testing.T) {",
+            "    tests := []struct {",
+            "        name     string",
+            "        ${3:input}    ${4:InputType}",
+            "        expected ${5:OutputType}",
+            "    }{",
+            "        {\"${6:case1}\", ${7:1}, ${8:2}},",
+            "        {\"${9:case2}\", ${10:3}, ${11:4}},",
+            "    }",
+            "    for _, tt := range tests {",
+            "        t.Run(tt.name, func(t *testing.T) {",
+            "            if got := ${12:func(tt.$3)}; got != tt.expected {",
+            "                t.Errorf(\"got %v, want %v\", got, tt.expected)",
+            "            }",
+            "        })",
+            "    }",
+            "}"
+        ],
+        "description": "表驱动测试（testing + t.Run 子测试）"
+    },
+    "基准测试": {
+        "prefix": "go_test_bench",
+        "body": [
+            "package ${1:pkg}",
+            "",
+            "import \"testing\"",
+            "",
+            "func Benchmark${2:FuncName}(b *testing.B) {",
+            "    for i := 0; i < b.N; i++ {",
+            "        ${3:funcToBench()}",
+            "    }",
+            "}"
+        ],
+        "description": "基准测试（func BenchmarkXxx）"
+    },
+    "跳过测试": {
+        "prefix": "go_test_skip",
+        "body": [
+            "func Test${1:FuncName}(t *testing.T) {",
+            "    if ${2:condition} {",
+            "        t.Skip(\"${3:reason}\")",
+            "    }",
+            "    ${4:// test body}",
+            "}"
+        ],
+        "description": "跳过测试（t.Skip）"
+    },
+    "并行测试": {
+        "prefix": "go_test_parallel",
+        "body": [
+            "func Test${1:FuncName}(t *testing.T) {",
+            "    t.Parallel()",
+            "    ${2:// test body}",
+            "}"
+        ],
+        "description": "并行测试（t.Parallel）"
+    },
+    "相等断言": {
+        "prefix": "go_test_assert_eq",
+        "body": [
+            "import \"github.com/stretchr/testify/assert\"",
+            "",
+            "assert.Equal(t, ${1:expected}, ${2:actual})"
+        ],
+        "description": "testify assert.Equal 相等断言"
+    },
+    "不等断言": {
+        "prefix": "go_test_assert_ne",
+        "body": [
+            "import \"github.com/stretchr/testify/assert\"",
+            "",
+            "assert.NotEqual(t, ${1:not_expected}, ${2:actual})"
+        ],
+        "description": "testify assert.NotEqual 不等断言"
+    },
+    "真值断言": {
+        "prefix": "go_test_assert_true",
+        "body": [
+            "import \"github.com/stretchr/testify/assert\"",
+            "",
+            "assert.True(t, ${1:condition})"
+        ],
+        "description": "testify assert.True 真值断言"
+    },
+    "空值断言": {
+        "prefix": "go_test_assert_nil",
+        "body": [
+            "import \"github.com/stretchr/testify/assert\"",
+            "",
+            "assert.Nil(t, ${1:obj})"
+        ],
+        "description": "testify assert.Nil 空值断言"
+    },
+    "包含断言": {
+        "prefix": "go_test_assert_contains",
+        "body": [
+            "import \"github.com/stretchr/testify/assert\"",
+            "",
+            "assert.Contains(t, ${1:container}, ${2:element})"
+        ],
+        "description": "testify assert.Contains 包含断言"
+    },
+    "Panic 断言": {
+        "prefix": "go_test_panic",
+        "body": [
+            "import \"github.com/stretchr/testify/assert\"",
+            "",
+            "assert.Panics(t, func() { ${1:funcThatPanics()} })"
+        ],
+        "description": "testify assert.Panics 捕获 panic"
+    },
+    "require.NoError": {
+        "prefix": "go_test_require",
+        "body": [
+            "import \"github.com/stretchr/testify/require\"",
+            "",
+            "require.NoError(t, ${1:err})"
+        ],
+        "description": "testify require.NoError（失败立即返回）"
+    },
+    "TestMain 初始化": {
+        "prefix": "go_test_setup",
+        "body": [
+            "func TestMain(m *testing.M) {",
+            "    ${1:// setup before all tests}",
+            "    code := m.Run()",
+            "    ${2:// teardown after all tests}",
+            "    os.Exit(code)",
+            "}"
+        ],
+        "description": "TestMain 初始化与清理"
+    },
+    "子测试 setup": {
+        "prefix": "go_test_sub_setup",
+        "body": [
+            "func Test${1:FuncName}(t *testing.T) {",
+            "    ${2:fixture} := ${3:setup()}",
+            "    t.Cleanup(func() { ${4:teardown($2)} })",
+            "    t.Run(\"${5:sub}\", func(t *testing.T) {",
+            "        ${6:// use $2}",
+            "    })",
+            "}"
+        ],
+        "description": "子测试 setup（t.Cleanup 收尾）"
+    },
+    "t.Cleanup 收尾": {
+        "prefix": "go_test_cleanup",
+        "body": [
+            "func Test${1:FuncName}(t *testing.T) {",
+            "    ${2:res} := ${3:create()}",
+            "    t.Cleanup(func() { ${4:destroy($2)} })",
+            "    ${5:// use $2}",
+            "}"
+        ],
+        "description": "t.Cleanup 测试收尾"
+    },
+    "t.Helper 辅助函数": {
+        "prefix": "go_test_helper",
+        "body": [
+            "func ${1:assertSomething}(t *testing.T, ${2:got}, ${3:want} ${4:type}) {",
+            "    t.Helper()",
+            "    if ${2:got} != ${3:want} {",
+            "        t.Errorf(\"got %v, want %v\", ${2:got}, ${3:want})",
+            "    }",
+            "}"
+        ],
+        "description": "t.Helper 标记辅助函数（失败报调用方行号）"
+    },
+    "t.Run 子测试": {
+        "prefix": "go_test_subtest",
+        "body": [
+            "func Test${1:Parent}(t *testing.T) {",
+            "    t.Run(\"${2:sub}\", func(t *testing.T) {",
+            "        ${3:// sub test body}",
+            "    })",
+            "}"
+        ],
+        "description": "t.Run 命名子测试"
+    },
+    "表驱动循环": {
+        "prefix": "go_test_table_loop",
+        "body": [
+            "tests := []struct {",
+            "    name string",
+            "    ${1:input} ${2:type}",
+            "    want  ${3:type}",
+            "}{",
+            "    {\"${4:a}\", ${5:1}, ${6:2}},",
+            "}",
+            "for _, tt := range tests {",
+            "    t.Run(tt.name, func(t *testing.T) {",
+            "        ${7:// test tt.$1}",
+            "    })",
+            "}"
+        ],
+        "description": "for-range 遍历表驱动测试"
+    },
+    "表结构体": {
+        "prefix": "go_test_table_struct",
+        "body": [
+            "tests := []struct {",
+            "    name  string",
+            "    ${1:args}",
+            "    want  ${2:type}",
+            "    wantErr bool",
+            "}{",
+            "    {\"${3:ok}\", ${4:args}, ${5:want}, false},",
+            "    {\"${6:err}\", ${7:args}, ${8:nil}, true},",
+            "}"
+        ],
+        "description": "含 wantErr 的表结构体"
+    },
+    "Mock 对象": {
+        "prefix": "go_test_mock_obj",
+        "body": [
+            "import \"github.com/stretchr/testify/mock\"",
+            "",
+            "type ${1:MockTarget} struct {",
+            "    mock.Mock",
+            "}",
+            "",
+            "func (m *$1) ${2:Method}(${3:args}) ${4:returns} {",
+            "    ret := m.Called(${3:args})",
+            "    return ${5:ret}",
+            "}"
+        ],
+        "description": "testify mock.Mock 嵌入对象"
+    },
+    "Mock 桩方法": {
+        "prefix": "go_test_mock_method",
+        "body": [
+            "import \"github.com/stretchr/testify/mock\"",
+            "",
+            "${1:mock}.On(\"${2:Method}\", ${3:args}).Return(${4:returns})"
+        ],
+        "description": "testify .On().Return() 桩方法"
+    },
+    "Mock 断言调用": {
+        "prefix": "go_test_mock_assert",
+        "body": [
+            "import \"github.com/stretchr/testify/mock\"",
+            "",
+            "${1:mock}.AssertExpectations(t)",
+            "${1:mock}.AssertCalled(t, \"${2:Method}\", ${3:args})",
+            "${1:mock}.AssertNumberOfCalls(t, \"${2:Method}\", ${4:1})"
+        ],
+        "description": "mock.AssertExpectations 断言调用次数"
+    },
+    "接口 mock": {
+        "prefix": "go_test_iface_mock",
+        "body": [
+            "type ${1:MockTarget} struct {",
+            "    ${2:dependency}Iface",
+            "}",
+            "",
+            "func (m *$1) ${3:Method}(${4:args}) ${5:returns} {",
+            "    return m.${2:dependency}.${6:RealMethod}($4)",
+            "}"
+        ],
+        "description": "手工 mock 接口（替换依赖）"
+    },
+    "go test -cover": {
+        "prefix": "go_test_cover",
+        "body": [
+            "# 覆盖率统计",
+            "go test -cover ./..."
+        ],
+        "description": "go test -cover 覆盖率"
+    },
+    "覆盖率 HTML": {
+        "prefix": "go_test_cover_html",
+        "body": [
+            "# 生成覆盖率 HTML 报告",
+            "go test -coverprofile=coverage.out ./...",
+            "go tool cover -html=coverage.out -o coverage.html"
+        ],
+        "description": "覆盖率 HTML 报告生成"
+    },
+    "testing.Short 短测": {
+        "prefix": "go_test_short",
+        "body": [
+            "func Test${1:FuncName}(t *testing.T) {",
+            "    if testing.Short() {",
+            "        t.Skip(\"skipping in short mode\")",
+            "    }",
+            "    ${2:// long-running test}",
+            "}"
+        ],
+        "description": "testing.Short() 短测模式"
+    },
+    "测试超时": {
+        "prefix": "go_test_timeout",
+        "body": [
+            "# 设置测试超时 30s",
+            "go test -timeout 30s ./..."
+        ],
+        "description": "go test -timeout 超时设置"
+    },
+    "t.Setenv 环境变量": {
+        "prefix": "go_test_env",
+        "body": [
+            "func Test${1:FuncName}(t *testing.T) {",
+            "    t.Setenv(\"${2:KEY}\", \"${3:value}\")",
+            "    ${4:// test body}",
+            "}"
+        ],
+        "description": "t.Setenv 测试用环境变量（自动还原）"
+    },
+    "抛错断言": {
+        "prefix": "go_test_assert_throw",
+        "body": [
+            "import \"github.com/stretchr/testify/assert\"",
+            "",
+            "var err = ${1:funcThatErr()}",
+            "assert.Error(t, err)",
+            "assert.ErrorIs(t, err, ${2:ExpectedErr})"
+        ],
+        "description": "testify assert.Error / ErrorIs 抛错断言"
+    },
+    "数值大于断言": {
+        "prefix": "go_test_assert_greater",
+        "body": [
+            "import \"github.com/stretchr/testify/assert\"",
+            "",
+            "assert.Greater(t, ${1:actual}, ${2:threshold})",
+            "assert.Less(t, ${1:actual}, ${3:upper})"
+        ],
+        "description": "testify assert.Greater / Less 数值断言"
     }
 }

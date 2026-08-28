@@ -68,8 +68,8 @@ JSON 解析器会报 "Invalid \escape"。
 ## 验证清单（生成完必跑）
 
 ```bash
-# 1. JSON 合法
-python3 -c "import json; json.load(open('shell.code-snippets'))"
+# 1. 静态校验（JSONC + 字段 + 重复 prefix + 测试分隔符）
+python3 references/validate_snippets.py .vscode/*.code-snippets
 
 # 2. 用 python 模拟 snippet 展开（参考 references/expand.py）
 python3 references/expand.py shell.code-snippets
@@ -126,6 +126,15 @@ python3 references/expand.py shell.code-snippets
 - 日志打印
 - 读取json配置文件
 - 程序退出监听，比如sighup这种，要做推出前的清理或者处理
+- 测试
+  - 基本测试函数、子测试、跳过、预期失败（xfail）
+  - 断言（相等、不等、真值、包含、近似）
+  - 异常断言（raises / throws / catch）
+  - 测试生命周期（setup / teardown / beforeEach / afterEach / beforeAll / afterAll）
+  - fixture 与数据准备
+  - 参数化测试
+  - mock / spy / stub
+  - 异步测试、覆盖率、跳过/标签
 
 > 上面的是我想生成的功能名称
 
@@ -174,61 +183,108 @@ python3 references/expand.py shell.code-snippets
 
 新增语言时，**先看 sufix 表，相同功能复用同 sufix**，不允许临时发明。prefix 格式 `{lang}_{sufix}`，例如 `py_try`、`go_throw`、`ts_for_range`。
 
-| sufix | 含义 | py | go | ts | js | sh | rs | ja |
-|---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| `for` | 数字范围循环（`0..n`） | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `for_range` | 遍历集合（`for-of` / `range slice` / `iter().enumerate()`） | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `while` | while 循环 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `try` | 错误捕获（try/catch/|| 链） | ✓ | — | — | — | ✓ | — | ✓ |
-| `err_check` | 错误检查（Go `if err != nil`） | — | ✓ | — | — | — | — | — |
-| `throw` | 抛出错误（raise/throw/return err/panic） | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `error_define` | 定义错误（class/var/func/enum） | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `if` | if 判断 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `read_file` | 读文件 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `write_file` | 写文件 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `copy_file` | 拷贝文件 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `move_file` | 移动/重命名 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `delete_file` | 删除文件 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `read_env` | 读环境变量 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `read_json` | 读 JSON 配置 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `shell` | 执行 shell 命令 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `time` | 获取程序耗时 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `sleep` | 时间等待 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `random_string` | 生成随机字符串 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `cwd` | 获取当前目录 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `args` | 命令行参数 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `input` | 用户输入 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `thread_lock` | 互斥锁 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `thread_rlock` | 读写锁 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `thread_semaphore` | 信号量 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `thread_condition` | 条件变量 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `thread_event` | 事件 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `thread_barrier` | 屏障 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `process` | 多进程 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `log` | 日志 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `signal` | 信号监听 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `function` | 函数定义 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `class` | 类定义 | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ |
+| sufix | 含义 | py | go | ts | js | sh | rs | ja | lua |
+|---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| `for` | 数字范围循环（`0..n`） | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `for_range` | 遍历集合（`for-of` / `range slice` / `iter().enumerate()`） | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `while` | while 循环 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `try` | 错误捕获（try/catch/pcall） | ✓ | — | — | — | ✓ | — | ✓ | ✓ |
+| `err_check` | 错误检查（Go `if err != nil`） | — | ✓ | — | — | — | — | — | — |
+| `throw` | 抛出错误（raise/throw/return err/panic） | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `error_define` | 定义错误（class/var/func/enum） | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `if` | if 判断 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `read_file` | 读文件 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `write_file` | 写文件 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `copy_file` | 拷贝文件 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `move_file` | 移动/重命名 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `delete_file` | 删除文件 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `read_env` | 读环境变量 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `read_json` | 读 JSON 配置 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `shell` | 执行 shell 命令 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `time` | 获取程序耗时 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `sleep` | 时间等待 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `random_string` | 生成随机字符串 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `cwd` | 获取当前目录 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `args` | 命令行参数 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `input` | 用户输入 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `thread_lock` | 互斥锁 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| `thread_rlock` | 读写锁 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| `thread_semaphore` | 信号量 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| `thread_condition` | 条件变量 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| `thread_event` | 事件 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| `thread_barrier` | 屏障 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| `process` | 多进程 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| `log` | 日志 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `signal` | 信号监听 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| `function` | 函数定义 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `class` | 类定义（table 模拟） | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ |
+
+## 测试段 sufix（pytest/jest/vitest/testing/junit/rstest/busted/bats）
+
+| sufix | 含义 | py | go | ts | js | sh | rs | ja | lua |
+|---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| `test_func` | 基本测试函数 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `test_class` | 测试类/组 | ✓ | — | ✓ | ✓ | — | ✓ | ✓ | ✓ |
+| `test_assert_eq` | 相等断言 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `test_assert_ne` | 不等断言 | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ |
+| `test_assert_true` | 真值断言 | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ |
+| `test_assert_contains` | 包含/匹配断言 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `test_assert_approx` | 浮点近似断言 | ✓ | — | ✓ | ✓ | — | ✓ | — | — |
+| `test_throws` | 异常断言 | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ |
+| `test_setup` | 前置钩子（setup/beforeEach） | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `teardown` | 后置钩子（teardown/afterEach） | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `test_fixture` | fixture / 数据准备 | ✓ | — | — | — | — | — | — | ✓ |
+| `test_param` | 参数化测试 | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | — |
+| `test_mock` | mock / spy / stub | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | ✓ |
+| `test_skip` | 跳过 / 条件执行 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `test_async` | 异步测试 | ✓ | — | ✓ | ✓ | — | ✓ | — | — |
+| `test_cov` | 覆盖率配置/命令 | ✓ | ✓ | ✓ | ✓ | — | ✓ | ✓ | — |
+
+> **生成规则**：测试 snippets 的 prefix 格式为 `{lang}_test_*`，与原有 sufix 命名一致。body 必须写完整 `import` / `package` / `use` 声明（独立可用原则）。
 
 **规则**：
 - Go 习惯用 `if err != nil` 而不是 try/catch，所以用 `err_check` 替代 `try`（其他语言都用 `try`）
 - Rust 用 `?` + `Result`/match 替代 try/catch，所以也跳过 `try`
+- Lua 用 `pcall(xpcall)` 代替 try/catch，sufix 用 `try`（body 写 pcall 调用模式）
 - Java 用 checked/unchecked + try-catch-finally，所以 `try` ✓、`err_check` ✗（仅 Go 使用）
 - Go 没有 `while` 关键字，用 `for cond {}` 等价实现，sufix 仍叫 `while`（body 是 for 写法）
 - Go 没有 `class`，用 `type Name struct {}` + receiver 方法模拟，sufix 仍叫 `class`
 - Rust 没有 `class`，用 `struct` + `impl` 块模拟，sufix 仍叫 `class`
+- Lua 没有 `class`，用 `table {}` 模拟，sufix 仍叫 `class`
 - Shell 没有 `class`，`class` sufix 整体不出现
+- Lua 没有内建线程/信号/进程，thread_* / signal / process 整体不出现（coroutine 是另一种并发模型，不在此处覆盖）
 - 错误抛出统一 `throw`（不管语言里叫 raise/throw/return err/panic）
 - 错误定义统一 `error_define`（不管实现是 class/var/func/enum）
 - 函数定义统一 `function`（不管语言里叫 def/func/function/fn/method）
-- 语言没有的特性，sufix 整体不出现（如 Go 无 `try`、Rust 无 `try`、Shell 无 `class`、仅 Go 用 `err_check`）
+- 语言没有的特性，sufix 整体不出现（如 Go 无 `try`、Rust 无 `try`、Shell 无 `class`、Lua 无 `thread_*`/`signal`/`process`、仅 Go 用 `err_check`）
 - 跨语言 sufix 必须完全一致，方便 IDE 自动补全跨语言切换
 - **跨语言 key 也保持一致**：同名功能的 snippet 在所有语言文件里用相同的中文 key（如 `while 循环`、`if 判断`、`信号监听`），VSCode 按文件后缀匹配，互不冲突
+- **测试 snippets 必带分隔注释**：在原有 snippets 与新增测试 snippets 之间插入一行 `// 下面为测试snippets`，VSCode 的 JSONC 解析器会忽略该注释，方便人眼快速定位（详见下方「文件格式」一节）
 
 # 文件格式
 - 以python为例子
   - 文件名: python.code-snippets 放在当前项目的.vscode目录下
   - prefix: 如果是if -> py_if 用-连接
+
+## JSONC 分隔注释（追加 snippets 时使用）
+
+VSCode 的 `.code-snippets` 文件本质是 **JSONC**（JSON with Comments），支持 `//` 单行注释。当在已有文件中追加新 snippet 类别时（如追加测试 snippets），必须在原内容末尾与新内容之间插入一行注释作为视觉分隔：
+
+```jsonc
+{
+    "for 数字范围循环": { ... },
+    ...
+    "信号监听": { ... },
+    // 下面为测试snippets
+    "基本测试函数": { ... },
+    ...
+}
+```
+
+**规则**：
+- 注释必须独占一行，**不要**写在某个 snippet 的最后一个 `}` 后跟注释（JSON 不支持尾随注释）
+- 注释使用 `// 下面为测试snippets` 这一固定文案（按用户偏好统一）
+- 校验时需要去掉 `//` 注释行再用 `json.loads` 解析（VSCode 内部会忽略注释，但 Python 的标准 json 模块不允许）
 
 # 生成完成后：同步 AGENTS.md
 

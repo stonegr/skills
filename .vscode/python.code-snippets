@@ -351,5 +351,358 @@
             "        ${4:# init fields}"
         ],
         "description": "类定义"
+    },
+    // 下面为测试snippets
+    "基本测试函数": {
+        "prefix": "py_test_func",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "def test_${1:func_name}():",
+            "    ${2:result} = ${3:actual}",
+            "    assert ${2:result} == ${4:expected}"
+        ],
+        "description": "基本测试函数（pytest）"
+    },
+    "测试类": {
+        "prefix": "py_test_class",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "class Test${1:ClassName}:",
+            "    def test_${2:method_name}(self):",
+            "        ${3:result} = ${4:actual}",
+            "        assert ${3:result} == ${5:expected}"
+        ],
+        "description": "测试类（pytest）"
+    },
+    "子测试": {
+        "prefix": "py_test_subtest",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "def test_${1:func_name}():",
+            "    with pytest.subtests() as subtests:",
+            "        for ${2:case} in ${3:[1, 2, 3]}:",
+            "            with subtests.test(msg=f\"case={$2}\"):",
+            "                assert ${4:actual(${2:case})} == ${5:expected($2)}"
+        ],
+        "description": "子测试（pytest.subtests）"
+    },
+    "跳过测试": {
+        "prefix": "py_test_skip",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "@pytest.mark.skip(reason=\"${1:reason}\")",
+            "def test_${2:func_name}():",
+            "    ${3:pass}"
+        ],
+        "description": "跳过测试（@pytest.mark.skip）"
+    },
+    "预期失败": {
+        "prefix": "py_test_xfail",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "@pytest.mark.xfail(reason=\"${1:known bug}\")",
+            "def test_${2:func_name}():",
+            "    ${3:assert False}"
+        ],
+        "description": "预期失败（@pytest.mark.xfail）"
+    },
+    "相等断言": {
+        "prefix": "py_test_assert_eq",
+        "body": [
+            "assert ${1:actual} == ${2:expected}"
+        ],
+        "description": "相等断言"
+    },
+    "不等断言": {
+        "prefix": "py_test_assert_ne",
+        "body": [
+            "assert ${1:actual} != ${2:expected}"
+        ],
+        "description": "不等断言"
+    },
+    "真值断言": {
+        "prefix": "py_test_assert_true",
+        "body": [
+            "assert ${1:condition}"
+        ],
+        "description": "真值断言"
+    },
+    "包含断言": {
+        "prefix": "py_test_assert_in",
+        "body": [
+            "assert ${1:item} in ${2:container}"
+        ],
+        "description": "包含断言（in）"
+    },
+    "浮点近似断言": {
+        "prefix": "py_test_assert_approx",
+        "body": [
+            "import pytest",
+            "",
+            "assert ${1:actual} == pytest.approx(${2:expected}, rel=${3:1e-6})"
+        ],
+        "description": "浮点近似断言（pytest.approx）"
+    },
+    "异常断言": {
+        "prefix": "py_test_raises",
+        "body": [
+            "import pytest",
+            "",
+            "with pytest.raises(${1:ValueError}):",
+            "    ${2:func_that_raises()}"
+        ],
+        "description": "异常断言（pytest.raises）"
+    },
+    "异常匹配消息": {
+        "prefix": "py_test_raises_match",
+        "body": [
+            "import pytest",
+            "",
+            "with pytest.raises(${1:ValueError}, match=r\"${2:pattern}\"):",
+            "    ${3:func_that_raises()}"
+        ],
+        "description": "异常断言匹配消息（match 正则）"
+    },
+    "模块级别 setup": {
+        "prefix": "py_test_setup",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "def setup_module(${1:module}):",
+            "    ${2:# init before all tests}"
+        ],
+        "description": "模块/函数级 setup"
+    },
+    "函数级 teardown": {
+        "prefix": "py_test_teardown",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "def teardown_function(${1:function}):",
+            "    ${2:# cleanup after each test}"
+        ],
+        "description": "函数级 teardown"
+    },
+    "类级别 setup": {
+        "prefix": "py_test_class_setup",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "class Test${1:ClassName}:",
+            "    def setup_class(${2:cls}):",
+            "        ${3:# init before this class}",
+            "",
+            "    def teardown_class(${2:cls}):",
+            "        ${4:# cleanup after this class}"
+        ],
+        "description": "类级 setup/teardown"
+    },
+    "addfinalizer 收尾": {
+        "prefix": "py_test_finalizer",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "@pytest.fixture",
+            "def ${1:resource}(request):",
+            "    ${2:res} = ${3:create()}",
+            "    request.addfinalizer(lambda: ${4:destroy($2)})",
+            "    return ${2:res}"
+        ],
+        "description": "request.addfinalizer 收尾"
+    },
+    "基本 fixture": {
+        "prefix": "py_test_fixture",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "@pytest.fixture",
+            "def ${1:fixture_name}():",
+            "    ${2:data} = ${3:create_data()}",
+            "    return ${2:data}",
+            "",
+            "",
+            "def test_${4:func_name}(${1:fixture_name}):",
+            "    assert ${1:fixture_name} is not None"
+        ],
+        "description": "基本 fixture"
+    },
+    "yield 风格 fixture": {
+        "prefix": "py_test_fixture_yield",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "@pytest.fixture",
+            "def ${1:fixture_name}():",
+            "    # setup",
+            "    ${2:res} = ${3:create()}",
+            "    yield ${2:res}",
+            "    # teardown",
+            "    ${4:destroy($2)}"
+        ],
+        "description": "yield 风格 fixture（setup+teardown）"
+    },
+    "参数化 fixture": {
+        "prefix": "py_test_fixture_param",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "@pytest.fixture(params=[${1:1, 2, 3}])",
+            "def ${2:fixture_name}(request):",
+            "    return request.param",
+            "",
+            "",
+            "def test_${3:func_name}(${2:fixture_name}):",
+            "    assert ${2:fixture_name} > ${4:0}"
+        ],
+        "description": "参数化 fixture"
+    },
+    "fixture scope": {
+        "prefix": "py_test_fixture_scope",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "@pytest.fixture(scope=${1|function,class,module,session|})",
+            "def ${2:fixture_name}():",
+            "    ${3:# init shared resource}",
+            "    return ${4:data}"
+        ],
+        "description": "fixture scope（function/class/module/session）"
+    },
+    "参数化测试": {
+        "prefix": "py_test_param",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "@pytest.mark.parametrize(\"${1:input},${2:expected}\", [",
+            "    (${3:1}, ${4:2}),",
+            "    (${5:2}, ${6:4}),",
+            "])",
+            "def test_${7:func_name}(${1:input}, ${2:expected}):",
+            "    assert ${8:func($1)} == ${2:expected}"
+        ],
+        "description": "参数化测试（@pytest.mark.parametrize）"
+    },
+    "参数化 ids": {
+        "prefix": "py_test_param_ids",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "@pytest.mark.parametrize(",
+            "    \"${1:input},${2:expected}\",",
+            "    [(${3:1}, ${4:2}), (${5:2}, ${6:4})],",
+            "    ids=[\"${7:first}\", \"${8:second}\"],",
+            ")",
+            "def test_${9:func_name}(${1:input}, ${2:expected}):",
+            "    assert ${10:func($1)} == ${2:expected}"
+        ],
+        "description": "参数化带 ids 标签"
+    },
+    "多 parametrize 叠加": {
+        "prefix": "py_test_param_stack",
+        "body": [
+            "import pytest",
+            "",
+            "",
+            "@pytest.mark.parametrize(\"${1:a}\", [${2:1, 2}])",
+            "@pytest.mark.parametrize(\"${3:b}\", [${4:'x', 'y'}])",
+            "def test_${5:func_name}(${1:a}, ${3:b}):",
+            "    assert ${6:func($1, $3)} is not None"
+        ],
+        "description": "多个 parametrize 叠加（笛卡尔积）"
+    },
+    "Mock 基本": {
+        "prefix": "py_test_mock",
+        "body": [
+            "from unittest.mock import Mock",
+            "",
+            "${1:mock} = Mock(return_value=${2:42})",
+            "result = ${1:mock}()",
+            "assert result == ${2:42}"
+        ],
+        "description": "unittest.mock.Mock 基本"
+    },
+    "patch 替换函数": {
+        "prefix": "py_test_patch",
+        "body": [
+            "from unittest.mock import patch",
+            "",
+            "with patch(\"${1:module.func}\") as ${2:mock_func}:",
+            "    ${2:mock_func}.return_value = ${3:42}",
+            "    ${4:result = call_func()}",
+            "${2:mock_func}.assert_called_once_with(${5:args})"
+        ],
+        "description": "unittest.mock.patch 替换模块函数"
+    },
+    "spy": {
+        "prefix": "py_test_spy",
+        "body": [
+            "from unittest.mock import MagicMock",
+            "",
+            "${1:obj}.${2:method} = MagicMock(wraps=${1:obj}.${2:method})",
+            "${1:obj}.${2:method}(${3:args})",
+            "${1:obj}.${2:method}.assert_called_with(${3:args})"
+        ],
+        "description": "spy：保留原行为并记录调用"
+    },
+    "Mock return_value": {
+        "prefix": "py_test_mock_return",
+        "body": [
+            "from unittest.mock import Mock",
+            "",
+            "${1:mock} = Mock()",
+            "${1:mock}.${2:method}.return_value = ${3:42}",
+            "assert ${1:mock}.${2:method}() == ${3:42}"
+        ],
+        "description": "Mock.return_value 设定返回值"
+    },
+    "Mock side_effect": {
+        "prefix": "py_test_mock_side",
+        "body": [
+            "from unittest.mock import Mock",
+            "",
+            "${1:mock} = Mock(side_effect=[${2:1}, ${3:2}, ${4:ValueError}])",
+            "${1:mock}()  # returns 1",
+            "${1:mock}()  # returns 2",
+            "# 第三次抛出 ValueError"
+        ],
+        "description": "Mock.side_effect 多次返回/抛异常"
+    },
+    "覆盖率命令": {
+        "prefix": "py_test_cov",
+        "body": [
+            "# 运行测试并生成覆盖率报告",
+            "pytest --cov=${1:src} --cov-report=${2|html,term,xml|} --cov-fail-under=${3:80}"
+        ],
+        "description": "pytest --cov 覆盖率命令"
+    },
+    "tmp_path": {
+        "prefix": "py_test_tmp",
+        "body": [
+            "def test_${1:func_name}(tmp_path):",
+            "    ${2:file} = tmp_path / \"${3:name}.txt\"",
+            "    ${2:file}.write_text(\"${4:content}\")",
+            "    assert ${2:file}.read_text() == \"${4:content}\""
+        ],
+        "description": "tmp_path 临时目录 fixture"
     }
 }

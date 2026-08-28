@@ -281,5 +281,285 @@
             "}"
         ],
         "description": "函数定义"
+    },
+    // 下面为测试snippets
+    "基本测试": {
+        "prefix": "sh_test_func",
+        "body": [
+            "@test \"${1:test name}\" {",
+            "    ${2:# test body}",
+            "    [ \"$status\" -eq 0 ]",
+            "}"
+        ],
+        "description": "基本测试函数（bats）"
+    },
+    "命名测试": {
+        "prefix": "sh_test_named",
+        "body": [
+            "@test \"${1:group}: ${2:case}\" {",
+            "    ${3:# test body}",
+            "}"
+        ],
+        "description": "命名测试（带分组前缀）"
+    },
+    "跳过测试": {
+        "prefix": "sh_test_skip",
+        "body": [
+            "@test \"${1:test name}\" {",
+            "    skip \"${2:reason}\"",
+            "}"
+        ],
+        "description": "skip 跳过测试"
+    },
+    "条件跳过": {
+        "prefix": "sh_test_skip_if",
+        "body": [
+            "@test \"${1:test name}\" {",
+            "    [ \"${2:condition}\" ] && skip \"${3:reason}\"",
+            "    ${4:# test body}",
+            "}"
+        ],
+        "description": "条件满足时跳过（skip_if）"
+    },
+    "加载辅助文件": {
+        "prefix": "sh_test_load_helper",
+        "body": [
+            "# 加载公共辅助函数",
+            "load '${1:helpers/test_helper.bash}'"
+        ],
+        "description": "load 辅助函数文件"
+    },
+    "相等断言": {
+        "prefix": "sh_test_eq",
+        "body": [
+            "[ \"${1:actual}\" = \"${2:expected}\" ]"
+        ],
+        "description": "字符串相等断言"
+    },
+    "不等断言": {
+        "prefix": "sh_test_ne",
+        "body": [
+            "[ \"${1:actual}\" != \"${2:expected}\" ]"
+        ],
+        "description": "字符串不等断言"
+    },
+    "真值断言": {
+        "prefix": "sh_test_true",
+        "body": [
+            "[ \"${1:condition}\" ]"
+        ],
+        "description": "真值断言（test 命令）"
+    },
+    "匹配断言": {
+        "prefix": "sh_test_contains",
+        "body": [
+            "[[ \"${1:string}\" =~ ${2:pattern} ]]"
+        ],
+        "description": "正则匹配断言"
+    },
+    "退出码断言": {
+        "prefix": "sh_test_status",
+        "body": [
+            "[ \"$status\" -eq ${1:0} ]"
+        ],
+        "description": "退出码断言"
+    },
+    "错误退出断言": {
+        "prefix": "sh_test_err",
+        "body": [
+            "run ${1:command}",
+            "[ \"$status\" -ne 0 ]",
+            "[ \"${2:output}\" = \"${3:expected_err_msg}\" ]"
+        ],
+        "description": "命令返回非零 + 错误消息匹配"
+    },
+    "setup_file 前置": {
+        "prefix": "sh_test_setup_file",
+        "body": [
+            "setup_file() {",
+            "    ${1:# 整个文件第一个测试前}",
+            "}",
+            "",
+            "teardown_file() {",
+            "    ${2:# 整个文件最后一个测试后}",
+            "}"
+        ],
+        "description": "setup_file / teardown_file（每文件）"
+    },
+    "setup_test 前置": {
+        "prefix": "sh_test_setup_test",
+        "body": [
+            "setup() {",
+            "    ${1:# 每个测试前}",
+            "}",
+            "",
+            "teardown() {",
+            "    ${2:# 每个测试后}",
+            "}"
+        ],
+        "description": "setup / teardown（每用例）"
+    },
+    "全局 setup": {
+        "prefix": "sh_test_setup",
+        "body": [
+            "setup() {",
+            "    ${1:# 全局初始化}",
+            "}"
+        ],
+        "description": "全局 setup 初始化"
+    },
+    "全局 teardown": {
+        "prefix": "sh_test_teardown",
+        "body": [
+            "teardown() {",
+            "    ${1:# 全局清理}",
+            "}"
+        ],
+        "description": "全局 teardown 清理"
+    },
+    "for 循环参数化": {
+        "prefix": "sh_test_param_for",
+        "body": [
+            "@test \"${1:group}: ${2:case}\" {",
+            "    for ${3:case} in ${4:1 2 3}; do",
+            "        run ${5:func $3}",
+            "        [ \"$status\" -eq 0 ]",
+            "        [ \"$output\" = \"$3\" ]",
+            "    done",
+            "}"
+        ],
+        "description": "for 循环跑多组用例"
+    },
+    "数组参数化": {
+        "prefix": "sh_test_param_arr",
+        "body": [
+            "declare -a ${1:cases}=(\"${2:a}\" \"${3:b}\" \"${4:c}\")",
+            "for ${5:case} in \"${${1:cases}[@]}\"; do",
+            "    @test \"$5: $5\" {",
+            "        run ${6:func $5}",
+            "        [ \"$status\" -eq 0 ]",
+            "    }",
+            "done"
+        ],
+        "description": "数组 + 循环生成多测试"
+    },
+    "data 文件参数化": {
+        "prefix": "sh_test_param_data",
+        "body": [
+            "while IFS='${1::}' read -r ${2:input} ${3:expected}; do",
+            "    @test \"test $2 -> $3\" {",
+            "        run ${4:func $2}",
+            "        [ \"$output\" = \"$3\" ]",
+            "    }",
+            "done < ${5:testdata.csv}"
+        ],
+        "description": "从数据文件读取参数化"
+    },
+    "source 引入 stub": {
+        "prefix": "sh_test_source",
+        "body": [
+            "# 引入 stub 替换原命令",
+            "source ${1:test/stubs/cmd_stub.sh}"
+        ],
+        "description": "source 引入 stub 文件"
+    },
+    "重定义函数 stub": {
+        "prefix": "sh_test_function_mock",
+        "body": [
+            "# 重定义函数为 stub",
+            "${1:func_name}() {",
+            "    echo \"${2:stubbed}\"",
+            "}"
+        ],
+        "description": "重定义函数为 stub"
+    },
+    "环境变量 mock": {
+        "prefix": "sh_test_env_mock",
+        "body": [
+            "export ${1:KEY}=\"${2:value}\""
+        ],
+        "description": "测试环境变量设置"
+    },
+    "run 捕获输出": {
+        "prefix": "sh_test_run",
+        "body": [
+            "run ${1:command}",
+            "echo \"$output\"",
+            "[ \"$status\" -eq ${2:0} ]"
+        ],
+        "description": "run 命令并捕获输出"
+    },
+    "退出码校验": {
+        "prefix": "sh_test_status_check",
+        "body": [
+            "run ${1:command}",
+            "[ \"$status\" -eq ${2:0} ]"
+        ],
+        "description": "run + status 校验"
+    },
+    "输出内容校验": {
+        "prefix": "sh_test_output_check",
+        "body": [
+            "run ${1:command}",
+            "[[ \"$output\" =~ \"${2:pattern}\" ]]"
+        ],
+        "description": "run + output 校验"
+    },
+    "bats-assert 扩展断言": {
+        "prefix": "sh_test_bats_assert",
+        "body": [
+            "load '${1:test_helper.bash}'",
+            "",
+            "@test \"${2:test name}\" {",
+            "    run ${3:command}",
+            "    assert_success",
+            "    assert_output \"${4:expected}\"",
+            "}"
+        ],
+        "description": "bats-assert 扩展断言（assert_success 等）"
+    },
+    "bats-support 辅助": {
+        "prefix": "sh_test_bats_support",
+        "body": [
+            "load '${1:test_helper/common-setup.bash}'",
+            "",
+            "common_setup() {",
+            "    load '${2:test_helper.bash}'",
+            "}",
+            "common_teardown() {",
+            "    ${3:# cleanup}",
+            "}"
+        ],
+        "description": "bats-support 通用辅助"
+    },
+    "并行运行": {
+        "prefix": "sh_test_parallel",
+        "body": [
+            "bats --jobs ${1:4} ${2:tests/}"
+        ],
+        "description": "bats --jobs N 并行"
+    },
+    "过滤测试": {
+        "prefix": "sh_test_filter",
+        "body": [
+            "bats --filter ${1:regex} ${2:tests/}"
+        ],
+        "description": "bats --filter 正则过滤"
+    },
+    "kcov 覆盖率": {
+        "prefix": "sh_test_cover",
+        "body": [
+            "# 使用 kcov 跑覆盖率",
+            "kcov --include-pattern=${1:src/} coverage/ bats ${2:tests/}"
+        ],
+        "description": "kcov 覆盖率（shell 测试）"
+    },
+    "export 测试环境": {
+        "prefix": "sh_test_export_env",
+        "body": [
+            "export ${1:ENV_VAR}=\"${2:test_value}\"",
+            "export ${3:ANOTHER_VAR}=\"${4:value}\""
+        ],
+        "description": "批量 export 测试环境变量"
     }
 }

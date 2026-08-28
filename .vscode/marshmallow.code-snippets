@@ -474,5 +474,82 @@
             "    )"
         ],
         "description": "自定义字段错误消息"
+    },
+    // 下面为测试snippets
+    "schema.load 加载测试": {
+        "prefix": "ms_test_load",
+        "body": [
+            "from ${1:app.schemas} import ${2:UserSchema}",
+            "",
+            "",
+            "def test_${3:load_valid}():",
+            "    ${4:schema} = ${2:UserSchema}()",
+            "    ${5:result} = ${4:schema}.load({'name': '${6:alice}', 'age': ${7:30}})",
+            "    assert ${5:result}['name'] == '${6:alice}'",
+            "    assert ${5:result}['age'] == ${7:30}"
+        ],
+        "description": "schema.load 验证加载"
+    },
+    "schema.dump 转储测试": {
+        "prefix": "ms_test_dump",
+        "body": [
+            "from ${1:app.schemas} import ${2:UserSchema}",
+            "",
+            "",
+            "def test_${3:dump}():",
+            "    ${4:schema} = ${2:UserSchema}()",
+            "    ${5:obj} = ${6:User}(name='${7:alice}', age=${8:30})",
+            "    ${9:data} = ${4:schema}.dump(${5:obj})",
+            "    assert ${9:data}['name'] == '${7:alice}'"
+        ],
+        "description": "schema.dump 验证转储"
+    },
+    "校验失败断言": {
+        "prefix": "ms_test_valid",
+        "body": [
+            "import pytest",
+            "from marshmallow import ValidationError",
+            "",
+            "from ${1:app.schemas} import ${2:UserSchema}",
+            "",
+            "",
+            "def test_${3:invalid_age}():",
+            "    ${4:schema} = ${2:UserSchema}()",
+            "    with pytest.raises(ValidationError) as ${5:exc}:",
+            "        ${4:schema}.load({'name': '${6:alice}', 'age': ${7:-1}})",
+            "    assert 'age' in ${5:exc}.value.messages"
+        ],
+        "description": "校验失败抛 ValidationError"
+    },
+    "嵌套 Schema 测试": {
+        "prefix": "ms_test_nested",
+        "body": [
+            "from ${1:app.schemas} import ${2:UserSchema}",
+            "",
+            "",
+            "def test_${3:nested_load}():",
+            "    ${4:schema} = ${2:UserSchema}()",
+            "    ${5:data} = ${4:schema}.load({",
+            "        'name': '${6:alice}',",
+            "        'age': ${7:30},",
+            "        'address': {'city': '${8:Beijing}', 'street': '${9:Main St}'},",
+            "    })",
+            "    assert ${5:data}['address']['city'] == '${8:Beijing}'"
+        ],
+        "description": "嵌套 Schema 加载测试"
+    },
+    "partial=True 测试": {
+        "prefix": "ms_test_partial",
+        "body": [
+            "from ${1:app.schemas} import ${2:UserSchema}",
+            "",
+            "",
+            "def test_${3:partial_load}():",
+            "    ${4:schema} = ${2:UserSchema}(partial=True)",
+            "    # 只传部分字段，不抛错",
+            "    ${5:data} = ${4:schema}.load({'name': '${6:alice}'})",
+            "    assert ${5:data}['name'] == '${6:alice}'"
+        ],
+        "description": "partial=True 跳过缺失字段"
     }
 }

@@ -557,5 +557,107 @@
             "    return ${5:[]}"
         ],
         "description": "OpenAPI 标签元数据"
+    },
+    // 下面为测试snippets
+    "依赖覆盖测试": {
+        "prefix": "fa_test_dep_override",
+        "body": [
+            "import pytest",
+            "from fastapi.testclient import TestClient",
+            "",
+            "from ${1:app.main} import app, ${2:get_db}",
+            "",
+            "",
+            "def ${3:override}_${2:get_db}():",
+            "    try:",
+            "        ${4:db = TestingSessionLocal()}",
+            "        yield ${4:db}",
+            "    finally:",
+            "        ${4:db}.close()",
+            "",
+            "",
+            "app.dependency_overrides[${2:get_db}] = ${3:override}_${2:get_db}",
+            "client = TestClient(app)",
+            "",
+            "",
+            "def test_${5:func_name}():",
+            "    response = client.get(${6:'/items'})",
+            "    assert response.status_code == ${7:200}"
+        ],
+        "description": "dependency_overrides 覆盖 DB session"
+    },
+    "认证测试": {
+        "prefix": "fa_test_auth",
+        "body": [
+            "from fastapi.testclient import TestClient",
+            "",
+            "client = TestClient(app)",
+            "",
+            "",
+            "def test_${1:protected}_with_token():",
+            "    ${2:token} = ${3:'test-token'}",
+            "    response = client.get(",
+            "        ${4:'/protected'},",
+            "        headers={'Authorization': f'Bearer {$2}'},",
+            "    )",
+            "    assert response.status_code == ${5:200}",
+            "",
+            "",
+            "def test_${1:protected}_without_token():",
+            "    response = client.get(${4:'/protected'})",
+            "    assert response.status_code == ${6:401}"
+        ],
+        "description": "带 Bearer Token 测试受保护路由"
+    },
+    "文件上传测试": {
+        "prefix": "fa_test_upload",
+        "body": [
+            "from fastapi.testclient import TestClient",
+            "",
+            "",
+            "def test_${1:upload}():",
+            "    response = client.post(",
+            "        ${2:'/upload'},",
+            "        files={'file': ('${3:name}.txt', b'${4:content}', '${5:text/plain}')},",
+            "    )",
+            "    assert response.status_code == ${6:200}",
+            "    assert response.json()['size'] == ${7:len('${4:content}')}"
+        ],
+        "description": "multipart 文件上传测试"
+    },
+    "WebSocket 测试": {
+        "prefix": "fa_test_ws",
+        "body": [
+            "from fastapi.testclient import TestClient",
+            "",
+            "",
+            "def test_${1:websocket}():",
+            "    client = TestClient(app)",
+            "    with client.websocket_connect(${2:'/ws'}) as ws:",
+            "        ws.send_text(${3:'hello'})",
+            "        data = ws.receive_text()",
+            "        assert data == ${4:'reply: hello'}"
+        ],
+        "description": "WebSocket 测试"
+    },
+    "异常断言": {
+        "prefix": "fa_test_exc",
+        "body": [
+            "import pytest",
+            "from fastapi import HTTPException",
+            "",
+            "",
+            "def test_${1:raises_404}():",
+            "    response = client.get(${2:'/missing'})",
+            "    assert response.status_code == ${3:404}",
+            "    assert response.json()['detail'] == ${4:'Not found'}",
+            "",
+            "",
+            "def test_${5:raises_http}():",
+            "    with pytest.raises(HTTPException) as ${6:exc}:",
+            "        ${7:raise_func()}",
+            "    assert ${6:exc}.value.status_code == ${8:400}"
+        ],
+        "description": "异常响应 + pytest.raises 断言"
     }
 }

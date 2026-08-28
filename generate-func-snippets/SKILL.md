@@ -338,7 +338,7 @@ JSON 文件 raw:    \\$var        ← 文件里实际写的字符
 | 迁移 | alembic / 自动迁移 / 手动迁移 |
 | 原始 SQL | text() / Raw SQL 执行 |
 
-### 测试类（pytest / jest / go testing）
+### 测试类（pytest / jest / vitest / go testing / junit / busted / bats）
 
 | 分类 | 覆盖示例 |
 |---|---|
@@ -349,6 +349,45 @@ JSON 文件 raw:    \\$var        ← 文件里实际写的字符
 | 异常断言 | assertRaises / rejects.toThrow |
 | 钩子 | setup/teardown / beforeAll/afterAll |
 | 覆盖率 | 配置运行 / 报告生成 |
+
+### 框架/库自带的测试 snippets（5–8 条/库，**强制**）
+
+> 生成以下库时，**必须**附带 5–8 条**库特有**的测试 snippet（与通用测试 snippets 互补）：
+>
+> | 库类型 | 必须涵盖 |
+> |---|---|
+> | Web 框架（fastapi / flask / gin / express / koa） | TestClient / httpx.AsyncClient / supertest 启动 + 异步测试 |
+> | ORM（sqlalchemy / gorm / sqlmodel / prisma / typeorm） | 内存数据库（sqlite `:memory:` / gorm sqlmock）+ 事务回滚 fixture |
+> | Schema/序列化（marshmallow / pydantic） | schema.load/dump 验证 + ValidationError 断言 |
+> | 数据处理（pandas / polars / numpy） | `pd.testing.assert_frame_equal` 等专用断言 |
+>
+> **命名规范**：沿用库缩写 `fa_test_*` / `gm_test_*` / `sa_test_*` / `sm_test_*` / `ms_test_*` / `pd_test_*`。
+>
+> **示例参考**：
+> - `fastapi` 已有：`fa_test_get`、`fa_test_post`、`fa_async_test`
+> - `sqlmodel` 已有：`sm_test_fixture`
+>
+> **生成位置**：追加到对应库的 `<library>.code-snippets` 文件中，**不要新建文件**。
+
+### JSONC 分隔注释（追加 snippets 时使用）
+
+VSCode 的 `.code-snippets` 文件是 **JSONC** 格式，支持 `//` 单行注释。当在已有库文件中追加测试 snippets 时，必须在原内容末尾与新增测试 snippets 之间插入一行分隔注释：
+
+```jsonc
+{
+    "fa_route_get": { ... },
+    ...
+    "fa_openapi_tags": { ... },
+    // 下面为测试snippets
+    "fa_test_get": { ... },
+    ...
+}
+```
+
+**规则**：
+- 注释独占一行，**不要**写在 snippet 的 `}` 后面跟注释（JSON 不允许）
+- 固定文案 `// 下面为测试snippets`，与 lang-snippets skill 保持一致
+- 校验时需要先剥掉 `//` 注释行再 `json.loads` 解析
 
 ### 工具类（pydantic / loguru / click / typer / pillow / rich）
 
@@ -425,14 +464,13 @@ df = pd.read_csv(path, encoding='utf-8', sep=',')
 ## 验证清单（生成完必跑）
 
 ```bash
-# 1. JSON 合法
-python3 -c "import json; json.load(open('.vscode/<library>.code-snippets'))"
+# 1. 静态校验（JSONC + 字段 + 重复 prefix + 测试分隔符）
+python3 references/validate_snippets.py .vscode/<library>.code-snippets
 
 # 2. 模拟展开
 python3 references/expand.py .vscode/<library>.code-snippets
 
-# 3. snippet 总数检查（应在 30-50 之间）
-python3 -c "import json; d=json.load(open('.vscode/<library>.code-snippets')); print(f'snippet 总数: {len(d)}')"
+# 3. snippet 总数检查（validate_snippets.py 已统计，可跳过此步）
 ```
 
 输出示例：

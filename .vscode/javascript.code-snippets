@@ -350,5 +350,307 @@
             "}"
         ],
         "description": "类定义（含构造器、方法）"
+    },
+    // 下面为测试snippets
+    "基本测试函数": {
+        "prefix": "js_test_func",
+        "body": [
+            "import { describe, test, expect } from 'vitest';",
+            "",
+            "describe('${1:module}', () => {",
+            "    test('${2:case}', () => {",
+            "        const ${3:actual} = ${4:func()};",
+            "        expect(${3:actual}).toBe(${5:expected});",
+            "    });",
+            "});"
+        ],
+        "description": "基本测试函数（vitest）"
+    },
+    "describe 分组": {
+        "prefix": "js_test_describe",
+        "body": [
+            "import { describe, test, expect } from 'vitest';",
+            "",
+            "describe('${1:group}', () => {",
+            "    test('${2:case}', () => {",
+            "        ${3:// test body}",
+            "    });",
+            "});"
+        ],
+        "description": "describe 测试分组"
+    },
+    "it 别名": {
+        "prefix": "js_test_it",
+        "body": [
+            "import { describe, it, expect } from 'vitest';",
+            "",
+            "describe('${1:group}', () => {",
+            "    it('${2:case}', () => {",
+            "        ${3:// test body}",
+            "    });",
+            "});"
+        ],
+        "description": "it 别名（test 同义）"
+    },
+    "跳过测试": {
+        "prefix": "js_test_skip",
+        "body": [
+            "test.skip('${1:case}', () => {",
+            "    ${2:// skipped body}",
+            "});"
+        ],
+        "description": "test.skip 跳过测试"
+    },
+    "独占测试": {
+        "prefix": "js_test_only",
+        "body": [
+            "test.only('${1:case}', () => {",
+            "    ${2:// exclusive body}",
+            "});"
+        ],
+        "description": "test.only 独占执行"
+    },
+    "严格相等断言": {
+        "prefix": "js_test_assert_eq",
+        "body": [
+            "expect(${1:actual}).toBe(${2:expected});"
+        ],
+        "description": "toBe 严格相等"
+    },
+    "深相等断言": {
+        "prefix": "js_test_assert_deep",
+        "body": [
+            "expect(${1:actual}).toEqual(${2:expected});"
+        ],
+        "description": "toEqual 深相等"
+    },
+    "真值断言": {
+        "prefix": "js_test_assert_true",
+        "body": [
+            "expect(${1:actual}).toBeTruthy();"
+        ],
+        "description": "toBeTruthy 真值断言"
+    },
+    "浮点近似断言": {
+        "prefix": "js_test_assert_close",
+        "body": [
+            "expect(${1:actual}).toBeCloseTo(${2:expected}, ${3:2});"
+        ],
+        "description": "toBeCloseTo 浮点近似"
+    },
+    "包含断言": {
+        "prefix": "js_test_assert_in",
+        "body": [
+            "expect(${1:array}).toContain(${2:element});"
+        ],
+        "description": "toContain 包含断言"
+    },
+    "同步异常断言": {
+        "prefix": "js_test_throws",
+        "body": [
+            "expect(() => ${1:func()}).toThrow(${2:Error});"
+        ],
+        "description": "toThrow 同步异常断言"
+    },
+    "异步异常断言": {
+        "prefix": "js_test_rejects",
+        "body": [
+            "await expect(${1:promise}).rejects.toThrow(${2:Error});"
+        ],
+        "description": "rejects.toThrow 异步异常断言"
+    },
+    "beforeEach 钩子": {
+        "prefix": "js_test_before_each",
+        "body": [
+            "import { beforeEach } from 'vitest';",
+            "",
+            "beforeEach(() => {",
+            "    ${1:// 每个用例前执行}",
+            "});"
+        ],
+        "description": "beforeEach 每个用例前"
+    },
+    "afterEach 钩子": {
+        "prefix": "js_test_after_each",
+        "body": [
+            "import { afterEach } from 'vitest';",
+            "",
+            "afterEach(() => {",
+            "    ${1:// 每个用例后执行}",
+            "});"
+        ],
+        "description": "afterEach 每个用例后"
+    },
+    "beforeAll 钩子": {
+        "prefix": "js_test_before_all",
+        "body": [
+            "import { beforeAll } from 'vitest';",
+            "",
+            "beforeAll(async () => {",
+            "    ${1:// 所有用例前执行一次}",
+            "});"
+        ],
+        "description": "beforeAll 全部用例前"
+    },
+    "afterAll 钩子": {
+        "prefix": "js_test_after_all",
+        "body": [
+            "import { afterAll } from 'vitest';",
+            "",
+            "afterAll(async () => {",
+            "    ${1:// 所有用例后执行一次}",
+            "});"
+        ],
+        "description": "afterAll 全部用例后"
+    },
+    "test.each 参数化": {
+        "prefix": "js_test_each",
+        "body": [
+            "import { test, expect } from 'vitest';",
+            "",
+            "test.each([",
+            "    { ${1:input}: ${2:1}, ${3:expected}: ${4:2} },",
+            "    { ${1:input}: ${5:2}, ${3:expected}: ${6:4} },",
+            "])('$1: $input => $expected', ({ ${1:input}, ${3:expected} }) => {",
+            "    expect(${7:func($input)}).toBe(${3:expected});",
+            "});"
+        ],
+        "description": "test.each 参数化"
+    },
+    "describe.each 参数化": {
+        "prefix": "js_test_describe_each",
+        "body": [
+            "import { describe, test, expect } from 'vitest';",
+            "",
+            "describe.each([",
+            "    { ${1:group}: '${2:a}' },",
+            "    { ${1:group}: '${3:b}' },",
+            "])('$1: $group', (${4:data}) => {",
+            "    test('${5:case}', () => {",
+            "        ${6:// test body}",
+            "    });",
+            "});"
+        ],
+        "description": "describe.each 参数化"
+    },
+    "条件执行": {
+        "prefix": "js_test_repeat",
+        "body": [
+            "import { test } from 'vitest';",
+            "",
+            "test.runIf(${1:condition})('${2:case}', () => {",
+            "    ${3:// body}",
+            "});"
+        ],
+        "description": "test.runIf 条件执行"
+    },
+    "mock 函数": {
+        "prefix": "js_test_mock_fn",
+        "body": [
+            "import { vi } from 'vitest';",
+            "",
+            "const ${1:mock} = vi.fn();"
+        ],
+        "description": "vi.fn() mock 函数"
+    },
+    "mockReturnValue": {
+        "prefix": "js_test_mock_return",
+        "body": [
+            "import { vi } from 'vitest';",
+            "",
+            "const ${1:mock} = vi.fn().mockReturnValue(${2:value});"
+        ],
+        "description": "mockReturnValue 返回值"
+    },
+    "spyOn 对象方法": {
+        "prefix": "js_test_spy_on",
+        "body": [
+            "import { vi } from 'vitest';",
+            "",
+            "const ${1:spy} = vi.spyOn(${2:obj}, '${3:method}');",
+            "${1:spy}.mockReturnValue(${4:value});"
+        ],
+        "description": "vi.spyOn 监听对象方法"
+    },
+    "mock 模块": {
+        "prefix": "js_test_mock_module",
+        "body": [
+            "import { vi } from 'vitest';",
+            "",
+            "vi.mock('${1:modulePath}', () => ({",
+            "    ${2:exported}: vi.fn().mockReturnValue(${3:value}),",
+            "}));"
+        ],
+        "description": "vi.mock 替换模块"
+    },
+    "unmock 模块": {
+        "prefix": "js_test_unmock",
+        "body": [
+            "import { vi } from 'vitest';",
+            "",
+            "vi.unmock('${1:modulePath}');",
+            "vi.doUnmock('${1:modulePath}');"
+        ],
+        "description": "vi.unmock / doUnmock 解除 mock"
+    },
+    "异步测试": {
+        "prefix": "js_test_async",
+        "body": [
+            "test('${1:async case}', async () => {",
+            "    const ${2:result} = await ${3:asyncFunc()};",
+            "    expect(${2:result}).toBe(${4:expected});",
+            "});"
+        ],
+        "description": "async/await 异步测试"
+    },
+    "并发测试": {
+        "prefix": "js_test_concurrent",
+        "body": [
+            "test.concurrent('${1:case}', async () => {",
+            "    ${2:// concurrent body}",
+            "});"
+        ],
+        "description": "test.concurrent 并发执行"
+    },
+    "覆盖率命令": {
+        "prefix": "js_test_cover",
+        "body": [
+            "npx vitest run --coverage"
+        ],
+        "description": "vitest --coverage 命令"
+    },
+    "测试超时": {
+        "prefix": "js_test_timeout",
+        "body": [
+            "test('${1:case}', async () => {",
+            "    ${2:// body}",
+            "}, ${3:1000});"
+        ],
+        "description": "test 第三个参数为超时毫秒"
+    },
+    "todo 测试占位": {
+        "prefix": "js_test_tag",
+        "body": [
+            "import { test } from 'vitest';",
+            "",
+            "test.todo('${1:case to implement}');"
+        ],
+        "description": "test.todo 占位"
+    },
+    "详细输出": {
+        "prefix": "js_test_hover",
+        "body": [
+            "npx vitest run --reporter=verbose"
+        ],
+        "description": "vitest 详细输出命令"
+    },
+    "断言 mock 调用": {
+        "prefix": "js_test_called",
+        "body": [
+            "expect(${1:mock}).toHaveBeenCalled();",
+            "expect(${1:mock}).toHaveBeenCalledTimes(${2:1});",
+            "expect(${1:mock}).toHaveBeenCalledWith(${3:args});"
+        ],
+        "description": "断言 mock 被调用"
     }
 }

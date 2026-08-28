@@ -318,5 +318,378 @@
             "}"
         ],
         "description": "类定义（含字段、构造器、方法）"
+    },
+    // 下面为测试snippets
+    "基本测试方法": {
+        "prefix": "ja_test_func",
+        "body": [
+            "import org.junit.jupiter.api.Test;",
+            "import static org.junit.jupiter.api.Assertions.*;",
+            "",
+            "class ${1:TestClass} {",
+            "    @Test",
+            "    void ${2:methodName}() {",
+            "        ${3:// arrange}",
+            "        ${4:String} ${5:actual} = ${6:actualValue};",
+            "        ${7:// assert}",
+            "        assertEquals(${8:expected}, ${5:actual});",
+            "    }",
+            "}"
+        ],
+        "description": "基本测试方法（JUnit 5）"
+    },
+    "DisplayName 显示名": {
+        "prefix": "ja_test_display_name",
+        "body": [
+            "import org.junit.jupiter.api.DisplayName;",
+            "import org.junit.jupiter.api.Test;",
+            "",
+            "@DisplayName(\"${1:测试描述}\")",
+            "class ${2:TestClass} {",
+            "    @Test",
+            "    @DisplayName(\"${3:用例名}\")",
+            "    void ${4:methodName}() {",
+            "        ${5:// test body}",
+            "    }",
+            "}"
+        ],
+        "description": "@DisplayName 自定义显示名"
+    },
+    "Disabled 禁用测试": {
+        "prefix": "ja_test_disabled",
+        "body": [
+            "import org.junit.jupiter.api.Disabled;",
+            "import org.junit.jupiter.api.Test;",
+            "",
+            "@Disabled(\"${1:reason}\")",
+            "@Test",
+            "void ${2:methodName}() {",
+            "    ${3:// disabled body}",
+            "}"
+        ],
+        "description": "@Disabled 禁用测试"
+    },
+    "TestMethodOrder": {
+        "prefix": "ja_test_order",
+        "body": [
+            "import org.junit.jupiter.api.MethodOrderer;",
+            "import org.junit.jupiter.api.Order;",
+            "import org.junit.jupiter.api.Test;",
+            "import org.junit.jupiter.api.TestMethodOrder;",
+            "",
+            "@TestMethodOrder(MethodOrderer.OrderAnnotation.class)",
+            "class ${1:TestClass} {",
+            "    @Test",
+            "    @Order(${2:1})",
+            "    void ${3:methodName}() {",
+            "        ${4:// body}",
+            "    }",
+            "}"
+        ],
+        "description": "@TestMethodOrder + @Order 控制测试顺序"
+    },
+    "Nested 内嵌测试": {
+        "prefix": "ja_test_nested",
+        "body": [
+            "import org.junit.jupiter.api.Nested;",
+            "import org.junit.jupiter.api.Test;",
+            "",
+            "class ${1:OuterTest} {",
+            "    @Nested",
+            "    class ${2:InnerTest} {",
+            "        @Test",
+            "        void ${3:methodName}() {",
+            "            ${4:// body}",
+            "        }",
+            "    }",
+            "}"
+        ],
+        "description": "@Nested 内嵌测试类"
+    },
+    "assertEquals": {
+        "prefix": "ja_test_assert_eq",
+        "body": [
+            "assertEquals(${1:expected}, ${2:actual});"
+        ],
+        "description": "assertEquals 相等断言"
+    },
+    "assertTrue": {
+        "prefix": "ja_test_assert_true",
+        "body": [
+            "assertTrue(${1:condition});"
+        ],
+        "description": "assertTrue 真值断言"
+    },
+    "assertNull": {
+        "prefix": "ja_test_assert_null",
+        "body": [
+            "assertNull(${1:obj});"
+        ],
+        "description": "assertNull 空值断言"
+    },
+    "assertAll 多断言": {
+        "prefix": "ja_test_assert_all",
+        "body": [
+            "assertAll(",
+            "    () -> assertEquals(${1:expected1}, ${2:actual1}),",
+            "    () -> assertEquals(${3:expected2}, ${4:actual2}),",
+            "    () -> assertTrue(${5:condition})",
+            ");"
+        ],
+        "description": "assertAll 多断言一起执行"
+    },
+    "assertThrows": {
+        "prefix": "ja_test_assert_throws",
+        "body": [
+            "${1:ExceptionType} ${2:ex} = assertThrows(${1:ExceptionType}.class, () -> ${3:func()});",
+            "assertEquals(\"${4:message}\", ${2:ex}.getMessage());"
+        ],
+        "description": "assertThrows 异常断言"
+    },
+    "assertTimeout": {
+        "prefix": "ja_test_assert_time",
+        "body": [
+            "assertTimeout(Duration.of${1:Seconds}(${2:5}), () -> ${3:slowFunc()});"
+        ],
+        "description": "assertTimeout 超时断言"
+    },
+    "@BeforeEach": {
+        "prefix": "ja_test_before_each",
+        "body": [
+            "import org.junit.jupiter.api.BeforeEach;",
+            "",
+            "@BeforeEach",
+            "void ${1:setUp}() {",
+            "    ${2:// 每个用例前}",
+            "}"
+        ],
+        "description": "@BeforeEach 每个用例前"
+    },
+    "@AfterEach": {
+        "prefix": "ja_test_after_each",
+        "body": [
+            "import org.junit.jupiter.api.AfterEach;",
+            "",
+            "@AfterEach",
+            "void ${1:tearDown}() {",
+            "    ${2:// 每个用例后}",
+            "}"
+        ],
+        "description": "@AfterEach 每个用例后"
+    },
+    "@BeforeAll": {
+        "prefix": "ja_test_before_all",
+        "body": [
+            "import org.junit.jupiter.api.BeforeAll;",
+            "",
+            "@BeforeAll",
+            "static void ${1:setUpAll}() {",
+            "    ${2:// 所有用例前执行一次}",
+            "}"
+        ],
+        "description": "@BeforeAll 全部用例前（static）"
+    },
+    "@AfterAll": {
+        "prefix": "ja_test_after_all",
+        "body": [
+            "import org.junit.jupiter.api.AfterAll;",
+            "",
+            "@AfterAll",
+            "static void ${1:tearDownAll}() {",
+            "    ${2:// 所有用例后执行一次}",
+            "}"
+        ],
+        "description": "@AfterAll 全部用例后（static）"
+    },
+    "ParameterizedTest": {
+        "prefix": "ja_test_param",
+        "body": [
+            "import org.junit.jupiter.params.ParameterizedTest;",
+            "import org.junit.jupiter.params.provider.ValueSource;",
+            "",
+            "@ParameterizedTest",
+            "@ValueSource(ints = {${1:1, 2, 3}})",
+            "void ${2:methodName}(${3:int} ${4:input}) {",
+            "    assertTrue(${4:input} > ${5:0});",
+            "}"
+        ],
+        "description": "@ParameterizedTest 参数化"
+    },
+    "@ValueSource": {
+        "prefix": "ja_test_value_source",
+        "body": [
+            "import org.junit.jupiter.params.ParameterizedTest;",
+            "import org.junit.jupiter.params.provider.ValueSource;",
+            "",
+            "@ParameterizedTest",
+            "@ValueSource(strings = {\"${1:a}\", \"${2:b}\", \"${3:c}\"})",
+            "void ${4:methodName}(${5:String} ${6:input}) {",
+            "    assertNotNull(${6:input});",
+            "}"
+        ],
+        "description": "@ValueSource 字符串/数字数组"
+    },
+    "@CsvSource": {
+        "prefix": "ja_test_csv_source",
+        "body": [
+            "import org.junit.jupiter.params.ParameterizedTest;",
+            "import org.junit.jupiter.params.provider.CsvSource;",
+            "",
+            "@ParameterizedTest",
+            "@CsvSource({",
+            "    \"${1:1}, ${2:2}\",",
+            "    \"${3:3}, ${4:6}\",",
+            "})",
+            "void ${5:methodName}(${6:int} ${7:a}, ${6:int} ${8:b}) {",
+            "    assertEquals(${7:a} + ${7:a}, ${8:b});",
+            "}"
+        ],
+        "description": "@CsvSource 多列 CSV 数据"
+    },
+    "@Mock 基本": {
+        "prefix": "ja_test_mock",
+        "body": [
+            "import org.junit.jupiter.api.extension.ExtendWith;",
+            "import org.mockito.Mock;",
+            "import org.mockito.junit.jupiter.MockitoExtension;",
+            "",
+            "@ExtendWith(MockitoExtension.class)",
+            "class ${1:TestClass} {",
+            "    @Mock",
+            "    private ${2:DependencyType} ${3:dep};",
+            "}"
+        ],
+        "description": "@Mock 基本 mock"
+    },
+    "@InjectMocks": {
+        "prefix": "ja_test_inject_mocks",
+        "body": [
+            "import org.mockito.InjectMocks;",
+            "",
+            "@InjectMocks",
+            "private ${1:ServiceType} ${2:service};"
+        ],
+        "description": "@InjectMocks 自动注入 mocks"
+    },
+    "when().thenReturn": {
+        "prefix": "ja_test_when_then",
+        "body": [
+            "import static org.mockito.Mockito.*;",
+            "",
+            "when(${1:mock}.${2:method}(${3:any()})).thenReturn(${4:value});"
+        ],
+        "description": "Mockito when().thenReturn 桩方法"
+    },
+    "verify 验证调用": {
+        "prefix": "ja_test_verify",
+        "body": [
+            "import static org.mockito.Mockito.*;",
+            "",
+            "verify(${1:mock}).${2:method}(${3:args});",
+            "verify(${1:mock}, times(${4:1})).${2:method}(${3:args});",
+            "verify(${1:mock}, never()).${5:otherMethod}();"
+        ],
+        "description": "Mockito verify 验证调用次数"
+    },
+    "ArgumentCaptor": {
+        "prefix": "ja_test_argument_captor",
+        "body": [
+            "import org.mockito.ArgumentCaptor;",
+            "import static org.mockito.Mockito.*;",
+            "",
+            "ArgumentCaptor<${1:Type}> ${2:captor} = ArgumentCaptor.forClass(${1:Type}.class);",
+            "verify(${3:mock}).${4:method}(${2:captor}.capture());",
+            "assertEquals(${5:expected}, ${2:captor}.getValue());"
+        ],
+        "description": "ArgumentCaptor 捕获参数"
+    },
+    "Assumptions.assumeTrue": {
+        "prefix": "ja_test_assume",
+        "body": [
+            "import org.junit.jupiter.api.Assumptions;",
+            "",
+            "Assumptions.assumeTrue(${1:condition}, \"${2:reason}\");",
+            "${3:// 在不满足条件时跳过该用例}"
+        ],
+        "description": "Assumptions.assumeTrue 条件跳过"
+    },
+    "@RepeatedTest": {
+        "prefix": "ja_test_repeated",
+        "body": [
+            "import org.junit.jupiter.api.RepeatedTest;",
+            "",
+            "@RepeatedTest(${1:5})",
+            "void ${2:methodName}(${3:RepetitionInfo} ${4:info}) {",
+            "    ${5:// 重复执行 5 次}",
+            "}"
+        ],
+        "description": "@RepeatedTest 重复测试"
+    },
+    "@Tag 分组": {
+        "prefix": "ja_test_tag",
+        "body": [
+            "import org.junit.jupiter.api.Tag;",
+            "import org.junit.jupiter.api.Test;",
+            "",
+            "@Tag(\"${1:fast}\")",
+            "@Test",
+            "void ${2:methodName}() {",
+            "    ${3:// tagged body}",
+            "}"
+        ],
+        "description": "@Tag 测试分组"
+    },
+    "@EnabledIf 条件启用": {
+        "prefix": "ja_test_enabled_if",
+        "body": [
+            "import org.junit.jupiter.api.condition.EnabledIf;",
+            "",
+            "@EnabledIf(\"${1:methodName}\")",
+            "@Test",
+            "void ${2:methodName}() {",
+            "    ${3:// body}",
+            "}",
+            "",
+            "static boolean ${1:methodName}() {",
+            "    return ${4:true};",
+            "}"
+        ],
+        "description": "@EnabledIf 条件启用"
+    },
+    "Mockito JUnit Vintage": {
+        "prefix": "ja_test_vintage",
+        "body": [
+            "import org.junit.platform.suite.api.IncludeEngines;",
+            "import org.junit.platform.suite.api.SelectPackages;",
+            "import org.junit.platform.suite.api.Suite;",
+            "",
+            "@Suite",
+            "@IncludeEngines(\"junit-vintage\")",
+            "@SelectPackages(\"${1:com.example}\")",
+            "class ${2:VintageSuite} {",
+            "}"
+        ],
+        "description": "JUnit Vintage 兼容 JUnit4 套件"
+    },
+    "@SpringBootTest": {
+        "prefix": "ja_test_spring_boot",
+        "body": [
+            "import org.springframework.boot.test.context.SpringBootTest;",
+            "",
+            "@SpringBootTest",
+            "class ${1:ApplicationTests} {",
+            "    @org.junit.jupiter.api.Test",
+            "    void contextLoads() {",
+            "    }",
+            "}"
+        ],
+        "description": "@SpringBootTest Spring Boot 集成测试"
+    },
+    "assertNotNull": {
+        "prefix": "ja_test_assert_not_null",
+        "body": [
+            "assertNotNull(${1:obj});"
+        ],
+        "description": "assertNotNull 非空断言"
     }
 }
