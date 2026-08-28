@@ -70,6 +70,12 @@ line-ending = "lf"
 # 保持为 true，有助于减少 git diff 冲突
 skip-magic-trailing-comma = false
 
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-subtests>=0.15.0",
+]
+
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = "single"
 multiline-quotes = "double"
