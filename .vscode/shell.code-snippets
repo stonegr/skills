@@ -230,7 +230,7 @@
             "${2:content}",
             "EOF",
             "",
-            "sed -i 's/\\ \\ \\ \\ \\ \\ \\ \\ //g' /etc/docker/daemon.json"
+            "sed -i 's/^\\ \\ \\ \\ \\ \\ \\ \\ //g' /etc/docker/daemon.json"
         ],
         "description": "写入文件（多行）"
     },
