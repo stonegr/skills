@@ -228,7 +228,9 @@
         "body": [
             "cat > ${1:path} << 'EOF'",
             "${2:content}",
-            "EOF"
+            "EOF",
+            "",
+            "sed -i 's/\\ \\ \\ \\ \\ \\ \\ \\ //g' /etc/docker/daemon.json"
         ],
         "description": "写入文件（多行）"
     },
