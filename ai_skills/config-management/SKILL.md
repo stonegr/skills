@@ -46,12 +46,49 @@ description: 规范项目的配置管理，包括配置文件格式、优先级�
 |------|--------|------|
 | 环境变量 | `.env` | 本地开发覆盖，不提交到git |
 | YAML | `config.yaml` | 主配置文件，支持复杂结构 |
-| JSON | `config.json` | 替代YAML，支持程序化生成 |
+| JSON | `config.json` 或 `config.jsonc` | 替代YAML，支持注释（JSONC），便于程序化生成与人工阅读 |
 
 **示例文件**：
 - `.env.example`：环境变量模板
 - `config.example.yaml`：YAML配置模板
-- `config.example.json`：JSON配置模板
+- `config.example.json` 或 `config.example.jsonc`：JSON/JSONC配置模板
+
+> **JSONC 支持**：JSON 文件允许使用注释（与 VSCode `jsonc` 格式一致）。可在字段上方或行尾添加 `//` 行注释 与 `/* */` 块注释，提升可读性。**注释内容必须在字符串字面量之外**，否则视为字符串的一部分。加载时由解析器先剥离注释再按 JSON 解析。
+
+#### JSONC 注释规范
+
+| 类型 | 语法 | 说明 |
+|------|------|------|
+| 行注释 | `// 注释内容` | 从 `//` 起一直到行尾，必须**在字符串字面量之外** |
+| 块注释 | `/* 注释内容 */` | 可跨行，**不允许嵌套**，不能在字符串字面量内 |
+
+**允许示例**：
+
+```jsonc
+{
+  // 应用基础配置
+  "app": {
+    "name": "My App",     // 项目名称
+    "env": "development", /* development/staging/production */
+    "root_path": "."
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8000
+  }
+}
+```
+
+**禁止示例**（字符串内的 `//` / `/* */` 不是注释，是字符串的一部分）：
+
+```jsonc
+{
+  "url": "https://example.com",   // OK：解析后 url = "https://example.com"
+  "note": "https://x // not comment"  // OK：// 在字符串内，属于字面量
+}
+```
+
+**剥离规则**：字符串字面量内的 `//`、`/*`、`*/` 全部视为普通字符，**不**当作注释开始/结束标记。加载器必须按 JSON 字符串语法识别后才能正确剥离注释。
 
 ### 2. 配置优先级（从高到低）
 
@@ -159,12 +196,12 @@ log:
 1. **创建配置文件**：
    - `.env`：环境变量文件
    - `config.yaml`：YAML配置文件
-   - `config.json`：JSON配置文件
+   - `config.json` 或 `config.jsonc`：JSON/JSONC配置文件（推荐 `.jsonc`，支持注释）
 
 2. **创建示例文件**：
    - `.env.example`：环境变量模板
    - `config.example.yaml`：YAML配置模板
-   - `config.example.json`：JSON配置模板
+   - `config.example.json` 或 `config.example.jsonc`：JSON/JSONC配置模板（与所选配置文件格式保持一致）
 
 3. **定义配置项**：
    - 按基础配置项规范定义
@@ -199,9 +236,10 @@ log:
    - 使用示例值
    - 添加注释说明
 
-3. **config.example.json**：
+3. **config.example.json / .jsonc**：
    - 与YAML配置保持一致
    - 使用示例值
+   - 推荐使用 `.jsonc` 后缀以便添加注释；若使用 `.json`，需保证是严格的 JSON 语法
 
 ### Step 5: 验证配置
 
@@ -357,8 +395,9 @@ config.load();
 
 ## 验证清单
 
-- [ ] 配置文件格式正确（.env, config.yaml, config.json）
-- [ ] 示例文件完整（.env.example, config.example.yaml, config.example.json）
+- [ ] 配置文件格式正确（.env, config.yaml, config.json/.jsonc）
+- [ ] 示例文件完整（.env.example, config.example.yaml, config.example.json/.jsonc）
+- [ ] JSONC 文件中的注释均位于字符串字面量之外（//、/* */ 不会被字符串吞掉）
 - [ ] 配置优先级正确（环境变量 > .env > 配置文件 > 默认值）
 - [ ] 配置项命名规范（环境变量大写下划线+APP_前缀，配置文件小写下划线）
 - [ ] 基础配置项完整（app, server, log）
@@ -401,7 +440,7 @@ config.load();
 - 示例文件使用占位符（如`CHANGEME`）
 
 ### 3. 配置版本控制
-- 配置文件（config.yaml, config.json）应提交到git
+- 配置文件（config.yaml, config.json / config.jsonc）应提交到git
 - .env文件不得提交到git
 - 示例文件（.env.example）应提交到git
 
@@ -424,7 +463,7 @@ A: 符合12-factor原则，环境变量是不同环境之间配置差异的首�
 A: 使用环境变量覆盖配置文件中的值。例如，生产环境可以设置`APP_DATABASE_HOST=prod-db.example.com`来覆盖配置文件中的数据库主机。
 
 ### Q3: 配置文件格式选择哪个？
-A: YAML更适合人类阅读，JSON更适合程序化生成。建议同时提供两种格式，让开发者选择。
+A: YAML更适合人类阅读，JSON/JSONC更适合程序化生成与添加注释。建议同时提供 YAML + JSON/JSONC 两种格式，让开发者选择。如果需要注释，推荐 `.jsonc` 后缀（与 VSCode 默认一致）。
 
 ### Q4: 如何验证配置的正确性？
 A: 使用配置验证脚本（references/validate_config.py）验证配置文件格式和内容。同时，使用类型系统进行运行时验证。
@@ -444,10 +483,11 @@ python references/validate_config.py config.yaml
 ```
 
 脚本会检查：
-- 配置文件格式（YAML/JSON）
+- 配置文件格式（YAML / JSON / JSONC）
 - 必须的配置项
 - 配置值范围
 - 示例文件完整性
+- JSONC 文件：剥离注释后必须能解析为合法 JSON；字符串字面量内的 `//`、`/*`、`*/` 不会被当作注释标记
 
 ### 配置模板
 

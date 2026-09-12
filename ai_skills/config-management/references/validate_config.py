@@ -2,29 +2,90 @@
 """
 配置文件验证脚本
 用于验证配置文件是否符合config-management规范
+
+支持以下文件格式：
+- YAML: .yaml / .yml
+- JSON: .json
+- JSONC (JSON with Comments): .jsonc / .json（带 // 或 /* */ 注释的 JSON）
 """
 
-import yaml
 import json
 import os
 import sys
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+import yaml
+
+
+def strip_json_comments(text: str) -> str:
+    """
+    剥离 JSONC 注释，支持 // 行注释 和 /* */ 块注释。
+
+    严格遵守 JSON 字符串语法：
+    - 字符串字面量内的 // 、/* 、*/ 视为普通字符，不作为注释标记
+    - 块注释不支持嵌套
+    """
+    result = []
+    i = 0
+    n = len(text)
+    in_string = False
+    string_quote = ''
+
+    while i < n:
+        ch = text[i]
+
+        if in_string:
+            result.append(ch)
+            if ch == '\\' and i + 1 < n:
+                result.append(text[i + 1])
+                i += 2
+                continue
+            if ch == string_quote:
+                in_string = False
+            i += 1
+            continue
+
+        if ch in ('"', "'"):
+            in_string = True
+            string_quote = ch
+            result.append(ch)
+            i += 1
+            continue
+
+        if ch == '/' and i + 1 < n:
+            nxt = text[i + 1]
+            if nxt == '/':
+                j = text.find('\n', i)
+                if j == -1:
+                    j = n
+                i = j
+                continue
+            if nxt == '*':
+                j = text.find('*/', i + 2)
+                if j == -1:
+                    raise ValueError("JSONC 块注释未闭合：缺少 '*/'")
+                i = j + 2
+                continue
+
+        result.append(ch)
+        i += 1
+
+    return ''.join(result)
 
 
 class ConfigValidator:
     """配置文件验证器"""
-    
+
     # 必须包含的基础配置项
     REQUIRED_SECTIONS = ['app', 'server', 'log']
-    
+
     # 必须包含的配置项
     REQUIRED_CONFIGS = {
         'app': ['name', 'env', 'root_path'],
         'server': ['host', 'port'],
         'log': ['level', 'file']
     }
-    
+
     # 配置项验证规则
     VALIDATION_RULES = {
         'app.env': ['development', 'staging', 'production'],
@@ -35,66 +96,75 @@ class ConfigValidator:
         'log.max_backups': (1, 100),
         'log.max_age': (1, 365)
     }
-    
+
     def __init__(self):
         self.errors = []
         self.warnings = []
-    
+
     def validate_yaml(self, file_path: str) -> bool:
         """验证YAML配置文件"""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 config = yaml.safe_load(f)
-            
+
             if not isinstance(config, dict):
-                self.errors.append(f"配置文件格式错误: {file_path}")
+                self.errors.append(f'配置文件格式错误: {file_path}')
                 return False
-            
+
             return self.validate_config(config, file_path)
-            
+
         except yaml.YAMLError as e:
-            self.errors.append(f"YAML解析错误: {e}")
+            self.errors.append(f'YAML解析错误: {e}')
             return False
         except Exception as e:
-            self.errors.append(f"读取文件错误: {e}")
+            self.errors.append(f'读取文件错误: {e}')
             return False
-    
+
     def validate_json(self, file_path: str) -> bool:
-        """验证JSON配置文件"""
+        """验证JSON/JSONC配置文件（支持 // 与 /* */ 注释）"""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                config = json.load(f)
-            
-            if not isinstance(config, dict):
-                self.errors.append(f"配置文件格式错误: {file_path}")
+            with open(file_path, encoding='utf-8') as f:
+                raw = f.read()
+
+            try:
+                stripped = strip_json_comments(raw)
+            except ValueError as e:
+                self.errors.append(f'JSONC注释处理错误: {e}')
                 return False
-            
+
+            try:
+                config = json.loads(stripped)
+            except json.JSONDecodeError as e:
+                self.errors.append(f'JSON解析错误: {e}')
+                return False
+
+            if not isinstance(config, dict):
+                self.errors.append(f'配置文件格式错误: {file_path}')
+                return False
+
             return self.validate_config(config, file_path)
-            
-        except json.JSONDecodeError as e:
-            self.errors.append(f"JSON解析错误: {e}")
-            return False
+
         except Exception as e:
-            self.errors.append(f"读取文件错误: {e}")
+            self.errors.append(f'读取文件错误: {e}')
             return False
-    
-    def validate_config(self, config: Dict[str, Any], file_path: str) -> bool:
+
+    def validate_config(self, config: dict[str, Any], file_path: str) -> bool:
         """验证配置内容"""
         valid = True
-        
+
         # 检查必须的配置节
         for section in self.REQUIRED_SECTIONS:
             if section not in config:
-                self.errors.append(f"缺少必须的配置节: {section}")
+                self.errors.append(f'缺少必须的配置节: {section}')
                 valid = False
             else:
                 # 检查必须的配置项
                 if section in self.REQUIRED_CONFIGS:
                     for config_key in self.REQUIRED_CONFIGS[section]:
                         if config_key not in config[section]:
-                            self.errors.append(f"配置节 {section} 缺少必须的配置项: {config_key}")
+                            self.errors.append(f'配置节 {section} 缺少必须的配置项: {config_key}')
                             valid = False
-        
+
         # 验证配置值
         for key, rule in self.VALIDATION_RULES.items():
             value = self.get_nested_value(config, key)
@@ -114,12 +184,12 @@ class ConfigValidator:
                 elif isinstance(rule, tuple):
                     min_val, max_val = rule
                     if not (min_val <= value <= max_val):
-                        self.errors.append(f"配置项 {key} 的值 {value} 不在允许的范围内: [{min_val}, {max_val}]")
+                        self.errors.append(f'配置项 {key} 的值 {value} 不在允许的范围内: [{min_val}, {max_val}]')
                         valid = False
-        
+
         return valid
-    
-    def get_nested_value(self, config: Dict[str, Any], key: str) -> Any:
+
+    def get_nested_value(self, config: dict[str, Any], key: str) -> Any:
         """获取嵌套配置值"""
         keys = key.split('.')
         value = config
@@ -129,13 +199,13 @@ class ConfigValidator:
             else:
                 return None
         return value
-    
+
     def validate_env_example(self, file_path: str) -> bool:
         """验证.env.example文件"""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 lines = f.readlines()
-            
+
             env_vars = []
             for line in lines:
                 line = line.strip()
@@ -143,104 +213,111 @@ class ConfigValidator:
                     if '=' in line:
                         key = line.split('=')[0]
                         env_vars.append(key)
-            
+
             # 检查必须的环境变量
             required_env_vars = [
                 'APP_NAME', 'APP_ENV', 'APP_ROOT_PATH',
                 'APP_SERVER_HOST', 'APP_SERVER_PORT',
                 'APP_LOG_LEVEL', 'APP_LOG_FILE'
             ]
-            
+
             valid = True
             for env_var in required_env_vars:
                 if env_var not in env_vars:
-                    self.errors.append(f".env.example 缺少必须的环境变量: {env_var}")
+                    self.errors.append(f'.env.example 缺少必须的环境变量: {env_var}')
                     valid = False
-            
+
             return valid
-            
+
         except Exception as e:
-            self.errors.append(f"读取.env.example文件错误: {e}")
+            self.errors.append(f'读取.env.example文件错误: {e}')
             return False
-    
+
     def validate_example_files(self, directory: str) -> bool:
         """验证示例文件"""
         valid = True
-        
+
         # 检查.env.example
         env_example = os.path.join(directory, '.env.example')
         if os.path.exists(env_example):
             if not self.validate_env_example(env_example):
                 valid = False
         else:
-            self.warnings.append(f"缺少.env.example文件")
-        
+            self.warnings.append('缺少.env.example文件')
+
         # 检查config.example.yaml
         yaml_example = os.path.join(directory, 'config.example.yaml')
         if os.path.exists(yaml_example):
             if not self.validate_yaml(yaml_example):
                 valid = False
         else:
-            self.warnings.append(f"缺少config.example.yaml文件")
-        
-        # 检查config.example.json
-        json_example = os.path.join(directory, 'config.example.json')
-        if os.path.exists(json_example):
-            if not self.validate_json(json_example):
-                valid = False
-        else:
-            self.warnings.append(f"缺少config.example.json文件")
-        
+            self.warnings.append('缺少config.example.yaml文件')
+
+        # 检查 config.example.json 或 config.example.jsonc
+        json_candidates = [
+            os.path.join(directory, 'config.example.jsonc'),
+            os.path.join(directory, 'config.example.json'),
+        ]
+        json_found = False
+        for json_example in json_candidates:
+            if os.path.exists(json_example):
+                json_found = True
+                if not self.validate_json(json_example):
+                    valid = False
+                break
+        if not json_found:
+            self.warnings.append('缺少config.example.json/.jsonc文件')
+
         return valid
-    
+
     def print_results(self):
         """打印验证结果"""
         if self.errors:
-            print("❌ 验证失败:")
+            print('❌ 验证失败:')
             for error in self.errors:
-                print(f"  - {error}")
-        
+                print(f'  - {error}')
+
         if self.warnings:
-            print("⚠️  警告:")
+            print('⚠️  警告:')
             for warning in self.warnings:
-                print(f"  - {warning}")
-        
+                print(f'  - {warning}')
+
         if not self.errors and not self.warnings:
-            print("✅ 验证通过")
+            print('✅ 验证通过')
 
 
 def main():
     """主函数"""
     if len(sys.argv) < 2:
-        print("用法: python validate_config.py <目录或文件>")
-        print("示例:")
-        print("  python validate_config.py .")
-        print("  python validate_config.py config.yaml")
+        print('用法: python validate_config.py <目录或文件>')
+        print('示例:')
+        print('  python validate_config.py .')
+        print('  python validate_config.py config.yaml')
         sys.exit(1)
-    
+
     path = sys.argv[1]
     validator = ConfigValidator()
-    
+
     if os.path.isfile(path):
         # 验证单个文件
         if path.endswith('.yaml') or path.endswith('.yml'):
             validator.validate_yaml(path)
-        elif path.endswith('.json'):
+        elif path.endswith('.json') or path.endswith('.jsonc'):
             validator.validate_json(path)
         elif path.endswith('.env.example'):
             validator.validate_env_example(path)
         else:
-            print(f"不支持的文件格式: {path}")
+            print(f'不支持的文件格式: {path}')
             sys.exit(1)
     elif os.path.isdir(path):
         # 验证目录中的示例文件
         validator.validate_example_files(path)
     else:
-        print(f"路径不存在: {path}")
+        print(f'路径不存在: {path}')
         sys.exit(1)
-    
+
     validator.print_results()
-    
+
     if validator.errors:
         sys.exit(1)
 

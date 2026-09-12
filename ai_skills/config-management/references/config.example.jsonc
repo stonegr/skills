@@ -1,0 +1,78 @@
+{
+  // 应用基础配置
+  "app": {
+    "name": "FastAPI Production Template",  // 项目名称
+    "env": "development",                    /* development / staging / production */
+    "root_path": "."                         // 项目根路径
+  },
+
+  /*
+   * 服务器配置
+   * - host: 监听地址，0.0.0.0 表示所有网卡
+   * - port: 监听端口
+   * - workers: 工作进程数（仅 Linux 生效）
+   */
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8000,
+    "workers": 4,
+    "reload": true
+  },
+
+  // 日志配置
+  "log": {
+    "level": "INFO",                          // debug / info / warn / error
+    "format": "json",                         // json / text
+    "file": "./logs/app.log",                 // 日志文件路径（为空则输出到控制台）
+    "output": "both",                         // file / console / both
+    "max_size": 100,                          // 单个日志文件最大 MB
+    "max_backups": 7,                         // 最多保留旧文件数
+    "max_age": 30,                            // 最多保留天数
+    "compress": true,                         // 是否压缩
+    "time_format": "%Y-%m-%d %H:%M:%S",
+    "encoding": "utf-8"
+  },
+
+  // 数据库配置（PostgreSQL）
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "user": "postgres",
+    "password": "CHANGEME",
+    "name": "template_db",
+    "pool_size": 10,
+    "max_overflow": 20
+  },
+
+  // Redis 配置
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "password": "",
+    "db": 0
+  },
+
+  // JWT 配置
+  "jwt": {
+    "secret": "CHANGEME",
+    "access_expire_minutes": 60,
+    "refresh_expire_minutes": 10080           // 7 天
+  },
+
+  // 跨域配置（字符串里的 https:// 不是注释！）
+  "cors": {
+    "origins": [
+      "http://localhost:3000",
+      "http://localhost:8000",
+      "https://example.com"                   // 注释 OK
+    ],
+    "allow_credentials": true,
+    "allow_methods": ["*"],
+    "allow_headers": ["*"]
+  },
+
+  // 限流配置
+  "rate_limit": {
+    "default": "100/minute"
+  }
+}
