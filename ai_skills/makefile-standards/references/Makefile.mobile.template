@@ -1,0 +1,170 @@
+# =====================================================================
+# Android (Gradle) + iOS (Xcode) 双端统一 Makefile
+# 选择平台：make platform=android <target> 或 make platform=ios <target>
+# 默认 platform=android
+# =====================================================================
+
+PLATFORM ?= android
+SCHEME ?= <AppName>
+WORKSPACE ?= <AppName>.xcworkspace
+DERIVED_DATA := ./build
+
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help: ## 显示所有命令
+	@echo "Usage: make platform=android|ios <target>"
+	@echo ""
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+# ===== 共用 =====
+.PHONY: install
+install: ## 安装依赖 (Android: gradle wrapper; iOS: mint/pod install)
+ifeq ($(PLATFORM),android)
+	./gradlew --version
+else
+	@if ! command -v mint >/dev/null 2>&1; then \
+		echo "mint is not installed. Install: brew install mint"; \
+		exit 1; \
+	fi
+	mint bootstrap
+	cd ios && pod install
+endif
+
+.PHONY: clean
+clean: ## 清理构建产物
+ifeq ($(PLATFORM),android)
+	./gradlew clean
+	rm -rf app/build build/ .gradle/
+else
+	rm -rf $(DERIVED_DATA)
+	cd ios && xcodebuild clean -workspace $(WORKSPACE) -scheme $(SCHEME)
+endif
+
+# ===== Android =====
+.PHONY: dev-android
+dev-android: ## 启动 Android 开发（连接设备后安装 debug apk）
+	./gradlew installDebug
+
+.PHONY: build-android
+build-android: ## 构建 Android Debug APK
+	./gradlew assembleDebug
+
+.PHONY: release-android
+release-android: ## 构建 Android Release APK（需先配置签名）
+	./gradlew assembleRelease
+
+.PHONY: test-android
+test-android: ## 运行 Android 单元测试
+	./gradlew test
+
+.PHONY: lint-android
+lint-android: ## 运行 Android Lint 检查
+	./gradlew lintDebug
+
+.PHONY: fmt-android
+fmt-android: ## 格式化 Kotlin 代码 (ktlint)
+	@if ! command -v ktlint >/dev/null 2>&1; then \
+		echo "ktlint is not installed. Install: brew install ktlint"; \
+		exit 1; \
+	fi
+	ktlint --format
+
+# ===== iOS =====
+.PHONY: dev-ios
+dev-ios: ## 启动 iOS 开发（在模拟器中运行）
+	xcodebuild \
+		-workspace $(WORKSPACE) \
+		-scheme $(SCHEME) \
+		-configuration Debug \
+		-derivedDataPath $(DERIVED_DATA) \
+		-destination 'generic/platform=iOS Simulator' \
+		build
+
+.PHONY: build-ios
+build-ios: ## 构建 iOS Debug（模拟器）
+	xcodebuild \
+		-workspace $(WORKSPACE) \
+		-scheme $(SCHEME) \
+		-configuration Debug \
+		-derivedDataPath $(DERIVED_DATA) \
+		-destination 'generic/platform=iOS Simulator' \
+		build
+
+.PHONY: release-ios
+release-ios: ## 构建 iOS Release（真机，需配置签名）
+	xcodebuild \
+		-workspace $(WORKSPACE) \
+		-scheme $(SCHEME) \
+		-configuration Release \
+		-derivedDataPath $(DERIVED_DATA) \
+		-destination 'generic/platform=iOS' \
+		archive
+
+.PHONY: test-ios
+test-ios: ## 运行 iOS 单元测试
+	xcodebuild test \
+		-workspace $(WORKSPACE) \
+		-scheme $(SCHEME) \
+		-destination 'platform=iOS Simulator,name=iPhone 15'
+
+.PHONY: lint-ios
+lint-ios: ## 运行 SwiftLint 检查
+	@if ! command -v swiftlint >/dev/null 2>&1; then \
+		echo "swiftlint is not installed. Install: brew install swiftlint"; \
+		exit 1; \
+	fi
+	swiftlint
+
+.PHONY: fmt-ios
+fmt-ios: ## 使用 SwiftLint --fix 自动修复
+	swiftlint --fix
+
+# ===== 平台路由 =====
+.PHONY: dev
+dev: ## 启动开发（platform=android 默认）
+ifeq ($(PLATFORM),android)
+	$(MAKE) dev-android
+else
+	$(MAKE) dev-ios
+endif
+
+.PHONY: build
+build: ## 构建 debug（platform=android 默认）
+ifeq ($(PLATFORM),android)
+	$(MAKE) build-android
+else
+	$(MAKE) build-ios
+endif
+
+.PHONY: release
+release: ## 构建 release（platform=android 默认）
+ifeq ($(PLATFORM),android)
+	$(MAKE) release-android
+else
+	$(MAKE) release-ios
+endif
+
+.PHONY: test
+test: ## 运行单元测试（platform=android 默认）
+ifeq ($(PLATFORM),android)
+	$(MAKE) test-android
+else
+	$(MAKE) test-ios
+endif
+
+.PHONY: lint
+lint: ## 静态检查（platform=android 默认）
+ifeq ($(PLATFORM),android)
+	$(MAKE) lint-android
+else
+	$(MAKE) lint-ios
+endif
+
+.PHONY: fmt
+fmt: ## 自动格式化（platform=android 默认）
+ifeq ($(PLATFORM),android)
+	$(MAKE) fmt-android
+else
+	$(MAKE) fmt-ios
+endif

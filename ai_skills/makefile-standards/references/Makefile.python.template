@@ -1,0 +1,111 @@
+PYTHON ?= python3
+UV ?= uv
+COMPOSE := docker compose
+
+# Dev server defaults. Override on the command line, e.g.
+#   make dev HOST=0.0.0.0 PORT=5050
+# We intentionally use shell ${VAR:-default} instead of make's HOST?=
+# so that an inherited shell env like macOS's HOST=192.168.x.x
+# (which fails to bind when off-network) is always overridden.
+HOST ?= 127.0.0.1
+PORT ?= 8000
+
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help: ## 显示所有命令
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+.PHONY: install
+install: ## 同步依赖 (uv sync --all-extras)
+	$(UV) sync --all-extras
+
+.PHONY: dev
+dev: ## 启动开发服务 (HOST/PORT override via `make dev HOST=... PORT=...`)
+	@HOST=$${HOST:-$(HOST)}; \
+	PORT=$${PORT:-$(PORT)}; \
+	$(UV) run uvicorn app.main:app --reload --host $$HOST --port $$PORT
+
+.PHONY: start
+start: ## 启动生产服务 (Gunicorn)
+	$(UV) run gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$(PORT)
+
+.PHONY: test
+test: ## 运行 Pytest 单元测试
+	$(UV) run pytest -v
+
+.PHONY: test-cov
+test-cov: ## 运行测试并生成覆盖率报告
+	$(UV) run pytest --cov=app --cov-report=term-missing --cov-report=html
+
+.PHONY: lint
+lint: ## 代码检查 (Ruff + Pyright)
+	$(UV) run ruff check .
+	$(UV) run pyright .
+
+.PHONY: fmt
+fmt: ## 代码自动格式化 (Ruff)
+	$(UV) run ruff format .
+	$(UV) run ruff check --fix .
+
+.PHONY: clean
+clean: ## 清理缓存与构建产物
+	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name .ruff_cache -exec rm -rf {} + 2>/dev/null || true
+	rm -rf htmlcov/ .coverage dist/ build/ *.egg-info
+
+# ===== Docker (按需启用) =====
+.PHONY: docker-build
+docker-build: ## 构建所有服务的镜像
+	$(COMPOSE) build
+
+.PHONY: docker-up
+docker-up: ## 后台启动 docker compose 栈
+	$(COMPOSE) up -d
+
+.PHONY: docker-down
+docker-down: ## 停止并移除容器、网络（保留数据卷和镜像）
+	$(COMPOSE) down
+
+.PHONY: docker-logs
+docker-logs: ## 查看日志（默认所有服务; make docker-logs s=app 查看指定服务）
+	@if [ -n "$(s)" ]; then \
+		$(COMPOSE) logs -f $(s); \
+	else \
+		$(COMPOSE) logs -f; \
+	fi
+
+.PHONY: docker-clean
+docker-clean: ## 彻底清理：容器、网络、数据卷
+	$(COMPOSE) down -v --remove-orphans
+
+# ===== Database migration (按需启用) =====
+# .PHONY: migrate
+# migrate: ## 应用数据库迁移到最新版本
+# 	$(UV) run alembic upgrade head
+#
+# .PHONY: revision
+# revision: ## 生成新迁移版本 (usage: make revision m="message")
+# 	$(UV) run alembic revision --autogenerate -m "$(m)"
+#
+# .PHONY: downgrade
+# downgrade: ## 回滚一个迁移版本
+# 	$(UV) run alembic downgrade -1
+
+# ===== i18n (按需启用) =====
+# .PHONY: i18n-extract
+# i18n-extract: ## 从源码提取翻译到 locales/messages.pot
+# 	$(UV) run pybabel extract -F babel.cfg -o locales/messages.pot .
+#
+# .PHONY: i18n-update
+# i18n-update: ## 根据 .pot 更新各语言 .po
+# 	$(UV) run pybabel update -i locales/messages.pot -d locales
+#
+# .PHONY: i18n-compile
+# i18n-compile: ## 编译 .po → .mo
+# 	$(UV) run pybabel compile -d locales
+#
+# .PHONY: i18n-init
+# i18n-init: ## 初始化新语言 (usage: make i18n-init lang=ja_JP)
+# 	$(UV) run pybabel init -i locales/messages.pot -d locales -l $(lang)

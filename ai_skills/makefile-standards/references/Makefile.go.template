@@ -1,0 +1,101 @@
+APP_NAME := <project-name>
+BUILD_DIR := ./bin
+COMPOSE_FILE := ./deployments/docker-compose.yml
+COMPOSE := docker compose -f $(COMPOSE_FILE)
+SWAG_VERSION := v1.16.6
+
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help: ## 显示所有命令
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+.PHONY: install
+install: ## 下载依赖并整理 go.mod / go.sum
+	go mod tidy
+
+.PHONY: dev
+dev: ## 本地启动服务（go run）
+	go run ./cmd/server/main.go
+
+.PHONY: build
+build: ## 编译二进制到 bin/
+	mkdir -p $(BUILD_DIR)
+	CGO_ENABLED=0 go build -ldflags="-s -w" -o $(BUILD_DIR)/$(APP_NAME) ./cmd/server/main.go
+
+.PHONY: test
+test: ## 运行所有单元测试
+	go test -v ./...
+
+.PHONY: test-cov
+test-cov: ## 运行测试并生成覆盖率报告
+	go test -v -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out -o coverage.html
+
+.PHONY: lint
+lint: ## 运行 golangci-lint（未安装则自动安装）
+	@if ! command -v golangci-lint >/dev/null 2>&1; then \
+		echo "golangci-lint is not installed. Installing..."; \
+		go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
+	fi
+	@echo "Running golangci-lint..."
+	@golangci-lint run --fix ./...
+
+.PHONY: fmt
+fmt: ## 格式化 Go 代码 (gofmt + goimports)
+	gofmt -w .
+	@if ! command -v goimports >/dev/null 2>&1; then \
+		echo "goimports is not installed. Installing..."; \
+		go install golang.org/x/tools/cmd/goimports@latest; \
+	fi
+	@goimports -w .
+
+.PHONY: seed
+seed: ## 运行数据库种子数据
+	go run ./cmd/seed/seed.go
+
+.PHONY: swag
+swag: ## 生成 swagger 文档到 ./docs
+	@mkdir -p docs
+	go run github.com/swaggo/swag/cmd/swag@$(SWAG_VERSION) \
+		init \
+		-g ./cmd/server/main.go \
+		-o ./docs
+
+.PHONY: clean
+clean: ## 清理构建产物、覆盖率文件和日志目录
+	rm -rf $(BUILD_DIR) coverage.out coverage.html logs/
+
+# ===== Docker (按需启用) =====
+.PHONY: docker-build
+docker-build: ## 构建所有服务的镜像
+	$(COMPOSE) build
+
+.PHONY: docker-up
+docker-up: ## 后台启动所有服务（app + postgres + redis 等）
+	$(COMPOSE) up -d
+	@echo "Services started. Use 'make docker-logs' to view logs."
+
+.PHONY: docker-down
+docker-down: ## 停止并移除容器、网络（保留数据卷和镜像）
+	$(COMPOSE) down
+
+.PHONY: docker-logs
+docker-logs: ## 查看日志（默认所有服务; make docker-logs s=app 查看指定服务）
+	@if [ -n "$(s)" ]; then \
+		$(COMPOSE) logs -f $(s); \
+	else \
+		$(COMPOSE) logs -f; \
+	fi
+
+.PHONY: docker-build-cn
+docker-build-cn: ## 国内构建镜像（使用中科大源 + goproxy.cn）
+	docker build \
+	    --build-arg APK_MIRROR=mirrors.ustc.edu.cn \
+	    --build-arg GOPROXY=https://goproxy.cn,direct \
+	    -f $(COMPOSE_FILE) ..
+
+.PHONY: docker-clean
+docker-clean: ## 彻底清理：容器、网络、数据卷
+	$(COMPOSE) down -v --remove-orphans
+	@echo "Containers, networks, volumes cleaned up."

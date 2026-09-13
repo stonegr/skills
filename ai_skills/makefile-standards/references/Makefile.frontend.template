@@ -1,0 +1,73 @@
+PNPM ?= pnpm
+COMPOSE := docker compose
+
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help: ## 显示所有命令
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+.PHONY: install
+install: ## 安装依赖 (pnpm install)
+	$(PNPM) install
+
+.PHONY: dev
+dev: ## 启动开发服务器（Vite/Nuxt/Next）
+	$(PNPM) dev
+
+.PHONY: build
+build: ## 构建生产产物到 dist/
+	$(PNPM) build
+
+.PHONY: preview
+preview: ## 本地预览构建产物
+	$(PNPM) preview
+
+.PHONY: test
+test: ## 运行单元测试
+	$(PNPM) test
+
+.PHONY: test-cov
+test-cov: ## 运行测试并生成覆盖率报告
+	$(PNPM) test -- --coverage
+
+.PHONY: lint
+lint: ## 代码检查 (ESLint + Stylelint)
+	$(PNPM) lint
+
+.PHONY: fmt
+fmt: ## 自动格式化 (Prettier)
+	$(PNPM) format
+
+.PHONY: typecheck
+typecheck: ## TypeScript 类型检查（仅 TS 项目）
+	$(PNPM) exec tsc --noEmit
+
+.PHONY: clean
+clean: ## 清理构建产物与缓存
+	rm -rf dist/ .nuxt/ .next/ .cache/ .turbo/ coverage/ node_modules/.cache
+
+# ===== Docker (按需启用) =====
+.PHONY: docker-build
+docker-build: ## 构建所有服务的镜像
+	$(COMPOSE) build
+
+.PHONY: docker-up
+docker-up: ## 后台启动 docker compose 栈
+	$(COMPOSE) up -d
+
+.PHONY: docker-down
+docker-down: ## 停止并移除容器、网络（保留数据卷和镜像）
+	$(COMPOSE) down
+
+.PHONY: docker-logs
+docker-logs: ## 查看日志（默认所有服务; make docker-logs s=web 查看指定服务）
+	@if [ -n "$(s)" ]; then \
+		$(COMPOSE) logs -f $(s); \
+	else \
+		$(COMPOSE) logs -f; \
+	fi
+
+.PHONY: docker-clean
+docker-clean: ## 彻底清理：容器、网络、数据卷
+	$(COMPOSE) down -v --remove-orphans
