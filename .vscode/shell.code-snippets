@@ -68,7 +68,7 @@
         "prefix": "sh_read_file",
         "body": [
             "while IFS= read -r ${1:line}; do",
-            "    ${2:echo \"$line\"}",
+            "    ${2:echo \"\\$line\"}",
             "done < ${3:file}"
         ],
         "description": "读取文件（按行）"
@@ -108,9 +108,9 @@
         "prefix": "sh_args",
         "body": [
             "while getopts \"${1:o:vh}\" opt; do",
-            "    case \"$opt\" in",
+            "    case \"\\$opt\" in",
             "        ${2:o})",
-            "            ${3:echo \"option -$opt with arg $OPTARG\"}",
+            "            ${3:echo \"option -\\$opt with arg \\$OPTARG\"}",
             "            ;;",
             "        h)",
             "            ${4:usage}",
@@ -289,7 +289,7 @@
         "body": [
             "@test \"${1:test name}\" {",
             "    ${2:# test body}",
-            "    [ \"$status\" -eq 0 ]",
+            "    [ \"\\$status\" -eq 0 ]",
             "}"
         ],
         "description": "基本测试函数（bats）"
@@ -361,7 +361,7 @@
     "退出码断言": {
         "prefix": "sh_test_status",
         "body": [
-            "[ \"$status\" -eq ${1:0} ]"
+            "[ \"\\$status\" -eq ${1:0} ]"
         ],
         "description": "退出码断言"
     },
@@ -369,7 +369,7 @@
         "prefix": "sh_test_err",
         "body": [
             "run ${1:command}",
-            "[ \"$status\" -ne 0 ]",
+            "[ \"\\$status\" -ne 0 ]",
             "[ \"${2:output}\" = \"${3:expected_err_msg}\" ]"
         ],
         "description": "命令返回非零 + 错误消息匹配"
@@ -424,8 +424,8 @@
             "@test \"${1:group}: ${2:case}\" {",
             "    for ${3:case} in ${4:1 2 3}; do",
             "        run ${5:func $3}",
-            "        [ \"$status\" -eq 0 ]",
-            "        [ \"$output\" = \"$3\" ]",
+            "        [ \"\\$status\" -eq 0 ]",
+            "        [ \"\\$output\" = \"$3\" ]",
             "    done",
             "}"
         ],
@@ -438,7 +438,7 @@
             "for ${5:case} in \"${${1:cases}[@]}\"; do",
             "    @test \"$5: $5\" {",
             "        run ${6:func $5}",
-            "        [ \"$status\" -eq 0 ]",
+            "        [ \"\\$status\" -eq 0 ]",
             "    }",
             "done"
         ],
@@ -450,7 +450,7 @@
             "while IFS='${1::}' read -r ${2:input} ${3:expected}; do",
             "    @test \"test $2 -> $3\" {",
             "        run ${4:func $2}",
-            "        [ \"$output\" = \"$3\" ]",
+            "        [ \"\\$output\" = \"$3\" ]",
             "    }",
             "done < ${5:testdata.csv}"
         ],
@@ -485,8 +485,8 @@
         "prefix": "sh_test_run",
         "body": [
             "run ${1:command}",
-            "echo \"$output\"",
-            "[ \"$status\" -eq ${2:0} ]"
+            "echo \"\\$output\"",
+            "[ \"\\$status\" -eq ${2:0} ]"
         ],
         "description": "run 命令并捕获输出"
     },
@@ -494,7 +494,7 @@
         "prefix": "sh_test_status_check",
         "body": [
             "run ${1:command}",
-            "[ \"$status\" -eq ${2:0} ]"
+            "[ \"\\$status\" -eq ${2:0} ]"
         ],
         "description": "run + status 校验"
     },
@@ -502,7 +502,7 @@
         "prefix": "sh_test_output_check",
         "body": [
             "run ${1:command}",
-            "[[ \"$output\" =~ \"${2:pattern}\" ]]"
+            "[[ \"\\$output\" =~ \"${2:pattern}\" ]]"
         ],
         "description": "run + output 校验"
     },

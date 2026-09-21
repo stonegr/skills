@@ -736,9 +736,9 @@
         "prefix": "rs_test_param_each",
         "body": [
             "macro_rules! ${1:case} {",
-            "    ($($name:ident: $input:expr, $expected:expr),* $(,)?) => {",
-            "        $(#[test] fn $name() {",
-            "            assert_eq!(${2:func}($input), $expected);",
+            "    ($(\\$name:ident: \\$input:expr, \\$expected:expr),* $(,)?) => {",
+            "        $(#[test] fn \\$name() {",
+            "            assert_eq!(${2:func}(\\$input), \\$expected);",
             "        })*",
             "    }",
             "}",

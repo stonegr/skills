@@ -514,8 +514,8 @@
             "test.each([",
             "    { ${1:input}: ${2:1}, ${3:expected}: ${4:2} },",
             "    { ${1:input}: ${5:2}, ${3:expected}: ${6:4} },",
-            "])('$1: $input => $expected', ({ ${1:input}, ${3:expected} }) => {",
-            "    expect(${7:func($input)}).toBe(${3:expected});",
+            "])('$1: \\$input => \\$expected', ({ ${1:input}, ${3:expected} }) => {",
+            "    expect(${7:func(\\$input)}).toBe(${3:expected});",
             "});"
         ],
         "description": "test.each 参数化"
@@ -528,7 +528,7 @@
             "describe.each([",
             "    { ${1:group}: '${2:a}' },",
             "    { ${1:group}: '${3:b}' },",
-            "])('$1: $group', (${4:data}) => {",
+            "])('$1: \\$group', (${4:data}) => {",
             "    test('${5:case}', () => {",
             "        ${6:// test body}",
             "    });",
