@@ -29,6 +29,7 @@ name_map = {
     'sqlmodel': 'python',
     'marshmallow': 'python',
     'gorm': 'go',
+    'ipset': 'shell',
 }
 
 
@@ -45,6 +46,7 @@ for name, cate in name_map.items():
     _logger.info(f'开始处理: {o_file_name}')
     o_file_path = FILE_DIR.parent / '.vscode' / f'{o_file_name}'
     t_file_path = VSCODE_SNIPPETS_DIR / f'{cate}/{o_file_name}'
+    t_file_path.parent.mkdir(exist_ok=True)
     if t_file_path.exists():
         shutil.copy2(t_file_path, BACKUP_DIR)
         _logger.info(f'{o_file_name} 备份到 {BACKUP_DIR / o_file_name} 完成')

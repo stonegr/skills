@@ -1,0 +1,361 @@
+{
+    "创建 hash:ip 集合": {
+        "prefix": "ips_create_hash_ip",
+        "body": [
+            "ipset create ${1:BLACKLIST} hash:ip maxelem ${2:65536} family inet hashsize 1024 timeout 0"
+        ],
+        "description": "创建 hash:ip 集合（单 IP 黑/白名单）"
+    },
+    "创建 hash:net 集合": {
+        "prefix": "ips_create_hash_net",
+        "body": [
+            "ipset create ${1:BLACKNET} hash:net family inet hashsize 4096 maxelem 100000"
+        ],
+        "description": "创建 hash:net 集合（网段黑名单）"
+    },
+    "创建 hash:ip,port 集合": {
+        "prefix": "ips_create_hash_ipport",
+        "body": [
+            "ipset create ${1:SCAN_BLOCK} hash:ip,port family inet maxelem 65536"
+        ],
+        "description": "创建 hash:ip,port 集合（端口扫描防护）"
+    },
+    "创建 list:set 集合": {
+        "prefix": "ips_create_list_set",
+        "body": [
+            "ipset create ${1:ALL_BLOCK} list:set"
+        ],
+        "description": "创建 list:set 嵌套集合（集合引用集合）"
+    },
+    "销毁集合": {
+        "prefix": "ips_destroy",
+        "body": [
+            "ipset destroy ${1:NAME}"
+        ],
+        "description": "销毁集合（先确认未被 iptables/nft 引用）"
+    },
+    "清空集合条目": {
+        "prefix": "ips_flush",
+        "body": [
+            "ipset flush ${1:NAME}"
+        ],
+        "description": "清空集合内所有条目（保留集合本身）"
+    },
+    "重命名集合": {
+        "prefix": "ips_rename",
+        "body": [
+            "ipset rename ${1:OLD_NAME} ${2:NEW_NAME}"
+        ],
+        "description": "重命名集合"
+    },
+    "列出所有集合": {
+        "prefix": "ips_list_all",
+        "body": [
+            "ipset list"
+        ],
+        "description": "列出所有集合与头部信息"
+    },
+    "添加单个 IP": {
+        "prefix": "ips_add_ip",
+        "body": [
+            "ipset -exist add ${1:BLACKLIST} ${2:1.2.3.4}"
+        ],
+        "description": "添加单个 IP 到集合（-exist 跳过已存在报错）"
+    },
+    "添加网段": {
+        "prefix": "ips_add_net",
+        "body": [
+            "ipset -exist add ${1:BLACKNET} ${2:1.2.3.0/24}"
+        ],
+        "description": "添加网段到 hash:net 集合"
+    },
+    "删除条目": {
+        "prefix": "ips_del",
+        "body": [
+            "ipset -exist del ${1:BLACKLIST} ${2:1.2.3.4}"
+        ],
+        "description": "从集合删除条目（-exist 静默处理不存在）"
+    },
+    "测试条目是否存在": {
+        "prefix": "ips_test",
+        "body": [
+            "if ipset test ${1:BLACKLIST} ${2:1.2.3.4}; then",
+            "    echo \"${2:1.2.3.4} 在 ${1:BLACKLIST} 中\"",
+            "else",
+            "    echo \"${2:1.2.3.4} 不在 ${1:BLACKLIST} 中\"",
+            "fi"
+        ],
+        "description": "测试条目是否存在（基于退出码 0/非0）"
+    },
+    "批量恢复集合": {
+        "prefix": "ips_add_batch",
+        "body": [
+            "ipset restore < ${1:/etc/ipset.rules}"
+        ],
+        "description": "从文件批量恢复集合与条目"
+    },
+    "保存所有集合": {
+        "prefix": "ips_save",
+        "body": [
+            "ipset save > ${1:/etc/ipset.rules}"
+        ],
+        "description": "保存所有集合到文件（开机恢复用）"
+    },
+    "从文件恢复集合": {
+        "prefix": "ips_restore",
+        "body": [
+            "ipset restore < ${1:/etc/ipset.rules}"
+        ],
+        "description": "从文件恢复所有集合"
+    },
+    "ipset 开机恢复 path unit": {
+        "prefix": "ips_systemd_unit",
+        "body": [
+            "[Unit]",
+            "Description=Restore ipset rules on boot",
+            "Before=network-pre.target",
+            "",
+            "[Path]",
+            "PathExists=/etc/ipset.rules",
+            "",
+            "[Install]",
+            "WantedBy=multi-user.target"
+        ],
+        "description": "ipset-rules.path 单元（开机自动恢复，需配合同名 .service）"
+    },
+    "ipset 定时备份 timer": {
+        "prefix": "ips_systemd_timer",
+        "body": [
+            "[Unit]",
+            "Description=Periodic ipset rules backup",
+            "",
+            "[Timer]",
+            "OnCalendar=${1|hourly,daily,weekly|}",
+            "Persistent=true",
+            "Unit=ipset-backup.service",
+            "",
+            "[Install]",
+            "WantedBy=timers.target"
+        ],
+        "description": "ipset 定时备份 timer（配合 ipset-backup.service）"
+    },
+    "iptables 拒绝 ipset 内 IP": {
+        "prefix": "ips_ipt_drop",
+        "body": [
+            "iptables -I ${1:INPUT} 1 -m set --match-set ${2:BLACKLIST} src -j DROP"
+        ],
+        "description": "iptables DROP 匹配 ipset 内 IP"
+    },
+    "iptables 放行白名单": {
+        "prefix": "ips_ipt_allow",
+        "body": [
+            "iptables -I ${1:INPUT} 1 -m set --match-set ${2:WHITELIST} src -j ACCEPT"
+        ],
+        "description": "iptables 放行白名单内 IP（置顶规则）"
+    },
+    "iptables 多集合联合匹配": {
+        "prefix": "ips_ipt_multi_set",
+        "body": [
+            "iptables -A ${1:INPUT} -m set ! --match-set ${2:WHITELIST} src -m set --match-set ${3:BLACKLIST} src -j DROP"
+        ],
+        "description": "iptables 多集合匹配（白名单外 + 黑名单内 DROP）"
+    },
+    "iptables 记录 ipset 匹配日志": {
+        "prefix": "ips_ipt_log",
+        "body": [
+            "iptables -I ${1:INPUT} 1 -m set --match-set ${2:BLACKLIST} src -j NFLOG --nflog-group ${3:1}"
+        ],
+        "description": "iptables 记录 ipset 匹配日志（NFLOG）"
+    },
+    "nftables 定义 ipv4 set": {
+        "prefix": "ips_nft_set",
+        "body": [
+            "nft add set inet ${1:filter} ${2:BLACKLIST} { type ipv4_addr; flags interval; timeout ${3:12h}; }"
+        ],
+        "description": "nftables 定义 ipv4_addr set（作为 ipset 替代方案）"
+    },
+    "nftables 规则引用 ipset": {
+        "prefix": "ips_nft_match",
+        "body": [
+            "nft add rule inet ${1:filter} ${2:input} ip saddr @${3:BLACKLIST} drop"
+        ],
+        "description": "nftables 规则引用 ipset 集合（@setname 语法）"
+    },
+    "nftables 批量规则片段": {
+        "prefix": "ips_nft_restore",
+        "body": [
+            "#!/usr/sbin/nft -f",
+            "",
+            "table inet filter {",
+            "  set ${1:BLACKLIST} {",
+            "    type ipv4_addr",
+            "    flags interval",
+            "  }",
+            "",
+            "  chain ${2:input} {",
+            "    type filter hook input priority 0; policy accept;",
+            "    ip saddr @${1:BLACKLIST} drop",
+            "  }",
+            "}"
+        ],
+        "description": "nftables 批量规则片段（nft -f 加载）"
+    },
+    "封禁 IP 函数": {
+        "prefix": "ips_fn_block",
+        "body": [
+            "block_ip() {",
+            "  local set=\"\\${1}\"",
+            "  local ip=\"\\${2}\"",
+            "  if ipset -exist add \"$set\" \"$ip\"; then",
+            "    echo \"blocked: $ip\"",
+            "  else",
+            "    echo \"failed: $ip\" >&2",
+            "    return 1",
+            "  fi",
+            "}",
+            "",
+            "block_ip \"${1:BLACKLIST}\" \"${2:1.2.3.4}\""
+        ],
+        "description": "封禁 IP 函数（带去重检查，\\${N} 表示 shell positional param）"
+    },
+    "解封 IP 函数": {
+        "prefix": "ips_fn_unblock",
+        "body": [
+            "unblock_ip() {",
+            "  local set=\"\\${1}\"",
+            "  local ip=\"\\${2}\"",
+            "  ipset -exist del \"$set\" \"$ip\" && echo \"unblocked: $ip\" || {",
+            "    echo \"failed: $ip\" >&2",
+            "    return 1",
+            "  }",
+            "}",
+            "",
+            "unblock_ip \"${1:BLACKLIST}\" \"${2:1.2.3.4}\""
+        ],
+        "description": "解封 IP 函数"
+    },
+    "检查 IP 是否在黑名单": {
+        "prefix": "ips_fn_check",
+        "body": [
+            "is_blocked() {",
+            "  local set=\"\\${1}\"",
+            "  local ip=\"\\${2}\"",
+            "  ipset test \"$set\" \"$ip\" >/dev/null 2>&1",
+            "}",
+            "",
+            "if is_blocked \"${1:BLACKLIST}\" \"${2:1.2.3.4}\"; then",
+            "    echo \"${2:1.2.3.4} 已被封禁\"",
+            "fi"
+        ],
+        "description": "检查 IP 是否在黑名单（返回 0/1）"
+    },
+    "临时封禁 IP 函数": {
+        "prefix": "ips_fn_block_expire",
+        "body": [
+            "block_tmp() {",
+            "  local set=\"\\${1}\"",
+            "  local ip=\"\\${2}\"",
+            "  local duration=\"\\${3:3600}\"",
+            "  ipset -exist add \"$set\" \"$ip\" timeout \"$duration\"",
+            "  echo \"blocked $ip for $duration\"",
+            "  ( sleep \"$duration\"; ipset -exist del \"$set\" \"$ip\" ) &",
+            "}",
+            "",
+            "block_tmp \"${1:BLACKLIST}\" \"${2:1.2.3.4}\" \"${3:3600}\""
+        ],
+        "description": "临时封禁 IP 函数（带超时自动解封）"
+    },
+    "从 URL 同步黑名单": {
+        "prefix": "ips_script_sync",
+        "body": [
+            "#!/usr/bin/env bash",
+            "set -euo pipefail",
+            "",
+            "SET_NAME=\"${1:BLACKLIST}\"",
+            "URL=\"${2:https://example.com/blocklist.txt}\"",
+            "TMP=$(mktemp)",
+            "",
+            "curl -fsSL \"$URL\" -o \"$TMP\"",
+            "ipset create \"$SET_NAME\" hash:ip -exist",
+            "ipset flush \"$SET_NAME\"",
+            "",
+            "while IFS= read -r ip; do",
+            "  [[ \"$ip\" =~ ^#|^$ ]] && continue",
+            "  ipset -exist add \"$SET_NAME\" \"$ip\"",
+            "done < \"$TMP\"",
+            "",
+            "rm -f \"$TMP\"",
+            "echo \"synced $SET_NAME from $URL\""
+        ],
+        "description": "从 URL/文件同步黑名单（curl + ipset flush/add）"
+    },
+    "按国家封禁（ipdeny zone）": {
+        "prefix": "ips_script_geoip",
+        "body": [
+            "#!/usr/bin/env bash",
+            "set -euo pipefail",
+            "",
+            "SET_NAME=\"${1:BLACKLIST_GEO}\"",
+            "ZONES=\"${2:cn ru}\"",
+            "",
+            "ipset create \"$SET_NAME\" hash:net -exist",
+            "ipset flush \"$SET_NAME\"",
+            "",
+            "for zone in $ZONES; do",
+            "  echo \"fetching $zone.zone ...\"",
+            "  curl -fsSL \"https://www.ipdeny.com/ipblocks/data/countries/$zone.zone\" | \\",
+            "    awk '{print \"add \" '\"$SET_NAME\"' \" \\$0}' | \\",
+            "    xargs -L1 ipset",
+            "done",
+            "",
+            "echo \"geoip block loaded: $SET_NAME\""
+        ],
+        "description": "按国家封禁（ipdeny zone + xargs 批量 add）"
+    },
+    "列出带 timeout 的条目": {
+        "prefix": "ips_script_unblock_expired",
+        "body": [
+            "#!/usr/bin/env bash",
+            "set -euo pipefail",
+            "",
+            "ipset list ${1:BLACKLIST} | awk '/timeout/ {print}'"
+        ],
+        "description": "列出 ipset 内带 timeout 的条目（即将自动过期）"
+    },
+    "ipset 备份脚本": {
+        "prefix": "ips_script_backup",
+        "body": [
+            "#!/usr/bin/env bash",
+            "set -euo pipefail",
+            "",
+            "BACKUP_DIR=\"${1:/var/backups/ipset}\"",
+            "KEEP=\"${2:7}\"",
+            "",
+            "mkdir -p \"$BACKUP_DIR\"",
+            "file=\"$BACKUP_DIR/ipset-$(date +%Y%m%d-%H%M%S).rules.gz\"",
+            "ipset save | gzip > \"$file\"",
+            "",
+            "find \"$BACKUP_DIR\" -name 'ipset-*.rules.gz' -mtime +\"$KEEP\" -delete",
+            "echo \"backup: $file\""
+        ],
+        "description": "ipset 定时备份（gzip + 保留 N 天）"
+    },
+    "查看 ipset 统计": {
+        "prefix": "ips_debug_stats",
+        "body": [
+            "ipset list -terse ${1:BLACKLIST} | head -20",
+            "echo \"---\"",
+            "ipset list ${1:BLACKLIST} | grep -E '^(Name|Type|Size|References|Members):'"
+        ],
+        "description": "查看 ipset 集合头部与统计"
+    },
+    "启用 ipset 内核调试": {
+        "prefix": "ips_debug_headers",
+        "body": [
+            "modprobe ip_set debug=1",
+            "echo 1 > /sys/module/ip_set/parameters/debug",
+            "dmesg -w | grep -i 'ip_set\\|ipset'"
+        ],
+        "description": "启用 ipset 内核模块调试（dmesg 实时观察）"
+    }
+}
