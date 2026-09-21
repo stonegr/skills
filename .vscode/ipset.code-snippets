@@ -27,6 +27,21 @@
         ],
         "description": "创建 list:set 嵌套集合（集合引用集合）"
     },
+    "创建 bitmap:port 集合": {
+        "prefix": "ips_create_bitmap_port",
+        "body": [
+            "# range 0-65535, 最大覆盖 65536 个端口",
+            "ipset create ${1:ALL_BLOCK} bitmap:port range 0-1024"
+        ],
+        "description": "创建 bitmap:port 嵌套集合（集合引用集合）"
+    },
+    "创建 hash:mac 集合": {
+        "prefix": "ips_create_hash_mac",
+        "body": [
+            "ipset create ${1:ALL_BLOCK} hash:mac"
+        ],
+        "description": "创建 hash:mac 嵌套集合（集合引用集合）"
+    },
     "销毁集合": {
         "prefix": "ips_destroy",
         "body": [
@@ -206,10 +221,10 @@
             "block_ip() {",
             "  local set=\"\\${1}\"",
             "  local ip=\"\\${2}\"",
-            "  if ipset -exist add \"$set\" \"$ip\"; then",
-            "    echo \"blocked: $ip\"",
+            "  if ipset -exist add \"\\$set\" \"\\$ip\"; then",
+            "    echo \"blocked: \\$ip\"",
             "  else",
-            "    echo \"failed: $ip\" >&2",
+            "    echo \"failed: \\$ip\" >&2",
             "    return 1",
             "  fi",
             "}",
@@ -224,8 +239,8 @@
             "unblock_ip() {",
             "  local set=\"\\${1}\"",
             "  local ip=\"\\${2}\"",
-            "  ipset -exist del \"$set\" \"$ip\" && echo \"unblocked: $ip\" || {",
-            "    echo \"failed: $ip\" >&2",
+            "  ipset -exist del \"\\$set\" \"\\$ip\" && echo \"unblocked: \\$ip\" || {",
+            "    echo \"failed: \\$ip\" >&2",
             "    return 1",
             "  }",
             "}",
@@ -240,7 +255,7 @@
             "is_blocked() {",
             "  local set=\"\\${1}\"",
             "  local ip=\"\\${2}\"",
-            "  ipset test \"$set\" \"$ip\" >/dev/null 2>&1",
+            "  ipset test \"\\$set\" \"\\$ip\" >/dev/null 2>&1",
             "}",
             "",
             "if is_blocked \"${1:BLACKLIST}\" \"${2:1.2.3.4}\"; then",
@@ -256,9 +271,9 @@
             "  local set=\"\\${1}\"",
             "  local ip=\"\\${2}\"",
             "  local duration=\"\\${3:3600}\"",
-            "  ipset -exist add \"$set\" \"$ip\" timeout \"$duration\"",
-            "  echo \"blocked $ip for $duration\"",
-            "  ( sleep \"$duration\"; ipset -exist del \"$set\" \"$ip\" ) &",
+            "  ipset -exist add \"\\$set\" \"\\$ip\" timeout \"\\$duration\"",
+            "  echo \"blocked \\$ip for \\$duration\"",
+            "  ( sleep \"\\$duration\"; ipset -exist del \"\\$set\" \"\\$ip\" ) &",
             "}",
             "",
             "block_tmp \"${1:BLACKLIST}\" \"${2:1.2.3.4}\" \"${3:3600}\""
@@ -275,17 +290,17 @@
             "URL=\"${2:https://example.com/blocklist.txt}\"",
             "TMP=$(mktemp)",
             "",
-            "curl -fsSL \"$URL\" -o \"$TMP\"",
-            "ipset create \"$SET_NAME\" hash:ip -exist",
-            "ipset flush \"$SET_NAME\"",
+            "curl -fsSL \"\\$URL\" -o \"\\$TMP\"",
+            "ipset create \"\\$SET_NAME\" hash:ip -exist",
+            "ipset flush \"\\$SET_NAME\"",
             "",
             "while IFS= read -r ip; do",
-            "  [[ \"$ip\" =~ ^#|^$ ]] && continue",
-            "  ipset -exist add \"$SET_NAME\" \"$ip\"",
-            "done < \"$TMP\"",
+            "  [[ \"\\$ip\" =~ ^#|^$ ]] && continue",
+            "  ipset -exist add \"\\$SET_NAME\" \"\\$ip\"",
+            "done < \"\\$TMP\"",
             "",
-            "rm -f \"$TMP\"",
-            "echo \"synced $SET_NAME from $URL\""
+            "rm -f \"\\$TMP\"",
+            "echo \"synced \\$SET_NAME from \\$URL\""
         ],
         "description": "从 URL/文件同步黑名单（curl + ipset flush/add）"
     },
@@ -298,17 +313,17 @@
             "SET_NAME=\"${1:BLACKLIST_GEO}\"",
             "ZONES=\"${2:cn ru}\"",
             "",
-            "ipset create \"$SET_NAME\" hash:net -exist",
-            "ipset flush \"$SET_NAME\"",
+            "ipset create \"\\$SET_NAME\" hash:net -exist",
+            "ipset flush \"\\$SET_NAME\"",
             "",
-            "for zone in $ZONES; do",
-            "  echo \"fetching $zone.zone ...\"",
-            "  curl -fsSL \"https://www.ipdeny.com/ipblocks/data/countries/$zone.zone\" | \\",
-            "    awk '{print \"add \" '\"$SET_NAME\"' \" \\$0}' | \\",
+            "for zone in \\$ZONES; do",
+            "  echo \"fetching \\$zone.zone ...\"",
+            "  curl -fsSL \"https://www.ipdeny.com/ipblocks/data/countries/\\$zone.zone\" | \\",
+            "    awk '{print \"add \" '\"\\$SET_NAME\"' \" \\$0}' | \\",
             "    xargs -L1 ipset",
             "done",
             "",
-            "echo \"geoip block loaded: $SET_NAME\""
+            "echo \"geoip block loaded: \\$SET_NAME\""
         ],
         "description": "按国家封禁（ipdeny zone + xargs 批量 add）"
     },
@@ -331,12 +346,12 @@
             "BACKUP_DIR=\"${1:/var/backups/ipset}\"",
             "KEEP=\"${2:7}\"",
             "",
-            "mkdir -p \"$BACKUP_DIR\"",
-            "file=\"$BACKUP_DIR/ipset-$(date +%Y%m%d-%H%M%S).rules.gz\"",
-            "ipset save | gzip > \"$file\"",
+            "mkdir -p \"\\$BACKUP_DIR\"",
+            "file=\"\\$BACKUP_DIR/ipset-$(date +%Y%m%d-%H%M%S).rules.gz\"",
+            "ipset save | gzip > \"\\$file\"",
             "",
-            "find \"$BACKUP_DIR\" -name 'ipset-*.rules.gz' -mtime +\"$KEEP\" -delete",
-            "echo \"backup: $file\""
+            "find \"\\$BACKUP_DIR\" -name 'ipset-*.rules.gz' -mtime +\"\\$KEEP\" -delete",
+            "echo \"backup: \\$file\""
         ],
         "description": "ipset 定时备份（gzip + 保留 N 天）"
     },
